@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="ng-scope"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}
+
+
+</style>
+<script type="text/javascript">
+				
+				
+	function loginClick(){
+		document.getElementById("loginForm").submit();
+		
+	}			
+		</script>
+	
+	
+        <title>User Login</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        
+        <meta http-equiv="Expires" content="0">
+        <meta http-equiv="Pragma" content="no-store">
+        <meta http-equiv="Cache-control" content="no-store">
+        <meta http-equiv="Cache" content="no-store">
+
+        <link rel="stylesheet" type="text/css" href="{{ static ('/login_static/bootstrap.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ static ('/login_static/tiny.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ static ('/login_static/tiny-plus.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ static ('/login_static/tinyext.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ static ('/login_static/pageframework.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ static ('/login_static/widgets.css') }}">
+
+        <script type="text/javascript" id="deviceDetectScript" errorinfo=""></script>
+    <body style="background: url({{ static ('/login_static/loginbackground_hc.jpg')}}) repeat fixed center;">
+        <div id="loading">
+        </div>
+        <div id="banner">
+            <div class="widthLimit" ui-view="banner"><div  style="display:inline" class="ng-scope">
+    <a href="http/?locale=zh-cn">
+        <img id="logo" src="{{static ('/logo/logo3.png')}}" style="height: 32px;">
+		
+    </a>
+</div>
+<span id="bannerQuickLink" class="ng-scope">
+    <div  style="display:inline">
+        <a class="homepageLink ng-binding" ng-bind="i18n(&#39;homepageLink&#39;)" 
+		href="http:/?locale=zh-cn">首页</a>
+    </div>
+    <div  style="display:inline">
+        <a class="homepageLink ng-binding" ng-bind="i18n(&#39;helpCenter&#39;)" href="http/">帮助中心</a>
+    </div>
+    <!-- 只在中文下显示云社区 -->
+    <!-- ngIf: model.currentLanguage === 'zh-cn' --><div ng-if="model.currentLanguage === &#39;zh-cn&#39;" ng-click="BiEvent(&#39;send&#39;,&#39;event&#39;,&#39;button&#39;,&#39;click&#39;,&#39;login_cloudCommunity&#39;,model.cloudCommunityUrl)" style="display:inline" class="ng-scope">
+        <a class="homepageLink ng-binding" ng-bind="i18n(&#39;cloudCommunity&#39;)" href="http">联系客服</a>
+    </div><!-- end ngIf: model.currentLanguage === 'zh-cn' -->
+    <span id="languageSwitch" ng-mouseenter="model.mouseOnLanguageChangeArea()" ng-mouseleave="model.mouseLeaveLanguageChangeArea()">
+            <span ng-bind="model.currentLanguageStyle" class="ng-binding">简体中文</span>
+            <!--<div id="triangle"></div>-->
+    </span>
+</span>
+
+<!--国际站&&国内站语言类型 -->
+<!-- ngIf: !model.styleOfSite --><ul ng-if="!model.styleOfSite" id="loginPageLanguages" style="display:none;opacity: 94%;" ng-mouseleave="model.mouseLeaveLoginPageLanguagesItems()" class="ng-scope">
+    <!-- ngRepeat: language in model.loginPageLanguages --><li class="sel-lang ng-binding ng-scope" ng-repeat="language in model.loginPageLanguages" id="ch-zh-cn" ng-click="model.changeLanguage( language.key )">简体中文</li><!-- end ngRepeat: language in model.loginPageLanguages --><li class="sel-lang ng-binding ng-scope" ng-repeat="language in model.loginPageLanguages" id="ch-en-us" ng-click="model.changeLanguage( language.key )">English</li><!-- end ngRepeat: language in model.loginPageLanguages --><li class="sel-lang ng-binding ng-scope" ng-repeat="language in model.loginPageLanguages" id="ch-es-us" ng-click="model.changeLanguage( language.key )">Español</li><!-- end ngRepeat: language in model.loginPageLanguages --><li class="sel-lang ng-binding ng-scope" ng-repeat="language in model.loginPageLanguages" id="ch-pt-br" ng-click="model.changeLanguage( language.key )">Português</li><!-- end ngRepeat: language in model.loginPageLanguages -->
+</ul><!-- end ngIf: !model.styleOfSite -->
+
+<!-- ngIf: model.styleOfSite -->
+</div>
+        </div>
+        <div id="content" style="background-image:{{ static ('/login_static/loginbackground_hc.jpg')}}; background-size: cover;">
+            <div class="widthLimit" ui-view="content">
+				<link rel="stylesheet" type="text/css" ng-href="{{ static ('/login_static/loginpage_zh-cn.css') }}" class="ng-scope" href="{{ static ('/login_static/loginpage.css') }}">
+<div id="loginAdv" class="ng-scope">          <a href="http" target="_blank" mate_data_ts="www_v3_login.click.登录"> <img src="{{ static ('/login_static/0413-banner2.png') }}" alt=""></a></div>
+<form id="loginForm" role="form" action="/login/" method="post">
+			<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+				
+<div id="loginFormdiv" class="ng-scope">
+    <div class="loginTypeDiv">
+        <!-- ngIf: !model.isCompany --><span ng-if="!model.isCompany" class="loginTypeNoSelected ng-binding ng-scope" ng-bind="model.personageUser">账号登录</span><!-- end ngIf: !model.isCompany -->
+        <!-- ngIf: model.isCompany -->
+    </div>
+    、
+    <div ng-if="!model.isCompany &amp;&amp; !model.mobileLogin" class="personalDiv loginFormDiv ng-scope">
+        <!-- 账号输入框 -->
+        <div class="inputField">
+            <span class="tiny-textbox-container" id="personalAccountInputId" style="width: 320px; height: 36px;">
+				<input type="text" spellcheck="false"  class="tiny-input-text" name="username" validator="true" placeholder="账号名"></span>
+        </div>
+        <!-- 密码输入框 -->
+        <div class="inputField">
+            <span class="tiny-textbox-container" id="personalPasswordInputId" style="width: 320px; height: 36px;"> 
+			<input type="password" name="password" autocomplete="off" class="tiny-input-text" validator="true" placeholder="密码"></span>
+            <span class="pwdShowimg " 
+			></span>
+        </div>                
+    </div>
+
+
+    <div class="toDoDiv">
+        <!-- 记住密码按钮 -->
+        <div id="checkArea" class="checkboxDiv">
+            <!-- <tiny-checkbox id="model.chkId" text="model.chkTxt" checked="model.rememberChecked" change="model.rememberCheckedChange()"></tiny-checkbox> -->
+            <input id="checkboxInput" class="chat-button-location-radio-input ng-pristine ng-untouched ng-valid" type="checkbox" name="checkboxInput" ng-model="model.rememberChecked" ng-click="model.rememberCheckedChange()">
+            <label for="checkboxInput" ng-bind="model.chkTxt" class="ng-binding">记住登录名</label>
+        </div>
+    </div>
+
+    <div class="buttonAreaDiv">
+        <div id="buttonArea">
+            <div id="loginBtn" onclick="loginClick()" class="loginBtn" tabindex="0">
+                <span id="btn_submit"  ng-bind="model.submitBtnText" class="ng-binding">登录</span>
+            </div>
+            <div id="bottomBtns">
+                <div class="forgetPwdLink commonLinkDiv">
+                    <a href="https" ng-click="goFindPwd(&#39;send&#39;,&#39;event&#39;,&#39;button&#39;,&#39;click&#39;,&#39;login_fpwd&#39;)" class="loginswap loginBottomColor ng-binding" ng-bind="i18n(&#39;forgetPwd&#39;)">忘记密码</a>
+                </div>
+                <div class="splitLine"></div>
+                <div class="forgetPwdLink commonLinkDiv">
+                    <a href="https" ng-click="goFindPwd(&#39;send&#39;,&#39;event&#39;,&#39;button&#39;,&#39;click&#39;,&#39;login_fpwd&#39;)" class="loginswap loginBottomColor ng-binding" ng-bind="i18n(&#39;forgetPwd&#39;)">联系客服</a>
+                </div>
+
+                
+            </div>
+           
+        </div>
+    </div>
+<input type="hidden" name="hwmeta" id="hwmeta" value="JxEAzQAeBUgAAAAAANefAAYBAAfNn5+enIrtFgEABM3My8oHAQAGzczLy8b+FgEABM3My8oEAQAQystWVQgHBoggfBR9CGIPegQBABDKyf7/xsXEtS5OIk86XDVABAEACc3PXFkNDAtqOAMBACDNzMvKycjHxsXExhkYFxU9PDs/4uHg3DMyMTXo5+bmJQwBAFWZqpmskqKX8Nnr3LiFsYPg6ort2OPS6N641ueC4tLl1bKF5dG1hrfX4dCpnKvI98XyyfDb7Y6/3Ojf7d/o1rSGtIq4j7nd69rujrXX4Ozc7dnr3eSGFAEAGM3MqsqqxrDBtNSmxLHUk9O8woXhlvyY8hcBAATNzMrJAQEACM3MyrgWEevEAgEAdc2/853mjOeK6Mjy3+7N5LTat9K+yrqZ1oGgrp2ygbuazqTN+s331q2arYWk4pHgs9eB5YbOpNf5zf/J5tbjwumj6r3xvJe22bHbv57avNi81PrZm/KD7YHly/LAkaCxhLOGsZ6smqqJ27vcusujjbmLvZKilwsBAu7MsK7Cqdyv3q6XuZf3g/adstmtzbvft9W42KLF6ormiKjGsNuyxKqG6YfhiebLotW51OyH6YvrhuDim/LcuNn+juiV4ojkhrjfqt2s2PLD98WFoZKkkdbw3enan/+d6I77k+actdyuzLzetNCjzbnc9Zf5lbGCtIHGocm72bfDrN+B4ZL0ks67j6uYopPUutey1KuE657wg6eUppbTp9K85JDgqtu53fnK/MiD4L7Ut8Pn1ObX4Krdse+D54Lokvze79vprNiynPiH5cmn1vDd6drvm+6AIHwadANjC20CJBElF1Jgb15oUXVGcF1qHG8DXT9RPkktQjURIhQgW39Mfk94AnUZRzJUIU1pWmxYEzcENgczd0NnVGZXY1odOQo8CT0ERmBtWWpcHikNPgg1AUJ5XW5YZVESUGpbb1xuXxw+DzsIMnRHY1B6S388elxpXW5Yblx+T3tIcQVwAl48Xy5BIUMnAzAaKm0tSBd6GHQWJRQiFCsZOxV4GHAGawJ1AI/9xurGpNahyOmACmgQagCc95ntiKnLpcnnh/OG7Znx37LeutChn/Ke/pz3k6/Uu5f1mr/Nqdqvx6XB/ZTnkuGTt4S2hsTm1+PQia2eqJXSsMy/16D2gfnWvcmp37vTsdy0xqGO7oLszv/L+LHUusqqxrDBtOyK+5//odbg+sv/zI3liu2J8MGo07/S9MH1x4AKfRFPPVMnVDBKbFltXxp7G3MWYHpLf0x9CXwWSiRGIUk9UXVGcFwfbQklRzZWeBhnQ3Baa1wuWTVrCWkFdBJ4EGFFdkAMT39OfUl+WGVRYlcjVjhoBGwFcApnEjQBNQdCZFFlVmMXYgxUJ0MwQmRRZVcSNAE1BjBqXH5Pe0hySQwuHysYIhldeUp8SX05DC4fKxgiY1p8SX1OeDV1UWJUYVVmJwMwGisfW25IdUFyRAFBZVZgbVlhUXVGcF1qHG8DXT1YJ0ooRCYAzfnLjsyv/pHxk/fG9cXxyPQWAQAEzczLygQBAAnNz0NAAgEA95IEAQAJzc3JyUtKSct6BAEACc3J19bOzcxXYgQBAAnNydjXzMvKapcGAQAHzbe2tbQDchYBAATNzMvKBwEABs3My8p42wQBAAnNz0lI397dZKEEAQAQys2zsjQzMoumxqrHstS9yAQBABDKyhwaNDMy1gdlC2QXcxxvBwEABs3NzMrF9QUBABPKylRTqqmop6eqk5LynvOG4LHEBgEAB83d3NvbyioWAQAEzczLygQBABDKyAECRkVFFiVHKUYxVTpN"></div>
+</form>
+		</div>
+        <div id="footer">
+            <div class="widthLimit" ui-view="footer"><style class="ng-scope">
+    #laws span{
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+    
+    .footer-content-russia{
+       margin:auto;
+       padding-top: 15px;
+    }
+    .col-md-6-left {
+         float:left;
+         text-align: left;
+    }
+    .col-md-6-right {
+        float:right;
+        text-align: right;
+    }
+    
+    .swapClick.fold:after {
+        content: "";
+        height: 0;
+        width: 0;
+        opacity: 0.7;
+        border-top: 5px solid #FFFFFF;
+        border-right: 4px solid transparent;
+        border-left: 4px solid transparent;
+        position: absolute;
+        margin-top: 6px;
+        margin-left: 5px;
+    }
+    .swapClick.unfold:after {
+        content: "";
+        height: 0;
+        width: 0;
+        opacity: 0.7;
+        border-bottom: 5px solid #FFFFFF;
+        border-right: 4px solid transparent;
+        border-left: 4px solid transparent;
+        position: absolute;
+        margin-top: 6px;
+        margin-left: 5px;
+    }
+    @media only screen and (max-width: 1920px) {
+        #footer .footer-content {
+            height: 61px;
+        }
+    }
+    @media only screen and (max-width: 1680px) {
+
+    }
+    @media only screen and (max-width: 1440px) {
+
+    }
+    @media only screen and (max-width: 1366px) {
+
+    }
+    @media only screen and (max-width: 1280px) {
+        #footer .widthLimit {
+            margin: 0px;
+            padding: 0px;
+        }
+        #footer .footer-content {
+            height: 89px;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+        }
+        #footer .copyrightDiv {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #footer .otherLinkDiv {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    }
+    @media only screen and (max-width: 1024px) {
+        #footer .widthLimit {
+            margin: 0px;
+            padding: 0px;
+        }
+        #footer .footer-content {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+        }
+        #footer .copyrightDiv {
+            text-align: center;
+        }
+        #footer .otherLinkDiv {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
+<!-- 国内IP下 非中文环境下的样式 -->
+<!-- ngIf: !model.ipIsInternational && model.currentLanguage !== 'zh-cn' -->
+
+<!-- 海外IP下的样式 -->
+<!-- ngIf: model.ipIsInternational -->
+
+<!-- 国内IP显示 -->
+<!-- ngIf: !model.ipIsInternational --><div ng-if="!model.ipIsInternational" class="footer-content ng-scope unfold" ng-class="{&#39;unfold&#39;: model.showICP, &#39;fold&#39;: !model.showICP}">
+    <div class="copyrightDiv">
+        <span class="right-space ng-binding" ng-bind="model.copyRight">版权所有 © QXIC 2020 </span><!-- ngIf: model.currentLanguage !== 'zh-cn' -->
+        <!-- ngIf: model.showICP --><div class="right-space ng-scope" ng-if="model.showICP">
+            <a class="link ng-binding" ng-bind="i18n(&#39;copyrightNotice3&#39;)" href="http://beian.miit.gov.cn/publish/query/indexFirst.action" target="_blank" rel="noopener noreferrer nofollow">
+				鲁ICP备666666号</a>
+            <span ng-bind="i18n(&#39;copyrightNotice4&#39;)" class="ng-binding">666666号</span>
+            <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32011402010008" target="_blank" rel="noopener noreferrer">
+                <img style="vertical-align: sub" src="./login_static/footerImg2.png" alt="">
+            </a>
+            <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=666666" target="_blank" rel="noopener noreferrer" ng-bind="i18n(&#39;copyrightNotice5&#39;)" class="ng-binding">
+				666666</a>
+        </div><!-- end ngIf: model.showICP --> 
+    </div>
+    <div class="otherLinkDiv">
+        <span id="laws">
+            <!-- ngIf: footer.legalNotice --><a ng-if="footer.legalNotice" ng-bind="i18n(&#39;legalStatement&#39;)" target="_blank" rel="noopener noreferrer" 
+			href="http" class="ng-binding ng-scope">法律声明</a><!-- end ngIf: footer.legalNotice -->
+            <!-- ngIf: footer.privacyProtect --><span ng-if="footer.privacyProtect" class="ng-scope">|</span><!-- end ngIf: footer.privacyProtect -->
+            <!-- ngIf: footer.privacyProtect --><a ng-if="footer.privacyProtect" ng-bind="i18n(&#39;privacyStrategyStatement&#39;)" target="_blank" rel="noopener noreferrer" 
+			href="http" class="ng-binding ng-scope">隐私政策声明</a><!-- end ngIf: footer.privacyProtect -->
+		</span>
+    </div>
+</div><!-- end ngIf: !model.ipIsInternational -->
+
+<!-- 海外IP显示 -->
+<!-- ngIf: model.ipIsInternational -->
+<!-- russia -->
+<!-- ngIf: model.styleOfSite -->
+
+
+</div>
+        </div>
+        <span id="loginServerErrorMsg" style="display:none;"></span>
+     
+
+</body></html>

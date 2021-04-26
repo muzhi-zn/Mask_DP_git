@@ -1,0 +1,1639 @@
+#ifndef MMS_PPTSTR_IDL
+#define MMS_PPTSTR_IDL
+// Bob Ke 2020/02/27 Add  #9, #10, #11
+// Bob Ke 2020/03/09 Add #12, #13, #14
+// Bob Ke 2020/04/21 Add #15, #16
+// Bob Ke 2020/05/22 Add #17, #18, #19
+// Bob Ke 2020/07/30 Add #20
+// Bob Ke 2020/09/07 Add #21
+// Bob Ke 2020/10/22 Add #22, #23
+// Bob Ke 2020/10/26 Add #24
+
+typedef struct objectIdentifier_struct {
+    string identifier;                 //<i>Identifire
+    string stringifiedObjectReference; //<i>Stringified Object Reference
+}  objectIdentifier;
+
+typedef sequence<objectIdentifier> objectIdentifierSequence;
+
+typedef sequence<string> stringSequence;
+
+typedef struct pptRetCode_struct {
+    string transactionID;  //<i>Transaction ID
+    string returnCode;     //<i>Return Code
+    string messageID;      //<i>Message ID
+    string messageText;    //<i>Message Text
+    string reasonText;     //<i>Reason Text
+    any siInfo;            //<i>Reserved for SI customization
+} pptRetCode;
+
+typedef struct pptUser_struct {
+    objectIdentifier    userID;       //<i>User ID
+    string              password;     //<i>Password
+    string              newPassword;  //<i>New Password
+    string              functionID;   //<i>Function ID. For example, the Function ID of TxEnhancedFutureHoldReq is "TXPC041".  //0.41
+    string              clientNode;   //<i>Client Node
+    any siInfo;                       //<i>Reserved for SI customization
+}pptUser;
+
+typedef struct pptStartReticle_struct {
+   long                           sequenceNumber;    //<i>Sequence Number
+   objectIdentifier               reticleID;         //<i>Reticle ID
+    any siInfo;                                      //<i>Reserved for SI customization
+} pptStartReticle;
+
+typedef sequence <pptStartReticle> pptStartReticleSequence;
+
+typedef struct pptStartFixture_struct {
+    objectIdentifier    fixtureID;          //<i>Fixture ID
+    string              fixtureCategory;    //<i>Fixture Category
+    any siInfo;                             //<i>Reserved for SI customization
+} pptStartFixture;
+
+typedef sequence <pptStartFixture> pptStartFixtureSequence;
+
+typedef struct pptDCItem_struct {
+    string              dataCollectionItemName;    //<i>Data Collection Item Name
+    string              dataCollectionMode;        //<i>Data Collection Mode
+    string              dataCollectionUnit;        //<i>Data Collection Unit
+    string              dataType;                  //<i>Data Type
+    string              itemType;                  //<i>Item Type
+    string              measurementType;           //<i>Measurement Type
+    objectIdentifier    waferID;                   //<i>Wafer ID
+    string              waferPosition;             //<i>Wafer Position
+    string              sitePosition;              //<i>Site Position
+    boolean             historyRequiredFlag;       //<i>History Required Flag
+    string              calculationType;           //<i>Calculation Type
+    string              calculationExpression;     //<i>Calculation Expression
+    string              dataValue;                 //<i>Data Value
+    string              targetValue;               //<i>Target Value
+    string              specCheckResult;           //<i>Spec Check Result
+    stringSequence      actionCode;                //<i>Sequence of Action Codes
+    any siInfo;                                    //<i>Reserved for SI customization
+} pptDCItem;
+
+typedef sequence <pptDCItem> pptDCItemSequence;
+
+typedef struct pptDCSpec_struct {
+    string                        dataItemName;                 //<i>Data Item Name
+    boolean                       screenLimitUpperRequired;     //<i>Screen Limit Upper Required Flag
+    double                        screenLimitUpper;             //<i>Screen Limit Upper
+    string                        actionCodes_uscrn;            //<i>Action Codes Upper Screen
+    boolean                       screenLimitLowerRequired;     //<i>Screen Limit Lower Required Flag
+    double                        screenLimitLower;             //<i>Screen Limit Lower
+    string                        actionCodes_lscrn;            //<i>Action Codes Lower Screen
+    boolean                       specLimitUpperRequired;       //<i>Specification Limit Upper Required Flag
+    double                        specLimitUpper;               //<i>Specification Limit Upper
+    string                        actionCodes_usl;              //<i>Action Codes Upper Specification Limit
+    boolean                       specLimitLowerRequired;       //<i>Specification Limit Lower Required Flag
+    double                        specLimitLower;               //<i>Specification Limit Lower
+    string                        actionCodes_lsl;              //<i>Action Codes Lower Specification Limit
+    boolean                       controlLimitUpperRequired;    //<i>Control Limit Upper Required Flag
+    double                        controlLimitUpper;            //<i>Control Limit Upper
+    string                        actionCodes_ucl;              //<i>Action Codes Upper Control Limit
+    boolean                       controlLimitLowerRequired;    //<i>Control Limit Lower Required Flag
+    double                        controlLimitLower;            //<i>Control Limit Lower
+    string                        actionCodes_lcl;              //<i>Action Codes Lower Control Limit
+    double                        target;                       //<i>Target
+    string                        tag;                          //<i>Tag
+    any siInfo;                                                 //<i>Reserved for SI customization
+} pptDCSpec;
+
+typedef sequence <pptDCSpec> pptDCSpecSequence;
+
+typedef struct pptDCDef_struct {
+    objectIdentifier    dataCollectionDefinitionID;            //<i>Data Collection Definition ID
+    string              description;                           //<i>Description
+    string              dataCollectionType;                    //<i>Data Collection Type
+    pptDCItemSequence   strDCItem;                             //<i>Sequence of Data Collection Items
+    boolean             calculationRequiredFlag;               //<i>Calculation Required Flag
+    boolean             specCheckRequiredFlag;                 //<i>Spec Check Required Flag
+    objectIdentifier    dataCollectionSpecificationID;         //<i>Data Collection Definition ID
+    string              dcSpecDescription;                     //<i>Description of Data Collection Specification ID
+    pptDCSpecSequence   strDCSpec;                             //<i>Sequence of Data Collection Specs
+    objectIdentifier    previousDataCollectionDefinitionID;    //<i>Previous Data Collection Definition ID
+    objectIdentifier    previousOperationID;                   //<i>Previous Operation ID
+    string              previousOperationNumber;               //<i>Previous Operation Number
+    any siInfo;                                                //<i>Reserved for SI customization
+} pptDCDef;
+
+typedef sequence <pptDCDef> pptDCDefSequence;
+
+typedef struct pptStartRecipe_struct {
+    objectIdentifier              logicalRecipeID;       //<i>Logical Recipe ID
+    objectIdentifier              machineRecipeID;       //<i>Machine Recipe ID
+    string                        physicalRecipeID;      //<i>Physical Recipe ID
+    pptStartReticleSequence       strStartReticle;       //<i>Sequence of Start Reticle
+    pptStartFixtureSequence       strStartFixture;       //<i>Sequence of Start Fixture
+    boolean                       dataCollectionFlag;    //<i>Data Collection Flag
+    pptDCDefSequence              strDCDef;              //<i>Sequence of Data Collection Definition
+    any siInfo;                                          //<i>Reserved for SI customization
+} pptStartRecipe;
+
+typedef struct pptStartRecipeParameter_struct {
+    string                        parameterName;                 //<i>Parameter Name
+    string                        parameterValue;                //<i>Parameter Value
+    string                        targetValue;                   //<i>Target Value
+    boolean                       useCurrentSettingValueFlag;    //<i>Use Current Setting Value Flag
+    any siInfo;                                                  //<i>Reserved for SI customization
+} pptStartRecipeParameter;
+
+typedef sequence <pptStartRecipeParameter> pptStartRecipeParameterSequence;
+
+typedef struct pptLotWafer_struct {
+    objectIdentifier    waferID;                                 //<i>Wafer ID
+    long                slotNumber;                              //<i>Slot Number
+    boolean             controlWaferFlag;                        //<i>Control Wafer Flag
+    boolean             processJobExecFlag;                      //<i>Process Job Exec Flag //D5000001
+    boolean             parameterUpdateFlag;                     //<i>Parameter Update Flag //D5000001
+    string              processJobStatus;                        //<i>Process Job Status //D5000001
+    pptStartRecipeParameterSequence  strStartRecipeParameter;    //<i>Sequence of Start Recipe Parameter
+    any siInfo;                                                  //<i>Reserved for SI customization
+} pptLotWafer;
+
+typedef sequence <pptLotWafer> pptLotWaferSequence;
+
+typedef struct pptStartOperationInfo_struct {                                           //D4000093
+    objectIdentifier            routeID;            //<i>Route ID                       //D4000093
+    objectIdentifier            operationID;        //<i>Operation ID                   //D4000093
+    string                      operationNumber;    //<i>Operation Number               //D4000093
+    long                        passCount;          //<i>Pass Count                     //D4000093
+    any siInfo;                                     //<i>Reserved for SI customization  //D4000093
+} pptStartOperationInfo;   
+
+typedef struct pptLotInCassette_struct {
+    boolean                       operationStartFlag;           //<i>Operation Start Flag
+    boolean                       monitorLotFlag;               //<i>Monitor Lot Flag
+    objectIdentifier              lotID;                        //<i>Lot ID
+    string                        lotType;                      //<i>Lot Type
+    string                        subLotType;                   //<i>Sub Lot Type
+    pptStartRecipe                strStartRecipe;               //<i>Start Recipe Information
+    string                        recipeParameterChangeType;    //<i>Recipe Parameter Change Type
+    pptLotWaferSequence           strLotWafer;                  //<i>Sequence of Lot Wafer
+    objectIdentifier              productID;                    //<i>Product ID                   //D3000116
+    pptStartOperationInfo         strStartOperationInfo;        //<i>Start Operation Information  //D4000093
+    any siInfo;                                                 //<i>Reserved for SI customization
+} pptLotInCassette;
+
+typedef sequence <pptLotInCassette> pptLotInCassetteSequence;
+
+typedef struct pptStartCassette_struct {
+    long                          loadSequenceNumber;    //<i>Load Sequence Number
+    objectIdentifier              cassetteID;            //<i>Carrier ID
+    string                        loadPurposeType;       //<i>Load Purpose Type
+    objectIdentifier              loadPortID;            //<i>Load Port ID
+    objectIdentifier              unloadPortID;          //<i>Unload Port ID
+    pptLotInCassetteSequence      strLotInCassette;      //<i>Sequence of Lot in Carrier
+    any siInfo;                                          //<i>Reserved for SI customization
+} pptStartCassette;
+
+typedef sequence <pptStartCassette> pptStartCassetteSequence;
+
+typedef struct pptOpeStartReqResult_struct {
+    pptRetCode                    strResult;         //<i>Return Codes
+    objectIdentifier              controlJobID;      //<i>Control Job ID
+    pptStartCassetteSequence      strStartCassette;  //<i>Sequence of Start Carrier     //D51M0000
+    any siInfo;                                      //<i>Reserved for SI customization
+} pptOpeStartReqResult;
+
+typedef struct pptSpcReturnCode_struct {                                      //D4000092
+    string           rule;                //<i>Rule                           //D4000092
+    string           returnCodeStatus;    //<i>Return Code Status             //D4000092
+    any siInfo;                           //<i>Reserved for SI customization  //D4200055
+} pptSpcReturnCode;                                                           //D4000092
+
+typedef sequence <pptSpcReturnCode> pptSpcReturnCodeSequence; 
+
+typedef struct pptSpcChart_struct {
+    string           chartGroupID;                  //<i>Chart Group ID
+    string           chartID;                       //<i>Chart ID
+    string           chartType;                     //<i>Chart Type
+    string           speckCheck;                    //<i>Speck Check
+    pptSpcReturnCodeSequence returnCodes;           //<i>Sequence of Return Code Information           //D4000092
+    string           chartOwnerMailAddress;         //<i>Chart Owner Mail Address                      //D4100145
+    stringSequence   chartSubOwnerMailAddresses;    //<i>Sequence of Chart Sub Owner Mail Addresses    //D4100145
+    any siInfo;                                     //<i>Reserved for SI customization
+} pptSpcChart;
+
+typedef sequence <pptSpcChart> pptSpcChartSequence;
+
+typedef struct pptSpcDcItemAndChart_struct {
+       string       dataCollectionItemName;    //<i>Data Collection Item Name
+       pptSpcChartSequence strSpcChart;        //<i>Sequence of Spc Chart Information
+    any siInfo;                                //<i>Reserved for SI customization
+} pptSpcDcItemAndChart;
+
+typedef sequence <pptSpcDcItemAndChart> pptSpcDcItemAndChartSequence;
+
+typedef struct pptSpcResult_struct {
+    pptSpcDcItemAndChartSequence strSpcDcItem;     //<i>Sequence of Spc Dc Item And Chart Information
+    string                       bankID;           //<i>Bank ID             //D4100145
+    string                       reworkRouteID;    //<i>Rework Route ID     //D4100145
+    any siInfo;                                    //<i>Reserved for SI customization
+}  pptSpcResult;
+
+typedef struct pptOpeCompLot_struct {
+    objectIdentifier              lotID;              //<i>Lot ID
+    string                        lotStatus;          //<i>Lot Status
+    string                        specCheckResult;    //<i>Specification Check Result
+    string                        spcCheckResult;     //<i>Spc Check Result
+    pptSpcResult                  strSpcResult;       //<i>Spc Result Information
+    any siInfo;                                       //<i>Reserved for SI customization
+} pptOpeCompLot;
+
+typedef sequence <pptOpeCompLot> pptOpeCompLotSequence;
+
+typedef struct pptOpeCompWithDataReqResult_struct {
+    pptRetCode                    strResult;        //<i>Transaction Execution Result Information
+    pptOpeCompLotSequence         strOpeCompLot;    //<i>Sequence of OpeComp Lot Information
+    any siInfo;                                     //<i>Reserved for SI customization
+} pptOpeCompWithDataReqResult;
+
+typedef struct pptBaseResult_struct {
+   pptRetCode            strResult;
+   any siInfo;
+} pptBaseResult;
+
+typedef pptBaseResult pptHoldLotReleaseReqResult;
+
+typedef pptBaseResult pptRunningHoldReqResult;
+
+typedef struct pptForceOpeCompReqResult_struct {
+    pptRetCode                    strResult;        //<i>Transaction Execution Result Information
+    pptOpeCompLotSequence         strOpeCompLot;    //<i>Sequence of OpeComp Lot And Specification Check Result
+    any siInfo;                                     //<i>Reserved for SI customization
+} pptForceOpeCompReqResult;
+
+typedef pptBaseResult csUniversalHoldLotReqResult;
+
+typedef struct csUniversalHoldLotReqInParm_struct
+{
+    objectIdentifierSequence                lotIDSeq;
+    objectIdentifier                        reasonCode;
+    string                                  holdClaimMemo;
+    any                                     siInfo;
+} csUniversalHoldLotReqInParm;
+
+typedef struct pptHoldReq_struct {
+    string           holdType;                  //<i>Hold Type
+                                                    //<c>SP_HoldType_LotHold                    "LotHold"
+                                                    //<c>SP_HoldType_BankHold                   "BankHold"
+                                                    //<c>SP_HoldType_FutureHold                 "FutureHold"
+                                                    //<c>SP_HoldType_MergeHold                  "MergeHold"
+                                                    //<c>SP_HoldType_MonitorSPCHold             "MonitorSPCHold"
+                                                    //<c>SP_HoldType_MonitorSpecHold            "MonitorSpecHold"
+                                                    //<c>SP_HoldType_ReworkHold                 "ReworkHold"
+                                                    //<c>SP_HoldType_SPCOutOfRangeHold          "SPCOutOfRangeHold"
+                                                    //<c>SP_HoldType_SpecOverHold               "SpecOverHold"
+                                                    //<c>SP_HoldType_WaitingMonitorResultHold   "WaitingMonitorHold"
+                                                    //<c>SP_HoldType_ProcessHold                "ProcessHold"
+                                                    //<c>SP_HoldType_RecipeHold                 "RecipeHold"
+                                                    //<c>SP_HoldType_RunningHold                "RunningHold"
+                                                    //<c>SP_HoldType_ForceCompHold              "ForceCompHold"
+    objectIdentifier holdReasonCodeID;          //<i>Hold Reason Code ID
+    objectIdentifier holdUserID;                //<i>Hold User ID
+    string           responsibleOperationMark;  //<i>Responsible Opration Mark.
+                                                     //<c>SP_ResponsibleOperation_Current        "C"
+                                                     //<c>SP_ResponsibleOperation_Previous       "P"
+    objectIdentifier routeID;                   //<i>Route ID
+    string           operationNumber;           //<i>Operation Number
+    objectIdentifier relatedLotID;              //<i>Related Lot ID
+    string           claimMemo;                 //<i>Claim Comment
+    any siInfo;                                 //<i>Reserved for SI customization
+}pptHoldList;
+
+typedef sequence<pptHoldList> pptHoldListSequence ;
+
+typedef struct pptOpeStartCancelReqResult_struct {
+    pptRetCode                    strResult;           //<i>Transaction Execution Result Information
+    pptStartCassetteSequence      strStartCassette;    //<i>Sequence of Start Carrier
+    any siInfo;                                        //<i>Reserved for SI customization
+} pptOpeStartCancelReqResult;
+
+typedef struct pptLotsInfoForOpeStartInqResult_struct {
+    pptRetCode                    strResult;           //<i>Transaction Execution Result Information
+    objectIdentifier              equipmentID;         //<i>Equipment ID
+    string                        portGroupID;         //<i>Port Group ID
+    objectIdentifier              controlJobID;        //<i>Control Job ID
+    pptStartCassetteSequence      strStartCassette;    //<i>Sequence of Start Carrier
+    any siInfo;                                        //<i>Reserved for SI customization
+} pptLotsInfoForOpeStartInqResult;
+
+// Bob Ke 2020/02/27 Add Start  #9, #10, #11 
+typedef pptBaseResult csExTIPLayerDataParmSetReqResult;
+
+typedef struct csExTIPLayerData_Param_struct {
+    string                 name;
+    string                 type;
+    string                 value;
+    objectIdentifier       claimUserID;
+    string                 claimTimeStamp;
+    any                    siInfo;
+} csExTIPLayerData_Param;
+typedef sequence <csExTIPLayerData_Param> csExTIPLayerData_ParamSequence;
+
+typedef struct csExTIPLayerDataInfo_struct {
+    string                         partName;
+    long                           seq;
+    string                         tone;
+    string                         tipTech;
+    string                         grade;
+    string                         productType;
+    string                         customerID;
+    string                         purpose;             //REQ-00001-04
+    string                         lotID;
+    string                         lotCreatedStatus;
+    string                         result;
+    long                           retryCnt;
+    objectIdentifier               claimUserID;
+    string                         claimTimeStamp;
+    csExTIPLayerData_ParamSequence strExTIPLayerData_ParamSequence;
+    string                         orderType;//added by chenyang for compile error
+    any                            siInfo;
+} csExTIPLayerDataInfo;
+typedef sequence <csExTIPLayerDataInfo> csExTIPLayerDataInfoSequence;
+
+typedef struct csExTIPLayerData_struct {
+    string                         tipNO;
+    csExTIPLayerDataInfoSequence   strExTIPLayerDataInfoSequence;
+    any                            siInfo;
+} csExTIPLayerData;
+
+typedef sequence <csExTIPLayerData> csExTIPLayerDataSequence; //REQ-00001-04
+
+typedef struct csExTIPLayerDataParmSetReqInParm_struct {
+    csExTIPLayerData  strExTIPLayerData;
+    string            Action;
+    any               siInfo;
+} csExTIPLayerDataParmSetReqInParm;
+
+typedef struct pptLotStatusList_struct {
+    string           stateName;   //<i>State Name
+    string           stateValue;  //<i>State Value
+    any siInfo;                   //<i>Reserved for SI customization
+} pptLotStatusList;
+
+typedef sequence <pptLotStatusList> pptLotStatusListSequence;
+
+typedef struct pptBackupAddress_struct {
+    string                                hostName;     //<i>Host Name
+    string                                serverName;   //<i>Server Name
+    string                                itDaemonPort; //<i>IT Daemon Port Number
+    any                                   siInfo;       //<i>Reserved for SI customization
+} pptBackupAddress;
+
+typedef struct pptBackupProcess_struct {
+    string                                entryRouteID;           //<i>Entry Route ID that a lot entries in other Line.
+    string                                entryOperationNumber;   //<i>Entry Operation Number that a lot entries in other Line.
+    string                                exitRouteID;            //<i>Exit Route ID that a lot exits from other Line.
+    string                                exitOperationNumber;    //<i>Exit Operation Number that a lot exits from other Line.
+    any                                   siInfo;                 //<i>Reserved for SI customization
+} pptBackupProcess;
+
+typedef struct pptLotBackupData_struct {
+    string                              backupState;       //<i>Backup State
+    pptBackupAddress                    strBackupAddress;  //<i>Backup Address Information
+    pptBackupProcess                    strBackupProcess;  //<i>Backup Process Information
+    any siInfo;                                            //<i>Reserved for SI customization
+} pptLotBackupData;
+
+typedef sequence <pptLotBackupData> pptLotBackupDataSequence;
+
+typedef struct pptLotBackupInfo_struct {
+    boolean                             backupProcessingFlag;       //<i>Backup Processing Flag. If during a Backup Operation, True.
+    boolean                             currentLocationFlag;        //<i>Current Location Flag. If on the line of own Server, True.
+    boolean                             transferFlag;               //<i>Transfer Flag. If transferring between sites, True.
+    pptBackupAddress                    strBornSiteAddress;         //<i>Born Site Address Information
+    pptLotBackupDataSequence            strLotBackupSourceDataSeq;  //<i>Sequence of Backup Source Data Information
+    pptLotBackupDataSequence            strLotBackupDestDataSeq;    //<i>Sequence of Backup Destination Data Information
+    objectIdentifier                    returnRouteID ;             //<i>Return Route ID          //D4200252
+    string                              returnOperationNumber ;     //<i>Return Operation Number  //D4200252
+    any siInfo;                                                     //<i>Reserved for SI customization
+} pptLotBackupInfo;
+
+typedef struct pptLotListAttributes__180_struct {
+    objectIdentifier         lotID;                                 //<i>Lot ID
+    string                   lotType;                               //<i>Lot Type
+    string                   lotStatus;                             //<i>Lot Status
+    pptLotStatusListSequence strLotStatusList;                      //<i>Sequence of Lot Status List
+    objectIdentifier         bankID;                                //<i>Bank ID
+    string                   orderNumber;                           //<i>Order Number
+    string                   customerCode;                          //<i>Customer Code
+    objectIdentifier         productID;                             //<i>Product ID
+    string                   lastClaimedTimeStamp;                  //<i>Last Claimed Time Stamp
+    string                   dueTimeStamp;                          //<i>Due Time Stamp
+    objectIdentifier         routeID;                               //<i>Route ID
+    string                   operationNumber;                       //<i>Operation Number
+    long                     totalWaferCount;                       //<i>Total Wafer Count
+    boolean                  bankInRequiredFlag;                    //<i>Bank In Required Flag
+    string                   controlUseState;                       //<i>Control Use State
+    long                     usedCount;                             //<i>Used Count
+    string                   completionTimeStamp;                   //<i>Completion Time Stamp
+    objectIdentifier         lotFamilyID;                           //<i>Lot Family ID
+    objectIdentifier         productRequestID;                      //<i>Product Request ID
+    string                   subLotType;                            //<i>Sub Lot Type
+    objectIdentifier         lotOwnerID;                            //<i>Lot Owner ID
+    string                   requiredCassetteCategory;              //<i>Required Carrier Category
+    pptLotBackupInfo         strLotBackupInfo;                      //<i>Lot Backup Info
+    objectIdentifier         carrierID;                             //<i>Carrier ID
+    objectIdentifier         equipmentID;                           //<i>Equipment ID
+    objectIdentifier         holdReasonCodeID;                      //<i>Hold Reason Code ID
+    boolean                  sorterJobExistFlag;                    //<i>Sorter Job Existence Flag
+    boolean                  inPostProcessFlagOfCassette;           //<i>InPostProcessFlag of Cassette
+    boolean                  inPostProcessFlagOfLot;                //<i>InPostProcessFlag of Lot
+    string                   interFabXferState;                     //<i>interFab Xfer State
+    string                   bondingGroupID;                        //<i>Bonding Group ID
+    boolean                  autoDispatchControlFlag;               //<i>Auto Dispatch Control Flag
+    objectIdentifier         eqpMonitorJobID;                       //<i>Equipment Monitor Job ID
+    objectIdentifier         operationID;                           //<i>Operation ID
+    string                   pdType;                                //<i>Process Definition Type
+    string                   scheduleMode;                          //<i>PD Type
+    string                   planStartTimeStamp;                    //<i>Plan Start Time
+    long                     priorityClass;                         //<i>Priority Class
+    boolean                  lotInfoChangeFlag;                     //<i>Lot Info Change Flag 
+    any                      siInfo;                                //<i>Reserved for SI customization
+} pptLotListAttributes__180;
+
+typedef sequence <pptLotListAttributes__180> pptLotListAttributesSequence__180;
+
+typedef struct pptLotListInqResult__180_struct {
+    pptRetCode                        strResult;                    //<i>Transaction Execution Result Information
+    pptLotListAttributesSequence__180 strLotListAttributes;         //<i>Sequence of Lot List Attributes
+    any                               siInfo;                       //<i>Reserved for SI customization
+} pptLotListInqResult__180;
+
+typedef struct csExTIPLayerDataParmInqInParm_struct {
+    string                         tipNO;
+    string                         partName;
+    long                           seq;
+    string                         tone;
+    string                         tipTech;
+    string                         grade;
+    string                         orderType;           //REQ-00001-03
+    string                         productType;
+    string                         customerID;
+    string                         purpose;             //TIP,Scrap,Backup    
+    string                         lotID;
+    string                         lotCreatedStatus;
+    string                         result;
+    long                           retryCnt;                         
+    objectIdentifier               claimUserID;
+    string                         claimTimeStamp;
+    string                         claimTimeOperator; 
+    any         siInfo;
+} csExTIPLayerDataParmInqInParm;
+
+typedef struct csExTIPLayerDataParmInqResult_struct {
+    pptRetCode        strResult;
+    //REQ-00001-04 csExTIPLayerData  strExTIPLayerData;
+    csExTIPLayerDataSequence strExTIPLayerData;       //REQ-00001-04
+    any               siInfo;
+} csExTIPLayerDataParmInqResult;
+// Bob Ke 2020/02/27 Add End  #9, #10, #11 
+// Bob Ke 2020/03/09 Add Start #12, #13, #14
+typedef struct pptLotNoteFlagInfo_struct {
+    boolean          lotCommentFlag;        //<i>If Lot Comment exist, True.
+    boolean          lotNoteFlag;           //<i>If Lot Note exist, True.
+    boolean          lotOperationNoteFlag;  //<i>If Lot Operation Note exist, True.
+    any siInfo;                             //<i>Reserved for SI customization
+}pptLotNoteFlagInfo;
+
+typedef struct pptLotEquipmentList_struct {
+        objectIdentifier equipmentID;    //<i>Capable Equipment ID
+        string           equipmentName;  //<i>Equipment Name
+    any siInfo;                          //<i>Reserved for SI customization
+}pptLotEquipmentList;
+
+typedef sequence<pptLotEquipmentList>pptLotEquipmentListSequence ;
+
+typedef struct pptLotQtimeInfo_struct {
+    objectIdentifier  qrestrictionTriggerRouteID;            //<i>Q Restriction Trigger Route ID
+    string            qrestrictionTriggerOperationNumber;    //<i>Q Restriction Trigger Operation Number
+    string            qrestrictionTriggerTimeStamp;          //<i>Q Restriction Trigger Time Stamp
+    objectIdentifier  qrestrictionTargetRouteID;             //<i>Q Restriction Target Route ID
+    string            qrestrictionTargetOperationNumber;     //<i>Q Restriction Target Operation Number
+    string            qrestrictionTargetTimeStamp;           //<i>Q Restriction Target Time Stamp
+    string            qrestrictionRemainTime;                //<i>Q Restriction Remain Time  //0.30
+    string            watchDogRequired;                      //<i>Watch Dog Required         //0.45
+    string            actionDoneFlag;                        //<i>Action Done Flag           //0.45
+    any siInfo;                                              //<i>Reserved for SI customization
+} pptLotQtimeInfo;
+
+typedef sequence <pptLotQtimeInfo> pptLotQtimeInfoSequence;
+
+typedef struct pptEntityIdentifier_struct {
+    string           className;  //<i>Class Name should be selected from the following items.
+                                     //<c>SP_InhibitClassID_Product           "Product Specification"
+                                     //<c>SP_InhibitClassID_Route             "Route"
+                                     //<c>SP_InhibitClassID_Operation         "Operation"
+                                     //<c>SP_InhibitClassID_Process           "Process Definition"
+                                     //<c>SP_InhibitClassID_MachineRecipe     "Machine Recipe"
+                                     //<c>SP_InhibitClassID_Equipment         "Equipment"
+                                     //<c>SP_InhibitClassID_Reticle           "Reticle"
+                                     //<c>SP_InhibitClassID_ReticleGroup      "Reticle Group"
+                                     //<c>SP_InhibitClassID_Fixture           "Fixture"
+                                     //<c>SP_InhibitClassID_FixtureGroup      "Fixture Group"
+                                     //<c>SP_InhibitClassID_Stage             "Stage"                     // D4100113 add
+                                     //<c>SP_InhibitClassID_ModulePD          "Module Process Definition" // D4100113 add
+                                     //<c>SP_InhibitClassID_Chamber           "Chamber"                   // D6000217
+    objectIdentifier objectID;   //<i>Object ID (Entity ID)  (Not Support)
+    string           attrib;     //<i>Attribution            (Not Support)
+    any siInfo;                  //<i>Reserved for SI customization  //D4200055
+} pptEntityIdentifier;
+
+typedef sequence<pptEntityIdentifier> pptEntityIdentifierSequence ;
+
+typedef struct pptEntityInhibitAttributes_struct {
+    pptEntityIdentifierSequence entities;          //<i>Sequence of Entities
+    stringSequence              subLotTypes;       //<i>Sequence of Sub Lot Types.
+    string                      startTimeStamp;    //<i>Start Time Stamp
+    string                      endTimeStamp;      //<i>End Time Stamp
+    string                      reasonCode;        //<i>Inhibit Registration Reason Code.
+    string                      reasonDesc;        //<i>Inhibit Registretion Reason Description
+    string                      memo;              //<i>Comment for inhibition
+    objectIdentifier            ownerID;           //<i>Owner ID of who registed the Inhibition.
+    string                      claimedTimeStamp;  //<i>Claimed Time Stamp
+    any siInfo;                                    //<i>Reserved for SI customization  //D4200055
+} pptEntityInhibitAttributes;
+
+typedef sequence <pptEntityInhibitAttributes> pptEntityInhibitAttributesSequence ;
+
+typedef struct pptVirtualOperationLot_struct {
+    objectIdentifier                   lotID;                                  //<i>Lot ID
+    string                             lotStatus;                              //<i>Lot Status
+    objectIdentifier                   cassetteID;                             //<i>Carrier ID
+    string                             lotType;                                //<i>Lot Type
+    string                             multiLotType;                           //<i>Multi Lot Type
+    string                             transferStatus;                         //<i>Transfer Status
+    objectIdentifier                   transferReserveUserID;                  //<i>Transfer Reserve User ID
+    objectIdentifier                   stockerID;                              //<i>Stocker ID
+    objectIdentifier                   equipmentID;                            //<i>Equipment ID
+    pptLotEquipmentListSequence        strLotEquipmentList;                    //<i>Sequence of Lot Equipment List
+    objectIdentifier                   flowBatchID;                            //<i>Flow Batch ID
+    objectIdentifier                   controlJob;                             //<i>Control Job
+    objectIdentifier                   processReserveEquipmentID;              //<i>Process Reserve Equipment ID
+    objectIdentifier                   processReserveUserID;                   //<i>Process Reserve User ID
+    objectIdentifier                   productID;                              //<i>Product ID
+    boolean                            recipeAvailableFlag;                    //<i>Recipe Available Flag
+    objectIdentifier                   logicalRecipeID;                        //<i>Logical Recipe ID
+    objectIdentifier                   machineRecipeID;                        //<i>Machine Recipe ID
+    objectIdentifier                   processMonitorProductID;                //<i>Process Monitor Product ID
+    objectIdentifierSequence           reticleGroupIDs;                        //<i>Sequence of Reticle Group IDs
+    boolean                            reticleExistFlag;                       //<i>Reticle Exist Flag
+    string                             lastClaimedTimeStamp;                   //<i>Last Claimed Time Stamp
+    string                             stateChangeTimeStamp;                   //<i>State Change Time Stamp
+    string                             inventoryChangeTimeStamp;               //<i>Inventory Change Time Stamp
+    string                             dueTimeStamp;                           //<i>Due Time Stamp
+    string                             planStartTimeStamp;                     //<i>Plan Start Time Stamp
+    string                             planEndTimeStamp;                       //<i>Plan End Time Stamp
+    objectIdentifier                   plannedEquipmentID;                     //<i>Planned Equipment ID
+    string                             queuedTimeStamp;                        //<i>Queued Time Stamp
+    string                             priorityClass;                          //<i>Priority Class
+    string                             internalPriority;                       //<i>Internal Priority
+    string                             externalPriority;                       //<i>External Priority
+    boolean                            qtimeFlag;                              //<i>Qtime Flag
+    pptLotQtimeInfoSequence            strLotQtimeInfo;                        //<i>Sequence of Lot Q Time Info
+    string                             preOperationCompTimeStamp;              //<i>Pre Operation Comp Time Stamp
+    objectIdentifier                   routeID;                                //<i>Route ID
+    objectIdentifier                   operationID;                            //<i>Operation ID
+    string                             operationNumber;                        //<i>Operation Number
+    objectIdentifier                   testTypeID;                             //<i>Test Type ID
+    string                             inspectionType;                         //<i>Inspection Type
+    objectIdentifier                   stageID;                                //<i>Stage ID
+    boolean                            mandatoryOperationFlag;                 //<i>Mandatory Operation Flag
+    boolean                            processHoldFlag;                        //<i>Process Hold Flag
+    long                               totalWaferCount;                        //<i>Total Wafer Count
+    long                               totalGoodDieCount;                      //<i>Total Good Die Count
+    objectIdentifier                   next2EquipmentID;                       //<i>Next2 Equipment ID
+    objectIdentifier                   next2LogicalRecipeID;                   //<i>Next2 Logical Recipe ID
+    pptLotNoteFlagInfo                 strLotNoteFlagInfo;                     //<i>Lot Note Flag Information
+    pptEntityInhibitAttributesSequence entityInhibitions;                      //<i>Sequence of Entity Inhibitions
+    string                             physicalRecipeID;                       //<i>Physical Recipe ID
+    boolean                            operableFlagForCurrentMachineState;     //<i>Operable Flag for Current Machine State
+    boolean                            operableFlagForMultiRecipeCapability;   //<i>perable Flag for Multi Recipe Capability
+    string                             requiredCassetteCategory;               //<i>Required Carrier Category
+    string                             cassetteCategory;                       //<i>Carrier Category
+    string                             next2requiredCassetteCategory;          //<i>Next2 Required Carrier Category
+    boolean                            sorterJobExistFlag;                     //<i>Sorter Job Existence Flag
+    boolean                            inPostProcessFlagOfCassette;            //<i>InPostProcessFlag of Cassette
+    boolean                            inPostProcessFlagOfLot;                 //<i>InPostProcessFlag of Lot
+    string                             bondingFlowSectionName;                 //<i>Bonding Flow Section Name
+    string                             bondingCategory;                        //<i>Bonding Category
+                                                                                   //<c>SP_Lot_BondingCategory_Base
+                                                                                   //<c>SP_Lot_BondingCategory_Top
+    objectIdentifier                   topProductID;                           //<i>Top Product ID
+    string                             bondingGroupID;                         //<i>Bonding Group ID
+    boolean                            autoDispatchDisableFlag;                //<i>Auto Dispatch Disable Flag
+    boolean                            monitorOperationFlag;                   //<i>Lot is on Equipment Monitor Target Operation or not
+    objectIdentifier                   eqpMonitorJobID;                        //<i>Equipment Monitor job ID
+    long                               startSeqNo;                             //<i>Start Order Control at Monitor Operation
+    any                                siInfo;                                 //<i>Reserved for SI customization
+} pptVirtualOperationLot;
+
+typedef sequence <pptVirtualOperationLot> pptVirtualOperationLotSequence;
+
+typedef struct pptVirtualOperationInprocessingLot_struct {
+    objectIdentifier controlJobID;                                             //<i>Control Job ID
+    objectIdentifier lotID;                                                    //<i>Lot ID
+    objectIdentifier cassetteID;                                               //<i>Carrier ID
+    objectIdentifier equipmentID;                                              //<i>Equipment ID
+    objectIdentifier routeID;                                                  //<i>Route ID
+    objectIdentifier operationID;                                              //<i>Operation ID
+    string           operationNumber;                                          //<i>Operation Number
+    any              siInfo;                                                   //<i>Reserved for SI customization
+} pptVirtualOperationInprocessingLot;
+
+typedef sequence <pptVirtualOperationInprocessingLot> pptVirtualOperationInprocessingLotSequence;
+
+typedef struct pptVirtualOperationLotListInqResult_struct {
+    pptRetCode                                 strResult;                             //<i>Return Code
+    objectIdentifier                           operationID;                           //<i>Operation ID
+    string                                     operationName;                         //<i>Operation Name
+    pptVirtualOperationLotSequence             strVirtualOperationLot;                //<i>Sequence of Virtual Operation Lot
+    pptVirtualOperationInprocessingLotSequence strVirtualOperationInprocessingLot;    //<i>Sequence of Virtual Operation Inprocessing Lot
+    any                                        siInfo;                                //<i>Reserved for SI customization
+} pptVirtualOperationLotListInqResult;
+
+typedef struct pptVirtualOperationLotListInqInParam_struct {
+    objectIdentifier routeID;                                                         //<i>Route ID
+    string           operationNumber;                                                 //<i>Operation Number
+    objectIdentifier operationID;                                                     //<i>Operation ID
+    string           selectCriteria;                                                  //<i>Select Criteria
+                                                                                          //<c>SP_DP_SelectCriteria_All
+                                                                                          //<c>SP_DP_SelectCriteria_CanBeProcessed
+                                                                                          //<c>SP_DP_SelectCriteria_Hold
+    any              siInfo;                                                          //<i>Reserved for SI customization
+} pptVirtualOperationLotListInqInParam;
+
+typedef struct pptLoadingVerifiedLot_struct {
+    boolean             operationStartFlag;  //<i>Operation Start Flag. TRUE means this lot is an object of operation start.
+    boolean             monitorLotFlag;      //<i>Monitor Lot Flag. TRUE means this lot is representative lot of monitor group.
+    objectIdentifier    lotID;               //<i>Lot ID
+    string              verifyNGReason;      //<i>Verify NG Reason  //D4000017
+    any siInfo;                              //<i>Reserved for SI customization  //D4200055
+} pptLoadingVerifiedLot;
+
+typedef sequence <pptLoadingVerifiedLot> pptLoadingVerifiedLotSequence;
+
+typedef struct pptLoadingLotRptResult_struct {
+    pptRetCode                           strResult;              //<i>Transaction Execution Result Information
+    pptLoadingVerifiedLotSequence        strLoadingVerifiedLot;  //<i>Sequence of Loading Verified Lot //D4000017
+    any siInfo;                                                  //<i>Reserved for SI customization
+} pptLoadingLotRptResult;
+
+typedef pptBaseResult pptUnloadingLotRptResult; //D4200125
+
+// Bob Ke 2020/03/09 Add End #12, #13, #14
+// Bob Ke 2020/04/21 Add Start #15, #16
+typedef struct pptProcessBackupData_struct {
+     boolean                sourceFlag;     //<i>Source Flag
+     boolean                entryFlag;      //<i>Entry Flag
+     string                 hostName;       //<i>Host Name
+     string                 serverName;     //<i>Server Name
+     string                 itDaemonPort;   //<i>IT DAEMON PORT
+     objectIdentifier       lotID;          //<i>Lot ID          //P4200564
+     string                 objrefPO;       //<i>Stringfield Object Reference PosProcessOperation
+     any                    siInfo;         //<i>Reserved for SI customization
+} pptProcessBackupData ;
+
+typedef sequence <pptProcessBackupData> pptProcessBackupDataSequence;
+
+typedef struct pptProcessRef_struct {
+    string                     processFlow;                      //<i>Process Flow
+    string                     processOperationSpecification;    //<i>Process Operation Specification
+    string                     mainProcessFlow;                  //<i>Main Process Flow
+    string                     moduleNumber;                     //<i>Module Number
+    string                     moduleProcessFlow;                //<i>Module Process Flow
+    string                     modulePOS;                        //<i>Module POS
+    any                        siInfo;                           //<i>Reserved for SI customization
+} pptProcessRef ;
+
+typedef struct pptOperationNameAttributes__160_struct {
+  long             seqno;                                   //<i>Sequence Number. Not used.
+  objectIdentifier routeID;                                 //<i>Route ID
+  objectIdentifier operationID;                             //<i>Operation ID
+  string           operationNumber;                         //<i>Operation Number
+  string           operationName;                           //<i>Operation Name
+  string           operationPass;                           //<i>Operation Pass
+  string           objrefPO;                                //<i>Object Reference PO
+  pptProcessRef    processRef;                              //<i>Process Reference //D4100020
+  string           testType;                                //<i>Test Type
+  string           inspectionType;                          //<i>Inspection Type
+  objectIdentifier stageID;                                 //<i>Stage ID
+  objectIdentifier stageGroupID;                            //<i>Stage Group ID
+  string           maskLevel;                               //<i>Mask Level
+  string           departmentNumber;                        //<i>Department Number
+  boolean          mandatoryOperationFlag;                  //<i>Mandatory Operation Flag
+  double           standardCycleTime;                       //<i>Standard Cycle Time
+  string           plannedStartTime;                        //<i>Planned Start Time
+  string           plannedEndTime;                          //<i>Planned End Time
+  objectIdentifier plannedMachine;                          //<i>Planned Machine
+  string           actualStartTime;                         //<i>Actual Start Time
+  string           actualCompTime;                          //<i>Actual Comp Time
+  objectIdentifier assignedMachine;                         //<i>Assigned Machine
+  boolean          qtimeFlag;                               //<i>Qtime Flag //3.00 (R22)
+  objectIdentifierSequence machines;                        //<i>Sequence of Machines //3.00 (R22)
+  pptProcessBackupDataSequence  strProcessBackupDataSeq;    //<i>Sequence of Process Backup Data
+  string           pdType;                                  //<i>Process Definition Type
+  any siInfo;                                               //<i>Reserved for SI customization
+} pptOperationNameAttributes__160;
+
+typedef sequence <pptOperationNameAttributes__160> pptOperationNameAttributesSequence__160;
+
+typedef struct pptLotOperationListInqResult__160_struct {
+    pptRetCode                                 strResult;                     //<i>Transaction Execution Result Information
+    objectIdentifier                           lotID;                         //<i>Lot ID
+    pptOperationNameAttributesSequence__160    strOperationNameAttributes;    //<i>Sequence of Operation Name Attributes
+    any siInfo;                                                               //<i>Reserved for SI customization
+} pptLotOperationListInqResult__160;
+
+typedef struct pptRouteOperationListInqResult__160_struct {
+    pptRetCode      strResult;                                              //<i>Transaction Execution Result Information
+    pptOperationNameAttributesSequence__160 strOperationNameAttributes;     //<i>Sequence of Operation Name Attributes
+    any siInfo;                                                             //<i>Reserved for SI customization
+}  pptRouteOperationListInqResult__160;
+// Bob Ke 2020/04/21 Add End #15, #16
+// Bob Ke 2020/05/22 Add Start #17, #18, #19
+typedef struct pptHashedInfo_struct
+{
+    string                  hashKey;                     //<i>Hash Key
+    string                  hashData;                    //<i>Hash Data
+    any                     siInfo;                      //<i>Reserved for SI customization
+} pptHashedInfo;
+
+typedef sequence <pptHashedInfo> pptHashedInfoSequence;
+
+typedef struct pptUserDataInqInParm__101_struct
+{
+    string                  stringifiedObjectReference;  //<i>Object Reference
+    string                  className;                   //<i>Class Name
+                                                             //<c>SP_ClassName_PosArea                           "PosArea"
+                                                             //<c>SP_ClassName_PosAreaGroup                      "PosAreaGroup"
+                                                             //<c>SP_ClassName_PosBank                           "PosBank"
+                                                             //<c>SP_ClassName_PosBinDefinition                  "PosBinDefinition"
+                                                             //<c>SP_ClassName_PosBinSpecification               "PosBinSpecification"
+                                                             //<c>SP_ClassName_PosBOM                            "PosBOM"
+                                                             //<c>SP_ClassName_PosBufferResource                 "PosBufferResource"
+                                                             //<c>SP_ClassName_PosCalendarDate                   "PosCalendarDate"
+                                                             //<c>SP_ClassName_PosCassette                       "PosCassette"
+                                                             //<c>SP_ClassName_PosCode                           "PosCode"
+                                                             //<c>SP_ClassName_PosControlJob                     "PosControlJob"
+                                                             //<c>SP_ClassName_PosCustomer                       "PosCustomer"
+                                                             //<c>SP_ClassName_PosCustomerProduct                "PosCustomerProduct"
+                                                             //<c>SP_ClassName_PosDataCollectionDefinition       "PosDataCollectionDefinition"
+                                                             //<c>SP_ClassName_PosDataCollectionSpecification    "PosDataCollectionSpecification"
+                                                             //<c>SP_ClassName_PosDispatcher                     "PosDispatcher"
+                                                             //<c>SP_ClassName_PosReticle                        "PosReticle"
+                                                             //<c>SP_ClassName_PosProcessDurableCapability       "PosProcessDurableCapability"
+                                                             //<c>SP_ClassName_PosE10State                       "PosE10State"
+                                                             //<c>SP_ClassName_PosEntityInhibit                  "PosEntityInhibit"
+                                                             //<c>SP_ClassName_PosMachine                        "PosMachine"
+                                                             //<c>SP_ClassName_PosMachineContainer               "PosMachineContainer"
+                                                             //<c>SP_ClassName_PosMachineContainerPosition       "PosMachineContainerPosition"
+                                                             //<c>SP_ClassName_PosMachineNote                    "PosMachineNote"
+                                                             //<c>SP_ClassName_PosMachineOperationProcedure      "PosMachineOperationProcedure"
+                                                             //<c>SP_ClassName_PosMachineState                   "PosMachineState"
+                                                             //<c>SP_ClassName_PosFactoryNote                    "PosFactoryNote"
+                                                             //<c>SP_ClassName_PosFlowBatch                      "PosFlowBatch"
+                                                             //<c>SP_ClassName_PosFlowBatchDispatcher            "PosFlowBatchDispatcher"
+                                                             //<c>SP_ClassName_PosFutureReworkRequest            "PosFutureReworkRequest"
+                                                             //<c>SP_ClassName_PosLot                            "PosLot"
+                                                             //<c>SP_ClassName_PosLotComment                     "PosLotComment"
+                                                             //<c>SP_ClassName_PosLotFamily                      "PosLotFamily"
+                                                             //<c>SP_ClassName_PosLotNote                        "PosLotNote"
+                                                             //<c>SP_ClassName_PosLotOperationNote               "PosLotOperationNote"
+                                                             //<c>SP_ClassName_PosLotOperationSchedule           "PosLotOperationSchedule"
+                                                             //<c>SP_ClassName_PosLotSchedule                    "PosLotSchedule"
+                                                             //<c>SP_ClassName_PosLotType                        "PosLotType"
+                                                             //<c>SP_ClassName_PosLogicalRecipe                  "PosLogicalRecipe"
+                                                             //<c>SP_ClassName_PosMonitorGroup                   "PosMonitorGroup"
+                                                             //<c>SP_ClassName_PosMachineRecipe                  "PosMachineRecipe"
+                                                             //<c>SP_ClassName_PosMessageDefinition              "PosMessageDefinition"
+                                                             //<c>SP_ClassName_PosMaterialLocation               "PosMaterialLocation"
+                                                             //<c>SP_ClassName_PosMachineOperationMode           "PosMachineOperationMode"
+                                                             //<c>SP_ClassName_PosProcessDefinition              "PosProcessDefinition"
+                                                             //<c>SP_ClassName_PosProcessFlow                    "PosProcessFlow"
+                                                             //<c>SP_ClassName_PosProcessFlowContext             "PosProcessFlowContext"
+                                                             //<c>SP_ClassName_PosPlannedSplitJob                "PosPlannedSplitJob"
+                                                             //<c>SP_ClassName_PosProcessOperation               "PosProcessOperation"
+                                                             //<c>SP_ClassName_PosPortResource                   "PosPortResource"
+                                                             //<c>SP_ClassName_PosProcessOperationSpecification  "PosProcessOperationSpecification"
+                                                             //<c>SP_ClassName_PosProcessResource                "PosProcessResource"
+                                                             //<c>SP_ClassName_PosPrivilegeGroup                 "PosPrivilegeGroup"
+                                                             //<c>SP_ClassName_PosProductCategory                "PosProductCategory"
+                                                             //<c>SP_ClassName_PosProductGroup                   "PosProductGroup"
+                                                             //<c>SP_ClassName_PosProductRequest                 "PosProductRequest"
+                                                             //<c>SP_ClassName_PosProductSpecification           "PosProductSpecification"
+                                                             //<c>SP_ClassName_PosQTimeRestriction               "PosQTimeRestriction"
+                                                             //<c>SP_ClassName_PosRawMachineStateSet             "PosRawMachineStateSet"
+                                                             //<c>SP_ClassName_PosReticlePodPortResource         "PosReticlePodPortResource"
+                                                             //<c>SP_ClassName_PosReticlePod                     "PosReticlePod"
+                                                             //<c>SP_ClassName_PosReticleSet                     "PosReticleSet"
+                                                             //<c>SP_ClassName_PosScript                         "PosScript"
+                                                             //<c>SP_ClassName_PosSampleSpecification            "PosSampleSpecification"
+                                                             //<c>SP_ClassName_PosStage                          "PosStage"
+                                                             //<c>SP_ClassName_PosStageGroup                     "PosStageGroup"
+                                                             //<c>SP_ClassName_PosStorageMachine                 "PosStorageMachine"
+                                                             //<c>SP_ClassName_PosSystemMessageCode              "PosSystemMessageCode"
+                                                             //<c>SP_ClassName_PosTechnology                     "PosTechnology"
+                                                             //<c>SP_ClassName_PosTestSpecification              "PosTestSpecification"
+                                                             //<c>SP_ClassName_PosTestType                       "PosTestType"
+                                                             //<c>SP_ClassName_PosPerson                         "PosPerson"
+                                                             //<c>SP_ClassName_PosUserGroup                      "PosUserGroup"
+                                                             //<c>SP_ClassName_PosWafer                          "PosWafer"
+    pptHashedInfoSequence   strHashedInfoSeq;            //<i>Sequence of Hashed Information
+    string                  userDataName;                //<i>User Data Name
+    string                  userDataOriginator;          //<i>User Data Originator
+    any                     siInfo;                      //<i>Reserved for SI customization
+} pptUserDataInqInParm__101;
+
+typedef struct pptUserData_struct
+{
+    string    name;          //<i>User Data Name
+    string    type;          //<i>User Data Type
+    string    value;         //<i>User Data Value
+    string    originator;    //<i>User Data Originator
+    any       siInfo;        //<i>Reserved for SI customization
+} pptUserData;
+
+typedef sequence <pptUserData> pptUserDataSequence;
+
+//Result of TxUserDataInq(TXOTQ002)
+typedef struct pptUseDataInqResult_struct
+{
+    pptRetCode             strResult;         //<i>Return Code
+    pptUserDataSequence    strUserDataSeq;    //<i>User Data Sequence
+    any                    siInfo;            //<i>Reserved for SI customization
+} pptUserDataInqResult;
+
+typedef struct pptUserParameterValue_struct {
+    long       changeType;              //<i>Change Type
+                                            //<c>SP_ParVal_Add      1
+//PSIV00002617                                            //<c>SP_ParVal_Delete   2
+//PSIV00002617                                            //<c>SP_ParVal_Update   3
+                                            //<c>SP_ParVal_Update   2  //PSIV00002617
+                                            //<c>SP_ParVal_Delete   3  //PSIV00002617
+    string     parameterName;           //<i>Parameter Name
+    string     dataType;                //<i>Data Type
+                                            //<c>SP_ParValType_Integer    "INTEGER"
+                                            //<c>SP_ParValType_Real       "REAL"
+                                            //<c>SP_ParValType_String     "STRING"
+                                            //<c>SP_ParValType_TableSI    "TABLESI"
+                                            //<c>SP_ParValType_TableSR    "TABLESR"
+//PSN000090753                                            //<c>SP_ParValType_TableSS    "TABELSS"
+                                            //<c>SP_ParValType_TableSS    "TABLESS"  //PSN000090753
+                                            //<c>SP_ParValType_StrSeq     "STRINGSEQUENCE"
+    string     keyValue;                //<i>Key Value
+    string     value;                   //<i>Value
+    boolean    valueFlag;               //<i>Value Flag. If Key Value is valid, True.
+    string     description;             //<i>Description
+    any siInfo;                         //<i>Reserved for SI customization
+} pptUserParameterValue;
+
+typedef sequence<pptUserParameterValue> pptUserParameterValueSequence ;
+
+typedef struct pptUserParameterValueInqResult_struct {
+    pptRetCode                      strResult;      //<i>Return Codes
+    pptUserParameterValueSequence   parameters;     //<i>Sequence of Parameter Values
+    any siInfo;                                     //<i>Reserved for SI customization
+} pptUserParameterValueInqResult;
+
+typedef struct pptSimpleOperationInfo_struct {
+    objectIdentifier routeID;    //<i>Route ID
+    string           opeNo;      //<i>Operation Number
+    any siInfo;                  //<i>Reserved for SI customization
+} pptSimpleOperationInfo;
+
+typedef sequence <pptSimpleOperationInfo> pptSimpleOperationInfoSequence;
+
+typedef struct pptLotOperationInfo__160_struct {
+    objectIdentifier               routeID;                   //<i>Route ID
+    objectIdentifier               operationID;               //<i>Operation ID
+    string                         operationNumber;           //<i>Operation Number
+    string                         operationName;             //<i>Operation Name
+    objectIdentifier               stageID;                   //<i>Stage ID of the lot that is defined by SM.
+    string                         maskLevel;                 //<i>Mask Level
+    string                         department;                //<i>Department
+    boolean                        mandatoryOperationFlag;    //<i>Mandatory Operation Flag. If yes, True.
+    boolean                        processHoldFlag;           //<i>Process Hold Flag. If Hold, True.
+    pptLotEquipmentListSequence    strLotEquipmentList;       //<i>Sequence of Lot Equipment List
+    string                         planStartTimeStamp;        //<i>Plan Start Time Stamp
+    string                         planEndTimeStamp;          //<i>Plan End Time Stamp
+    objectIdentifier               plannedEquipmentID;        //<i>Planned Equipment ID
+    string                         queuedTimeStamp;           //<i>Queued Time Stamp
+    objectIdentifier               testSpecID;                //<i>Test Spec ID   //0.71 (R20CP)
+    string                         inspectionType;            //<i>Inspection Type
+    long                           reworkCount;               //<i>Rework Count
+    string                         pdType;                    //<i>Process Definition Type
+    pptSimpleOperationInfoSequence strBackOperationList;      //<i>Sequence of Back Operation
+    any siInfo;                                               //<i>Reserved for SI customization
+}pptLotOperationInfo__160;
+
+typedef struct pptLotWaferAttributes__150_struct {
+    objectIdentifier    waferID;            //<i>Wafer ID
+    objectIdentifier    cassetteID;         //<i>Carrier ID
+    string              aliasWaferName;     //<i>Alias Wafer Name
+    long                slotNumber;         //<i>Slot Number
+    objectIdentifier    productID;          //<i>Product ID
+    long                grossUnitCount;     //<i>Gross Unit Count
+    long                goodUnitCount;      //<i>Good Unit Count
+    long                repairUnitCount;    //<i>Repair Unit Count
+    long                failUnitCount;      //<i>Fail Unit Count
+    boolean             controlWaferFlag;   //<i>Control Wafer Flag
+    boolean             STBAllocFlag;       //<i>STB Allocation Flag. If Recyclable, True.
+    long                reworkCount ;       //<i>Rework Count   //D5000023
+    long                eqpMonitorUsedCount;//<i>Equipment Monitor Used Count
+    any siInfo;                             //<i>Reserved for SI customization
+} pptLotWaferAttributes__150;
+
+typedef sequence <pptLotWaferAttributes__150> pptLotWaferAttributesSequence__150;
+
+typedef struct pptLotWipOperationInfo_struct {
+        objectIdentifier responsibleRouteID;          //<i>Responsible Route ID
+        objectIdentifier responsibleOperationID;      //<i>Responsible Operation ID
+        string           responsibleOperationNumber;  //<i>Responsible Operation Number
+        string           responsibleOperationName;    //<i>Responsible Operation Name
+    any siInfo;                                       //<i>Reserved for SI customization
+} pptLotWipOperationInfo;
+
+typedef struct pptLotLocationInfo_struct {
+        objectIdentifier cassetteID;             //<i>Carrier ID
+        string           transferStatus;         //<i>Transfer Status
+                                                     //<c>SP_TransState_StationIn          "SI"
+                                                     //<c>SP_TransState_StationOut         "SO"
+                                                     //<c>SP_TransState_BayIn              "BI"
+                                                     //<c>SP_TransState_BayOut             "BO"
+                                                     //<c>SP_TransState_ManualIn           "MI"
+                                                     //<c>SP_TransState_ManualOut          "MO"
+                                                     //<c>SP_TransState_EquipmentIn        "EI"
+                                                     //<c>SP_TransState_EquipmentOut       "EO"
+                                                     //<c>SP_TransState_ShelfIn            "HI"
+                                                     //<c>SP_TransState_ShelfOut           "HO"
+                                                     //<c>SP_TransState_IntermediateIn     "II"
+                                                     //<c>SP_TransState_IntermediateOut    "IO"
+                                                     //<c>SP_TransState_AbnormalIn         "AI"
+                                                     //<c>SP_TransState_AbnormalOut        "AO"
+        string           transferReserveUserID;  //<i>Transfer Reserve User ID
+        objectIdentifier stockerID;              //<i>Stocker ID
+        objectIdentifier equipmentID;            //<i>Equipment ID
+        string           shelfPositionX;         //<i>Shelf PositionX
+        string           shelfPositionY;         //<i>Shelf PositionY
+        string           shelfPositionZ;         //<i>Shelf PositionZ
+        string           cassetteCategory;       //<i>Carrier Category  //D4000016
+                                                     //<c>SP_DurableCat_Cassette           "Cassette"
+                                                     //<c>SP_DurableCat_Carrier            "Carrier"
+                                                     //<c>SP_DurableCat_Reticle            "Reticle"
+                                                     //<c>SP_DurableCat_Fixture            "Fixture"
+    any siInfo;                                  //<i>Reserved for SI customization
+} pptLotLocationInfo;
+
+typedef struct pptLotRecipeInfo__150_struct {
+    objectIdentifier logicalRecipeID;          //<i>Logical Recipe ID
+    objectIdentifier processMonitorProductID;  //<i>Process Monitor Product ID
+    objectIdentifierSequence reticleGroupSeq;  //<i>Sequence of ReticleGroup IDs
+    boolean          FFEnforceFlag;            //<i>FF Enforce Flag (not used in current version)
+    boolean          FBEnforceFlag;            //<i>FB Enforce Flag (not used in current version)
+    objectIdentifier testTypeID;               //<i>Test Type ID (ASMView only)
+    any siInfo;                                //<i>Reserved for SI customization
+} pptLotRecipeInfo__150;
+
+typedef struct pptLotProductInfo__101_struct {
+    objectIdentifier productID;           //<i>Product ID
+    string           productType;         //<i>Product Type
+                                              //<c>SP_ProdType_Wafer       "Wafer"
+                                              //<c>SP_ProdType_Die         "Die" (ASMView only)
+                                              //<c>SP_ProdType_Chip        "Chip" (ASMView only)
+                                              //<c>SP_ProdType_Package     "Package" (ASMView only)
+    objectIdentifier productGroupID;      //<i>Product Group ID
+    string           technologyCode;      //<i>Tecnology Code
+    string           manufacturingLayer;  //<i>Manufacturing Layer
+    string           reticleSetID;        //<i>Reticle Set ID  //D4000048
+    objectIdentifier bomID;               //<i>BOM ID          //DSIV00001830
+    any siInfo;                           //<i>Reserved for SI customization
+} pptLotProductInfo__101;
+
+typedef struct pptLotControlJobInfo_struct {
+    objectIdentifier                     controlJobID;               //<i>Control Job ID
+    objectIdentifier                     processReserveEquipmentID;  //<i>Process Reserve Equipment ID
+    objectIdentifier                     processReserveUserID;       //<i>Process Reserve User ID
+    any siInfo;                                                      //<i>Reserved for SI customization
+} pptLotControlJobInfo;
+
+typedef struct pptLotOrderInfo_struct {
+    string           orderNumber;      //<i>Order Number
+    string           customerCode;     //<i>Customer Code
+    boolean          shipRequireFlag;  //<i>Ship Require Flag
+    any siInfo;                        //<i>Reserved for SI customization
+} pptLotOrderInfo;
+
+typedef struct pptLotFlowBatchInfo_struct {
+        objectIdentifier flowBatchID;                  //<i>Flow Batch ID
+        objectIdentifier flowBatchReserveEquipmentID;  //<i>Flow Batch Reserve Equipment ID
+    any siInfo;                                        //<i>Reserved for SI customization
+} pptLotFlowBatchInfo;
+
+typedef struct pptLotControlUseInfo_struct {
+        long             usedCount;        //<i>Used Count as Control Wafer Lot
+        long             recycleCount;     //<i>Recycle Count
+        string           controlUseState;  //<i>Control Use State of Control Wafer Lot
+                                               //<c>SP_Lot_ControlUseState_WaitUse      "WaitUse"
+                                               //<c>SP_Lot_ControlUseState_InUse        "InUse"
+                                               //<c>SP_Lot_ControlUseState_WaitRecycle  "WaitRecycle"
+                                               //<c>SP_Lot_ControlUseState_InRecycle    "InRecycle"
+    any siInfo;                            //<i>Reserved for SI customization
+} pptLotControlUseInfo;
+
+typedef struct pptEqpMonitorID_struct {
+    objectIdentifier                equipmentID;                        //<i>Equipment ID
+    objectIdentifier                chamberID;                          //<i>Chamber ID
+    objectIdentifier                eqpMonitorID;                       //<i>Equipment Monitor ID
+    objectIdentifier                eqpMonitorJobID;                    //<i>Equipment Monitor Job ID
+    any                             siInfo;                             //<i>Reserved for SI customization
+} pptEqpMonitorID;
+
+typedef struct pptLotBasicInfo__140_struct {
+    objectIdentifier         lotID;                                 //<i>Lot ID
+    string                   lotType;                               //<i>Lot Type
+                                                                        //<c>SP_Lot_Type_ProductionLot        "Production"
+                                                                        //<c>SP_Lot_Type_EngineeringLot       "Engineering"
+                                                                        //<c>SP_Lot_Type_ProductionMonitorLot "Process Monitor"
+                                                                        //<c>SP_Lot_Type_EquipmentMonitorLot  "Equipment Monitor"
+                                                                        //<c>SP_Lot_Type_DummyLot             "Dummy"
+                                                                        //<c>SP_Lot_Type_VendorLot            "Vendor"
+                                                                        //<c>SP_Lot_Type_RecycleLot           "Recycle"
+                                                                        //<c>SP_Lot_Type_CorrelationLot       "Correlation"
+    string                   subLotType;                            //<i>Sub Lot Type
+    string                   lotContent;                            //<i>Lot Content
+    string                   lotStatus;                             //<i>Representative Lot Status
+                                                                        //<c>CIMFW_Lot_State_LotCreated        "LOTCREATED"
+                                                                        //<c>CIMFW_Lot_State_Released          "RELEASED"
+                                                                        //<c>CIMFW_Lot_State_Active            "ACTIVE"
+                                                                        //<c>CIMFW_Lot_State_Finished          "FINISHED"
+                                                                        //<c>CIMFW_Lot_State_Shipped           "SHIPPED"
+                                                                        //<c>CIMFW_Lot_HoldState_OnHold        "ONHOLD"
+                                                                        //<c>CIMFW_Lot_FinishedState_Completed "COMPLETED"
+                                                                        //<c>CIMFW_Lot_FinishedState_Scrapped  "SCRAPPED"
+                                                                        //<c>CIMFW_Lot_FinishedState_Emptied   "EMPTIED"
+                                                                        //<c>SP_Lot_ProcState_Waiting          "Waiting"
+                                                                        //<c>SP_Lot_ProcState_Processing       "Processing"
+                                                                        //<c>SP_Lot_InventoryState_NonProBank  "NonProBank"
+                                                                        //<c>SP_Lot_InventoryState_InBank      "InBank"
+                                                                        //<c>SP_Mc_Lot_Processing              "Processing"
+                                                                        //<c>SP_Mc_Lot_Loaded                  "Loaded"
+                                                                        //<c>SP_Mc_Lot_Unloadable              "Unloadable"
+                                                                        //<c>SP_ProcessJobStatus_Comp          "Comp"
+                                                                        //<c>SP_ProcessJobStatus_Inprocess     "Inpr"
+                                                                        //<c>SP_ProcessJobStatus_Wait          "Wait"
+                                                                        //<c>SP_ProcessJobStatus_Fail          "Fail"
+    pptLotStatusListSequence strLotStatusList;                      //<i>Sequence of Lot Status List
+    string                   dueTimeStamp;                          //<i>Due Time Stamp
+    string                   priorityClass;                         //<i>Priority Class
+                                                                        //<c>SP_PriorityClass_SuperHot 1
+                                                                        //<c>SP_PriorityClass_Hot      2
+                                                                        //<c>SP_PriorityClass_Rush     3
+                                                                        //<c>SP_PriorityClass_Normal   4
+                                                                        //<c>SP_PriorityClass_Slowing  5
+    string                   internalPriority;                      //<i>Internal Priority
+    string                   externalPriority;                      //<i>External Priority
+    long                     totalWaferCount;                       //<i>Total Wafer Count
+    long                     productWaferCount;                     //<i>Product Wafer Count
+    long                     controlWaferCount;                     //<i>Control Wafer Count
+    long                     totalGoodDieCount;                     //<i>Total Good Die Count
+    long                     totalBadDieCount;                      //<i>Total Bad Die Count
+    objectIdentifier         bankID;                                //<i>Bank ID. If InBank or NonProBank, Bank ID will be filled.
+    boolean                  qtimeFlag;                             //<i>QTime Flag. If Qtime restriction exist, True.
+    string                   processLagTime;                        //<i>Proccess Lag Time
+    objectIdentifier         parentLotID;                           //<i>Parent Lot ID of the Direct Parent
+    string                   vendorLotID;                           //<i>Vendor Lot ID
+    objectIdentifier         familyLotID;                           //<i>Family Lot ID
+    string                   lastClaimedTimeStamp;                  //<i>Last Calimed Time Stamp
+    objectIdentifier         lastClaimedUserID;                     //<i>Last Claimed User ID
+    string                   stateChangeTimeStamp;                  //<i>Status Change Time Stamp
+    string                   inventoryChangeTimeStamp;              //<i>Inventory Change Time Stamp
+    string                   requiredCassetteCategory;              //<i>Required Carrier Vategory (process contamination control)
+    boolean                  sorterJobExistFlag;                    //<i>Sorter job Existence Flag
+    boolean                  inPostProcessFlagOfCassette;           //<i>InPostProcessFlag of Cassette
+    boolean                  inPostProcessFlagOfLot;                //<i>InPostProcessFlag of Lot
+    string                   interFabXferState;                     //<i>InterFabXferState of Lot
+    string                   bondingGroupID;                        //<i>Bonding Group ID
+    boolean                  autoDispatchControlFlag;               //<i>Auto Dispatch Control Flag
+    pptEqpMonitorID          strEqpMonitorID;                       //<i>Equipment Monitor Job Info
+    any                      siInfo;                                //<i>Reserved for SI customization
+} pptLotBasicInfo__140;
+
+typedef struct pptLotInfo__160_struct {
+    pptLotBasicInfo__140               strLotBasicInfo;             //<i>Lot Basic Information
+    pptLotControlUseInfo               strLotControlUseInfo;        //<i>Lot Control Use Information
+    pptLotFlowBatchInfo                strLotFlowBatchInfo;         //<i>Lot Flow Batch Information
+    pptLotNoteFlagInfo                 strLotNoteFlagInfo;          //<i>Lot Note Flag Information
+    pptLotOperationInfo__160           strLotOperationInfo;         //<i>Lot Operation Information
+    pptLotOrderInfo                    strLotOrderInfo;             //<i>Lot Order Information
+    pptLotControlJobInfo               strLotControlJobInfo;        //<i>Lot Control Job Information
+    pptLotProductInfo__101             strLotProductInfo;           //<i>Lot Product Information
+    pptLotRecipeInfo__150              strLotRecipeInfo;            //<i>Lot Recipe Information
+    pptLotLocationInfo                 strLotLocationInfo;          //<i>Lot Location Information
+    pptLotWipOperationInfo             strLotWipOperationInfo;      //<i>Lot Wip Operation Information
+    pptLotWaferAttributesSequence__150 strLotWaferAttributes;       //<i>Sequence of Lot Wafer Attributes
+    pptEntityInhibitAttributesSequence entityInhibitions;           //<i>Sequence of Entity Inhibitions
+    pptLotBackupInfo                   strLotBackupInfo;            //<i>Lot Backup Information
+    any                                siInfo;                      //<i>Reserved for SI customization
+} pptLotInfo__160;
+
+typedef sequence <pptLotInfo__160> pptLotInfoSequence__160;
+
+typedef struct pptWaferMapInCassetteInfo_struct {
+    long                           slotNumber;      //<i>Slot Number
+    objectIdentifier               waferID;         //<i>Wafer ID
+    string                         aliasWaferName;  //<i>Alias Wafer Name  //Q3000004
+    objectIdentifier               lotID;           //<i>Lot ID
+    string                         scrapState;      //<i>Scrap State       // 4000098
+                                                    //<c>SP_ScrapState_Active          "Active"
+                                                    //<c>SP_ScrapState_Scrap           "Scrap"
+                                                    //<c>SP_ScrapState_Garbage         "Garbage"
+    any siInfo;                                     //<i>Reserved for SI customization
+} pptWaferMapInCassetteInfo;
+
+typedef sequence <pptWaferMapInCassetteInfo> pptWaferMapInCassetteInfoSequence;
+
+typedef struct pptLotListInCassetteInfo_struct {
+    objectIdentifier                     cassetteID;    //<i>Carrier ID
+    string                               multiLotType;  //<i>Multi Lot Type.
+                                                            //<c>SP_Cas_MultiLotType_SingleLotSingleRecipe    "SL-SR"
+                                                            //<c>SP_Cas_MultiLotType_MultiLotSingleRecipe     "ML-SR"
+                                                            //<c>SP_Cas_MultiLotType_MultiLotMultiRecipe      "ML-MR"
+    objectIdentifierSequence             lotID;         //<i>Sequence of Lot IDs
+    any siInfo;                                         //<i>Reserved for SI customization
+} pptLotListInCassetteInfo;
+
+typedef struct pptLotInfoInqResult__160_struct {
+    pptRetCode                               strResult;                    //<i>Transaction Execution Result Information
+    pptLotInfoSequence__160                  strLotInfo;                   //<i>Sequence of Lot Information
+    pptLotListInCassetteInfo                 strLotListInCassetteInfo;     //<i>Sequence of Lot List in Carrier Information
+    pptWaferMapInCassetteInfoSequence        strWaferMapInCassetteInfo;    //<i>Sequence of Wafer Map in Carrier Information
+    any                                      siInfo;                       //<i>Reserved for SI customization
+} pptLotInfoInqResult__160;
+// Bob Ke 2020/05/22 Add End #17, #18, #19
+// Bob Ke 2020/07/30 Add Start #20
+typedef struct pptFuncID_struct {
+    string   categoryID;  //<i>Category ID. It depends on SM setting.
+    string   functionID;  //<i>Function ID. It depends on SM setting.
+    string   permission;  //<i>Permission. It depends on SM setting.
+    any siInfo;           //<i>Reserved for SI customization
+} pptFuncID;
+
+typedef sequence <pptFuncID> pptFuncIDSequence;
+
+typedef struct pptFuncList_struct {
+    string            subSystemID;  //<i>Sub System ID
+                                        //<c>SP_SubSystemID_MM    "MM"
+                                        //<c>SP_SubSystemID_SM    "SM"
+                                        //<c>SP_SubSystemID_AM    "AM"
+                                        //<c>SP_SubSystemID_PM    "PM"
+                                        //<c>SP_SubSystemID_SPC   "SPC"
+                                        //<c>SP_SubSystemID_XMS   "XMS"
+                                        //<c>SP_SubSystemID_TCS   "TCS"
+                                        //<c>SP_SubSystemID_CFM   "CFM"
+                                        //<c>SP_SubSystemID_SCH   "SCH"
+                                        //<c>SP_SubSystemID_RPT   "RPT"
+    pptFuncIDSequence strFuncIDs;   //<i>Function IDs. For example, the ID of TxEnhancedFutureHoldReq is "TXPC041".
+    any siInfo;                     //<i>Reserved for SI customization
+} pptFuncList;
+
+typedef sequence <pptFuncList> pptFuncListSequence;
+
+typedef struct pptLogOnCheckReqResult_struct {
+    pptRetCode           strResult;              //<i>Transaction Execution Result Information
+    pptFuncListSequence  subSystemFuncLists;     //<i>Sequence of Sub System Function Lists
+    objectIdentifierSequence  productIDs;        //<i>Sequence of Access Permitted Product IDs        //D4000013
+    objectIdentifierSequence  machineRecipeIDs;  //<i>Sequence of Access Permitted Machine Recipe IDs //D4000013
+    any siInfo;                                  //<i>Reserved for SI customization
+} pptLogOnCheckReqResult;
+// Bob Ke 2020/07/30 Add End #20
+
+// Bob Ke 2020/09/07 Add #21
+typedef struct pptEqpContainerPosition_struct {
+    objectIdentifier    containerPositionID;        //<i>Container Position ID
+    objectIdentifier    controlJobID;               //<i>Control Job ID
+    string              processJobID;               //<i>Process Job ID
+    objectIdentifier    lotID;                      //<i>Lot ID
+    objectIdentifier    waferID;                    //<i>Wafer ID
+    objectIdentifier    srcCassetteID;              //<i>Src Cassette ID
+    objectIdentifier    srcPortID;                  //<i>Src Port ID
+    long                srcSlotNo;                  //<i>Src Slot No
+    string              SLMState;                   //<i>SLM State
+    objectIdentifier    destCassetteID;             //<i>Dest Cassette ID
+    objectIdentifier    destPortID;                 //<i>Dest Port ID
+    long                destSlotNo;                 //<i>Dest Slot No
+    string              estimatedProcessEndTime;    //<i>Estimated Process End Time
+    string              processStartTime;           //<i>Process Start Time
+    string              processCompleteTime;        //<i>Process Complete Time
+    string              lastClaimedTimeStamp;       //<i>Last Claimed Time Stamp
+    objectIdentifier    lastClaimedUserID;          //<i>Last Claimed User ID
+    any                 siInfo;                     //<i>Reserved for SI customization
+} pptEqpContainerPosition;
+
+typedef sequence <pptEqpContainerPosition> pptEqpContainerPositionSequence;
+
+typedef struct pptEqpContainer_struct {
+    objectIdentifier                  equipmentContainerID;             //<i>Equipment Container ID
+    objectIdentifier                  chamberID;                        //<i>Chamber ID
+    long                              maxCapacity;                      //<i>Max Capacity
+    long                              maxRsvCount;                      //<i>Max Reserve Count
+    long                              currentCapacity;                  //<i>Current Capacity
+    pptEqpContainerPositionSequence   strEqpContainerPositionSeq;       //<i>Sequence of Wafer Contained In Equipment
+    any                               siInfo;                           //<i>Reserved for SI customization
+} pptEqpContainer;
+
+typedef sequence <pptEqpContainer> pptEqpContainerSequence;
+
+typedef struct pptStoredReticle_struct
+{
+    objectIdentifier                        reticleID;        //<i>Reticle ID
+    string                                  description;      //<i>Description
+    objectIdentifier                        reticleGroupID;   //<i>Reticle Group ID
+    string                                  status;           //<i>Status
+    any                                     siInfo;           //<i>Reserved for SI customization
+}pptStoredReticle;
+
+typedef sequence <pptStoredReticle> pptStoredReticleSequence;
+
+typedef struct pptReticlePodPortInfo_struct {
+    objectIdentifier                        reticlePodPortID;              //<i>Reticle Pod Port ID
+    string                                  eqpCategory;                   //<i>Equipment Category
+    string                                  accessMode;                    //<i>Access Mode
+    string                                  portStatus;                    //<i>Port Status
+    string                                  portStatusChangeTimestamp;     //<i>Port Status Change Time Stamp
+    objectIdentifier                        portStatusChangeUserID;        //<i>Port Status Change User ID
+    objectIdentifier                        loadedReticlePodID;            //<i>Loaded Reticle Pod ID
+    objectIdentifier                        reservedReticlePodID;          //<i>Reserved Reticle Pod ID
+    string                                  transferReserveStatus;         //<i>Transfer Reserve Status
+    string                                  transferReserveTimestamp;      //<i>Transfer Reserve Time Stamp
+    string                                  dispatchStatus;                //<i>Dispatch Status
+    string                                  dispatchTimestamp;             //<i>Dispatch Time Stamp
+    any                                     siInfo;                        //<i>Reserved for SI customization
+} pptReticlePodPortInfo;
+
+typedef sequence <pptReticlePodPortInfo> pptReticlePodPortInfoSequence;
+
+typedef struct pptEquipmentAdditionalReticleAttribute_struct
+{
+    long                                    reticleStoreMaxCount;    //<i>Reticle Store Max Count
+    long                                    reticleStoreLimitCount;  //<i>Reticle Sotre Limit Count
+    pptReticlePodPortInfoSequence           strReticlePodPortIDs;    //<i>Sequence of Reticle Pod Information
+    pptStoredReticleSequence                strStoredReticles;       //<i>Sequence of Stored Reticle
+    any                                     siInfo;                  //<i>Reserved for SI customization
+} pptEquipmentAdditionalReticleAttribute;
+
+typedef struct pptEqpStockerStatus_struct {
+       objectIdentifier stockerID;          //<i>Stocker ID
+       string           stockerType;        //<i>Stocker Type
+                                                //<c>SP_Stocker_Type_Auto           "Auto"
+                                                //<c>SP_Stocker_Type_Interm         "Interm"
+                                                //<c>SP_Stocker_Type_Shelf          "Shelf"
+                                                //<c>SP_Stocker_Type_Reticle        "Reticle"
+                                                //<c>SP_Stocker_Type_Fixture        "Fixture"
+                                                //<c>SP_Stocker_Type_InterBay       "Inter Bay"
+                                                //<c>SP_Stocker_Type_IntraBay       "Intra Bay"
+                                                //<c>SP_Stocker_Type_ReticleShelf   "ReticleShelf"
+                                                //<c>SP_Stocker_Type_ReticlePod     "ReticlePod"
+                                                //<c>SP_Stocker_Type_BareReticle    "BareReticle"
+       objectIdentifier stockerStatus;      //<i>Stocker State
+       string           stockerPriority;    //<i>Stocker Priority
+       string           E10status;          //<i>Stocker E10 status         //D8000028
+       boolean          UTSFlag;            //<i>UTS Flag                   //D8000028
+       long             maxUTSCapacity;     //<i>Max UTS Capacity           //D8000028
+    any siInfo;                             //<i>Reserved for SI customization
+} pptEqpStockerStatus;
+
+typedef sequence <pptEqpStockerStatus> pptEqpStockerStatusSequence;
+
+typedef struct pptEqpStockerInfo_struct {
+       pptEqpStockerStatusSequence strEqpStockerStatus;    //<i>Sequence of Equipment Stocker Status
+    any siInfo;                                            //<i>Reserved for SI customization
+} pptEqpStockerInfo;
+
+typedef struct pptStartReservedControlJob_struct {
+    string                              portGroupID;     //<i>Port Group ID
+    objectIdentifier                    controlJobID;    //<i>Control Job ID
+    any siInfo;                                          //<i>Reserved for SI customization //D4200055
+} pptStartReservedControlJob;
+
+typedef sequence <pptStartReservedControlJob> pptStartReservedControlJobSequence;
+
+typedef struct pptEqpReservedControlJobInfo_struct {
+    pptStartReservedControlJobSequence  strStartReservedControlJob;    //<i>Sequence of Start Reserved Control Job
+    any siInfo;                                                        //<i>Reserved for SI customization //D4200055
+} pptEqpReservedControlJobInfo;
+
+
+typedef struct pptEqpInprocessingLot_struct {
+//(R30)    objectIdentifier                    controlJobID;
+    objectIdentifier                    lotID;                         //<i>Lot ID
+    objectIdentifier                    loadPortID;                    //<i>Load Port ID
+    objectIdentifier                    unloadPortID;                  //<i>Unload Port ID
+    long                                unloadSequenceNumber;          //<i>Unload Sequence Number
+    objectIdentifier                    cassetteID;                    //<i>Carrier ID
+    boolean                             dataCollectionRequiredFlag;    //<i>Data Collection Required Flag //(R30)
+    string                              holdState;                     //<i>Hold State    //D4100079
+                                                                           //<c>If SP_SQL_NOT_FOUND            ""
+                                                                           //<c>CIMFW_Lot_HoldState_OnHold     "ONHOLD"
+                                                                           //<c>CIMFW_Lot_HoldState_NotOnHold  "NOTONHOLD"
+    any                                 siInfo;                        //<i>Reserved for SI customization //P4000384
+} pptEqpInprocessingLot;
+
+typedef sequence <pptEqpInprocessingLot> pptEqpInprocessingLotSequence;
+
+//(R30) typedef struct pptEqpInprocessingLotInfo_struct {
+//(R30)     pptInprocessingLotSequence          strInprocessingLot;
+//(R30) }
+typedef struct pptEqpInprocessingControlJob_struct {           //(R30)
+    objectIdentifier                    controlJobID;             //<i>Control Job ID  //(R30)
+    pptEqpInprocessingLotSequence       strEqpInprocessingLot;    //<i>Sequence of Eqp Inprocessing Lot //(R30)
+    any siInfo;                                                   //<i>Reserved for SI customization   //D4200055
+} pptEqpInprocessingControlJob;                                //(R30)
+
+typedef sequence <pptEqpInprocessingControlJob> pptEqpInprocessingControlJobSequence;//(R30)
+
+typedef struct pptLotOnPort_struct {
+    boolean                                 operationStartFlag;    //<i>Operation Start Flag
+    boolean                                 monitorLotFlag;        //<i>Monitor Lot Flag
+    objectIdentifier                        lotID;                 //<i>Lot ID
+    string                                  lotType;               //<i>Lot Type
+                                                                       //<c>SP_Lot_Type_ProductionLot           "Production"
+                                                                       //<c>SP_Lot_Type_EngineeringLot          "Engineering"
+                                                                       //<c>SP_Lot_Type_ProductionMonitorLot    "Process Monitor"
+                                                                       //<c>SP_Lot_Type_EquipmentMonitorLot     "Equipment Monitor"
+                                                                       //<c>SP_Lot_Type_DummyLot                "Dummy"
+                                                                       //<c>SP_Lot_Type_VendorLot               "Vendor"
+                                                                       //<c>SP_Lot_Type_RecycleLot              "Recycle"
+                                                                       //<c>SP_Lot_Type_CorrelationLot          "Correlation"
+    string                                  subLotType;            //<i>Sublot Type
+    any siInfo;                                                    //<i>Reserved for SI customization
+} pptLotOnPort;
+
+typedef sequence <pptLotOnPort> pptLotOnPortSequence;
+
+typedef struct pptEqpPortStatus_struct {
+    objectIdentifier                        portID;                        //<i>Port ID
+    objectIdentifier                        associatedPortID;              //<i>Associated Port ID
+    string                                  portGroup;                     //<i>Port Group Name
+    long                                    loadSequenceNumber;            //<i>Load Sequence Number
+    string                                  portUsage;                     //<i>Port Usage
+                                                                               //<c>CIMFW_PortRsc_Input        "INPUT"
+                                                                               //<c>CIMFW_PortRsc_Output       "OUTPUT"
+                                                                               //<c>CIMFW_PortRsc_InputOutput  "INPUT_OUTPUT"
+    string                                  loadPurposeType;               //<i>Load Purpose Type
+                                                                               //<c>SP_LoadPurposeType_Any                 "Any Purpose"
+                                                                               //<c>SP_LoadPurposeType_Other               "Other"
+                                                                               //<c>SP_LoadPurposeType_EmptyCassette       "Empty Cassette"
+                                                                               //<c>SP_LoadPurposeType_FillerDummy         "Filler Dummy Lot"
+                                                                               //<c>SP_LoadPurposeType_ProcessLot          "Process Lot"
+                                                                               //<c>SP_LoadPurposeType_ProcessMonitorLot   "Process Monitor Lot"
+                                                                               //<c>SP_LoadPurposeType_SideDummyLot        "Side Dummy Lot"
+                                                                               //<c>SP_LoadPurposeType_WaitingMonitorLot   "Waiting Monitor Lot"
+                                                                               //<c>SP_LoadPurposeType_InternalBuffer      "Internal Buffer Eqp"
+    objectIdentifier                        operationModeID;               //<i>Capable Operation Mode ID
+    string                                  portState;                     //<i>Port State
+                                                                               //<c>SP_PortRsc_PortState_LoadAvail         "LoadAvail"
+                                                                               //<c>SP_PortRsc_PortState_LoadReq           "LoadReq"
+                                                                               //<c>SP_PortRsc_PortState_LoadComp          "LoadComp"
+                                                                               //<c>SP_PortRsc_PortState_UnloadReq         "UnloadReq"
+                                                                               //<c>SP_PortRsc_PortState_UnloadComp        "UnloadComp"
+                                                                               //<c>SP_PortRsc_PortState_UnloadAvail       "UnloadAvail"
+                                                                               //<c>SP_PortRsc_PortState_Unknown           "-"
+                                                                               //<c>SP_PortRsc_PortState_UnknownForTCS     "Unknown"
+                                                                               //<c>SP_PortRsc_PortState_Down              "Down"
+//    objectIdentifier                        loadResrvedCassetteID;
+    objectIdentifier                        loadResrvedCassetteID;         //<i>Load Reserved Carrier ID  //R30 DCR3000096
+    string                                  dispatchState;                 //<i>Dispatch State
+                                                                               //<c>SP_PortRsc_DispatchState_Required          "Required"
+                                                                               //<c>SP_PortRsc_DispatchState_Dispatched        "Dispatched"
+                                                                               //<c>SP_PortRsc_DispatchState_NotDispatched     "NotDispatched"
+                                                                               //<c>SP_PortRsc_DispatchState_Error             "Error"
+    string                                  dispatchState_TimeStamp;       //<i>Dispatch State Timestamp
+//(R30)  objectIdentifier                        dispatchedCassetteID;
+    objectIdentifier                        loadedCassetteID;              //<i>Loaded Carrier ID
+    objectIdentifier                        dispatchLoadCassetteID;        //<i>Dispatch Load Carrier ID  //(R30)
+    objectIdentifier                        dispatchUnloadCassetteID;      //<i>Dispatch Unload Carrier ID    //(R30)
+    string                                  cassetteLoadPurposeType;       //<i>Cassette Load Purpose Type (reference loadPurposeType)
+    objectIdentifier                        cassetteControlJobID;          //<i>Cassette Control Job ID
+    string                                  operationMode;                 //<i>Capable Operation Mode ID   //(R30)
+    string                                  onlineMode;                    //<i>Online mode    //(R30)
+                                                                               //<c>SP_Eqp_OnlineMode_Offline          "Off-Line"
+                                                                               //<c>SP_Eqp_OnlineMode_OnlineLocal      "On-Line Local"
+                                                                               //<c>SP_Eqp_OnlineMode_OnlineRemote     "On-Line Remote"
+    string                                  dispatchMode;                  //<i>Dispatch Mode  //(R30)
+                                                                               //<c>SP_Eqp_DispatchMode_Manual     "Manual"
+                                                                               //<c>SP_Eqp_DispatchMode_Auto       "Auto"
+    string                                  accessMode;                    //<i>Access Mode    //(R30)
+                                                                               //<c>SP_Eqp_AccessMode_Manual       "Manual"
+                                                                               //<c>SP_Eqp_AccessMode_Auto         "Auto"
+    string                                  operationStartMode;            //<i>Operation Start Mode   //(R30)
+                                                                               //<c>SP_Eqp_StartMode_Manual        "Manual"
+                                                                               //<c>SP_Eqp_StartMode_Auto          "Auto"
+    string                                  operationCompMode;             //<i>Operation Comp Mode    //(R30)
+                                                                               //<c>SP_Eqp_CompMode_Manual         "Manual"
+                                                                               //<c>SP_Eqp_CompMode_Auto           "Auto"
+    pptLotOnPortSequence                    strLotOnPort;                  //<i>Sequence of Lot On Port List
+    stringSequence                          cassetteCategoryCapability;    //<i>Sequence of Carrier Category Capability List  //D4000016
+    any siInfo;                                                            //<i>Reserved for SI customization
+} pptEqpPortStatus;
+
+typedef sequence <pptEqpPortStatus> pptEqpPortStatusSequence;
+
+typedef struct pptEqpPortInfo_struct {
+    pptEqpPortStatusSequence strEqpPortStatus;    //<i>Sequence of Equipment Port Status
+    any siInfo;                                   //<i>Reserved for SI customization
+} pptEqpPortInfo;
+
+typedef struct pptEqpChamberStatusInfo_struct {
+    objectIdentifier chamberID;                   //<i>Chamber ID
+    objectIdentifier chamberStatusCode;           //<i>Chamber State Code
+    objectIdentifier E10Status;                   //<i>E10 State Code
+    string           chamberStatusName;           //<i>Chamber State Name
+    string           chamberStatusDescription;    //<i>Cahmber State Description
+    string           changeTimeStamp;             //<i>Change Timestamp
+    objectIdentifier changeUserID;                //<i>Change User ID
+    objectIdentifier actualStatusCode;            //<i>Actual State Code
+    objectIdentifier actualE10Status;             //<i>Actual E10 State Code
+    string           actualStatusName;            //<i>Actual State Name
+    string           actualStatusDescription;     //<i>Actual State Description
+    string           actualChangeTimeStamp;       //<i>Actual Change Timestamp
+    boolean          chamberAvailableFlag;        //<i>Chamber Available Flag
+    any siInfo;                                   //<i>Reserved for SI customization
+} pptEqpChamberStatusInfo;
+
+typedef sequence <pptEqpChamberStatusInfo> pptEqpChamberStatusInfoSequence;
+
+typedef struct pptEqpChamberInfo_struct {
+       pptEqpChamberStatusInfoSequence strEqpChamberStatus;    //<i>Sequence of Equipment Chamber Status
+    any siInfo;                                                //<i>Reserved for SI customization
+} pptEqpChamberInfo;
+
+typedef struct pptEqpPmInfo_struct {
+    long            runWafer;                      //<i>Run Wafer
+    long            maximumRunWafer;               //<i>Maximum Run Wafers
+    string          runTime;                       //<i>Run Time
+    string          maximumRunTime;                //<i>Maximum Run Time
+    long            operationStartCount;           //<i>Operation Start Count
+    long            maximumOperationStartCount;    //<i>Maximum Operation Start Count
+    long            pmIntervalTime;                //<i>Interval between PM Time
+    string          lastMaintenanceTimeStamp;      //<i>Last Maintenance Timestamp
+    any siInfo;                                    //<i>Reserved for SI customization
+} pptEqpPmInfo;
+
+typedef struct pptEqpStatusInfo__090_struct {
+    objectIdentifier                        equipmentStatusCode;           //<i>Equipment State Code
+    string                                  E10Status;                     //<i>E10 State Code
+    string                                  equipmentStatusName;           //<i>Equipment State Name
+    string                                  equipmentStatusDescription;    //<i>Equipment State Description
+    string                                  changeTimeStamp;               //<i>Change Timestamp
+    objectIdentifier                        changeUserID;                  //<i>Change User ID
+    objectIdentifier                        actualStatusCode;              //<i>Actual State Code
+    string                                  actualE10Status;               //<i>Actual E10 State Code
+    string                                  actualStatusName;              //<i>Actual State Name
+    string                                  actualStatusDescription;       //<i>Actual State Description
+    string                                  actualChangeTimeStamp;         //<i>Actual Change Timestamp
+    boolean                                 equipmentAvailableFlag;        //<i>Equipment Available Flag
+    objectIdentifier                        lastRecipeID;                  //<i>Last Recipe ID
+    long                                    maxCountForFlowBatch;          //<i>Max count for FlowBatch
+    objectIdentifier                        reservedFlowBatchID;           //<i>Reserved Flow Batch ID
+    objectIdentifierSequence                reservedControlJobID;          //<i>Sequence of Reserved Control Job IDs
+    objectIdentifierSequence                reservedFlowBatchIDs;          //<i>Sequence of Reserved Flow Batch ID
+    any siInfo;                                                            //<i>Reserved for SI customization
+} pptEqpStatusInfo__090;
+
+typedef struct pptEqpBrInfo__120_struct {
+    string              equipmentName;                  //<i>Equipment Name
+    objectIdentifier    workArea;                       //<i>Work Area ID
+    string              equipmentOwner;                 //<i>Equipment Owner
+    string              TCSResourceName;                //<i>TCS Resource Name
+    string              equipmentCategory;              //<i>Equipment Category
+                                                            //<c>SP_Mc_Category_Dummy               "Dummy"
+                                                            //<c>SP_Mc_Category_WaferSorter         "Wafer Sorter"
+                                                            //<c>SP_Mc_Category_AssemblyVendor      "Assembly Vendor"
+                                                            //<c>SP_Mc_Category_Inspection          "Inspection"
+                                                            //<c>SP_Mc_Category_Test                "Test"
+                                                            //<c>SP_Mc_Category_Measurement         "Measurement"
+                                                            //<c>SP_Mc_Category_Process             "Process"
+                                                            //<c>SP_Mc_Category_CircuitProbe        "Circuit Probe"
+                                                            //<c>SP_Mc_Category_InternalBuffer      "Internal Buffer"
+    boolean             reticleUseFlag;                 //<i>Reticle Use Flag
+    boolean             fixtureUseFlag;                 //<i>Fixture Use Flag
+    boolean             cassetteChangeFlag;             //<i>Carrier Change Flag
+    boolean             startLotsNotifyRequiredFlag;    //<i>Start Lots Notify Required Flag
+    boolean             monitorCreationFlag;            //<i>Monitor Creation Flag
+    boolean             eqpToEqpTransferFlag;           //<i>Equipment to Eqipment Transfer Flag
+    boolean             takeInOutTransferFlag;          //<i>Take in out Transfer Flag
+    boolean             emptyCassetteRequireFlag;       //<i>Empty Carrier Required Flag
+    boolean             SLMCapabilityFlag;              //<i>SLM Capability Flag                    //DSIV00000099
+    string              SLMSwitch;                      //<i>SLM Switch                             //DSIV00000099
+    objectIdentifier    monitorBank;                    //<i>Monitor Bank ID
+    objectIdentifier    dummyBank;                      //<i>Dummy Bank ID
+    stringSequence      specialControl;                 //<i>Sequence of Special Control
+    string              multiRecipeCapability;          //<i>Multi recipe Capability
+    long                maxBatchSize;                   //<i>Maximum Process Batch Size             //DSIV00001830
+    long                minBatchSize;                   //<i>Minimum Process Batch Size             //DSIV00001830
+    long                minWaferCount;                  //<i>Minimum Wafer Count                    //DSIV00001830
+    boolean             processJobLevelCtrl;            //<i>Process Job Level Control Flag         //DSN000015229
+    any siInfo;                                         //<i>Reserved for SI customization
+} pptEqpBrInfo__120;
+
+typedef struct pptEqpInfoInqResult__160_struct {
+    pptRetCode                             strResult;                               //<i>Transaction Execution Result Information
+    objectIdentifier                       equipmentID;                             //<i>Equipment ID
+    pptEqpBrInfo__120                      equipmentBRInfo;                         //<i>Equipment Basic Record Information
+    pptEqpStatusInfo__090                  equipmentStatusInfo;                     //<i>Equipment State Information
+    pptEqpPmInfo                           equipmentPMInfo;                         //<i>Equipment Preventive-Maintenance Information
+    pptEqpChamberInfo                      equipmentChamberInfo;                    //<i>Equipment Chamber Information
+    pptEqpPortInfo                         equipmentPortInfo;                       //<i>Equipment Port Information
+    pptEqpInprocessingControlJobSequence   equipmentInprocessingControlJob;         //<i>Sequence of Equipment InProcessing Control Job
+    pptEqpReservedControlJobInfo           equipmentReservedControlJobInfo;         //<i>Reserved Control Job Information
+    objectIdentifierSequence               equipmentInprocessingDurableControlJobs; //<i>Sequence of Equipment InProcessing Durable Control Job
+    objectIdentifierSequence               equipmentReservedDurableControlJobs;     //<i>Reserved Durable Control Job Information
+    pptEqpStockerInfo                      equipmentStockerInfo;                    //<i>Equipment Stocker Information
+    pptEqpStockerInfo                      equipmentUTSInfo;                        //<i>Equipment Stocker Information
+    pptEqpStockerInfo                      equipmentSLMUTSInfo;                     //<i>Equipment Stocker Information
+    pptEntityInhibitAttributesSequence     entityInhibitions;                       //<i>Sequence of Entity Inhibit Attribute
+    pptEquipmentAdditionalReticleAttribute strEquipmentAdditionalReticleAttribute;  //<i>Equipment Additional Reticle Attribute
+    pptEqpContainerSequence                strEquipmentContainerSeq;                //<i>Sequence of Equipment Container
+    any                                    siInfo;                                  //<i>Reserved for SI customization
+} pptEqpInfoInqResult__160;
+// Bob Ke 2020/09/07 End #21
+
+// Bob Ke 2020/10/22 Start #22, #23
+typedef struct pptDCActionResultInfo_struct {
+    objectIdentifier                    lotID;                         //<i>lot ID
+    boolean                             monitorLotFlag;                //<i>monitor Lot Flag
+    objectIdentifier                    dcDefID;                       //<i>DC Def ID
+    objectIdentifier                    dcSpecID;                      //<i>DC Spec ID
+    string                              checkType;                     //<i>Check Type
+                                                                           //<c>SP_ActionResult_CheckType_SPEC   "SPEC"
+                                                                           //<c>SP_ActionResult_CheckType_SPC    "SPC"
+    string                              reasonCode;                    //<i>Reason Code
+    string                              actionCode;                    //<i>Action Code
+    string                              correspondingObjrefPO;         //<i>Corresponding Stringfield Object Reference PosProcessOperation
+    string                              bankID;                        //<i>BankID
+    string                              reworkRouteID;                 //<i>Rework RouteID
+    pptEntityIdentifierSequence         entities;                      //<i>Sequence of Entities
+    any siInfo;                                                        //<i>Reserved for SI customization
+} pptDCActionResultInfo;
+
+typedef sequence <pptDCActionResultInfo> pptDCActionResultInfoSequence;
+
+typedef struct pptDCActionLotResult_struct {
+    objectIdentifier                    measurementLotID;              //<i>Measurement Lot ID
+    pptDCActionResultInfoSequence       strDCActionResultInfo;         //<i>Sequence of DC Action Result Info
+    any siInfo;                                                        //<i>Reserved for SI customization
+} pptDCActionLotResult;
+
+typedef sequence <pptDCActionLotResult> pptDCActionLotResultSequence;
+
+typedef struct csCollectedDataInfoForAfterOpeCompInqInParm_struct{
+    objectIdentifier eqpID; 
+    objectIdentifier lotID; 
+}csCollectedDataInfoForAfterOpeCompInqInParm;
+
+typedef struct csCollectedDataInfoForAfterOpeCompInqResult_struct{
+    pptRetCode strResult; 
+    objectIdentifier eqpID; 
+    objectIdentifier lotID; 
+    string poObj; 
+    pptDCDefSequence strDCDefSeq; 
+    pptDCActionLotResultSequence strDCActionLotResult;
+    pptHashedInfoSequence strHashedInfoSeq;
+}csCollectedDataInfoForAfterOpeCompInqResult;
+typedef struct csPostDCActionResultInfo_struct
+{ 
+    objectIdentifier lotID; 
+    string lotStatus; 
+    string specCheckResult; 
+    string spcCheckResult; 
+    string OCAPCheckResult;
+    pptSpcResult strSpcResult; 
+    pptHashedInfoSequence strHashedInfoSeq; 
+}
+csPostDCActionResultInfo;
+
+typedef struct csCollectedDataAfterOpeCompRptResult_struct{ 
+    pptRetCode strResult;
+    csPostDCActionResultInfo strPostDCActionResultInfo;
+    pptHashedInfoSequence strHashedInfoSeq;
+}csCollectedDataAfterOpeCompRptResult;
+
+typedef struct csCollectedDataAfterOpeCompRptInParm_struct
+{
+     objectIdentifier eqpID;
+     objectIdentifier lotID;
+     string poObj;
+     pptDCDefSequence strDCDefSeq;
+     string claimMemo;
+     pptHashedInfoSequence strHashedInfoSeq;
+}csCollectedDataAfterOpeCompRptInParm;
+// Bob Ke 2020/10/22 End #22, #23
+
+// Bob Ke 2020/10/26 Start #24
+typedef pptBaseResult pptOpeLocateReqResult; //D4200125
+// Bob Ke 2020/10/22 End #24
+
+#endif

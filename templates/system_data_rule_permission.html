@@ -1,0 +1,112 @@
+
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+	<title>Data Rule Setting</title>
+	
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<script>var d = "";</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+{% include 'base.html' %}
+	
+	
+	<meta name="decorator" content="ani"/>
+	<link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+<script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+	<script type="text/javascript">
+
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if(!isValidate){
+                return false;
+            }else{
+                //功能权限
+                var ref = $('#menuTree').jstree(true);
+                var ids = ref.get_selected();
+                //取半选节点ID
+                $("#menuTree li").has("i[class*='jstree-undetermined']").each(function(){
+                    //alert($(this));
+					ids+=","+$(this).attr("id");
+                });
+				//alert(ids)
+                $("#menuIds").val(ids);
+				//return false;
+                
+                jp.loading();
+                jp.post("/system/data/rule/permission/save/",$('#inputForm').serialize(),function(data){
+                    if(data.success){
+                        // jp.getParent().refresh();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+
+                    }else{
+                        jp.error(data.msg);
+                    }
+                })
+            }
+
+        }
+		$(document).ready(function(){
+		
+			//功能权限
+			$('#menuTree').jstree({
+				'core' : {
+					"multiple" : true,
+					"animation" : 0,
+					"themes" : { "icons":true ,"stripes":false},
+					'data' : {
+						"url" : "/system/role/permission/tree/?roleId={{roleId}}",
+						"dataType" : "json" // needed only if you do not supply JSON headers
+					}
+				},
+				'plugins' : [ "checkbox", 'types' , 'wholerow'],
+				"types":{
+							'default' : {
+								'icon' : 'fa fa-folder'
+							},
+			                'html' : {
+			                    'icon' : 'fa fa-file-code-o'
+			                },
+			                'btn':{'icon' : 'fa fa-square'}
+				},
+				'checkbox' : {  
+	                // 禁用级联选中  
+	                'three_state' : false,       
+	                'cascade' : 'undetermined|down|up' //有三个选项，up, down, undetermined; 使用前需要先禁用three_state  
+	            },  
+
+			});
+			
+
+		});
+		
+	</script>
+
+</head>
+<body id="" class=""  style="">
+	
+	
+    <div class="tab-content">
+		<div id="tab-1" class="tab-pane fade in  active">
+			<div id="menuTree"></div>
+		</div>
+		
+	</div>
+	<form id="inputForm" class="form-horizontal" action="/ani/a/sys/role/save" method="post">
+		<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+		
+		<input id="id" name="id" type="hidden" value="{{roleId or ''}}"/>
+		<input id="menuIds" name="menuIds" type="hidden" value=""/>
+		
+	</form>
+
+</body>
+</html>

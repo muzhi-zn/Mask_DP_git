@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:17 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/pptForceOpeCompReqResult_struct.xsd"/>
+  <xsd:complexType name="pptForceOpeCompReqResult">
+    <xsd:complexContent>
+      <xsd:restriction base="tns:pptForceOpeCompReqResult_struct">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strResult" type="tns:pptRetCode"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strOpeCompLot" type="tns:pptOpeCompLotSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="siInfo" type="corba:CORBA.Any"/>
+        </xsd:sequence>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

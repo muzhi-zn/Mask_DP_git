@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Info Tree Maintain</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <link rel="stylesheet" type="text/css" href= "{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src= "{{ static ('/layui/layui.js') }}"></script>
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-lynch',
+                radioClass: 'iradio_square-lynch',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <style type="text/css">
+
+    #footer{
+        height: 120px;
+        background:oldlace ;
+        width: 50%;
+    }
+    .red {
+        color:red;
+        font-size: x-large;
+    }
+    .black {
+        color:black;
+        font-size: large;
+
+    }
+　　</style>
+
+    <link href="{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.js') }}" type="text/javascript">
+    </script>
+    <script>
+        $(document).ready(function () {
+            //zTree初始化
+            get_customer()
+            $(function () {
+                tree_view();
+            });
+
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+
+            //表格初始化
+            $('#table').bootstrapTable({
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                showSearch: false,
+                //显示刷新按钮
+                showRefresh: true,
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                {#showPaginationSwitch: true,#}
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/maintain/data_in/list/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    //alert(searchParam.pageNo)
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                    csrfmiddlewaretoken = token;
+                    return searchParam;
+                },
+                data: {csrfmiddlewaretoken: token},
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right",//pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press",//手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        deleteAll(row.id);
+                    }
+                },
+
+                columns: [{
+                    checkbox: true
+                },  {
+                    field: 'temp_name',
+                    title: 'File',
+                }, {
+                    field: 'file_size',
+                    title: 'File size',
+                }, {
+                    field: 'md5sum',
+                    title: 'MD5SUM',
+                }, {
+                    field: 'status',
+                    title: 'Status',
+                }, {
+                    field: 'start_time',
+                    title: 'Start Time',
+                }, {
+                    field: 'end_time',
+                    title: 'End Time',
+                }, {
+                    field: 'md5_pass',
+                    title: 'MD5SUM Pass',
+                }, {
+                    field: 'operate',
+                    title: 'Operation',
+                    align: 'center',
+                    events: {
+                        'click .view': function (e, value, row, index) {
+                            jp.openViewDialog('View', '/maintain/data_in/view/?id=' + row.id, '600px', '500px');
+                        },
+                        'click .mdt': function (e, value, row, index) {
+                            jp.openViewDialog('MDT', '/maintain/data_in/mdt/list/?id=' + row.id, '850px', '650px');
+                        },
+                    },
+                    formatter: function operateFormatter(value, row, index) {
+                        if ((row.cs_command === 'MDT') && (row.value === 'Y')) {
+                            return [
+                                {% if '/maintain/data_in/view/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                    '<a href="#" class="view" title="View" ><i class="fa fa-eye"></i> </a>',
+                                {% endif %}
+                                '&nbsp;',
+                                {% if '/maintain/data_in/mdt/list/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                    '<a href="#" class="mdt"  title="MDT"><i class="fa fa-users"></i> </a>',
+                                {% endif %}
+                            ].join('');
+                        } else {
+                            return [
+                                {% if '/maintain/data_in/view/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                    '<a href="#" class="view" title="View" ><i class="fa fa-eye"></i> </a>',
+                                {% endif %}
+                            ].join('');
+                        }
+                    }
+                }]
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) {//如果是移动端
+                $('#table').bootstrapTable("toggleView");
+            }
+
+            $('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table', function () {
+                {#$('#remove').prop('disabled', !$('#table').bootstrapTable('getSelections').length);#}
+                {#$('#edit').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);#}
+            });
+
+
+
+            $("#btnImport").click(function () {
+                jp.open({
+                    type: 2,
+                    area: [500, 200],
+                    auto: true,
+                    title: "导入数据",
+                    content: "/ani/a/tag/importExcel",
+                    btn: ['下载模板', '确定', '关闭'],
+
+                    btn1: function (index, layero) {
+                        jp.downloadFile('/ani/a/sys/user/import/template');
+                    },
+                    btn2: function (index, layero) {
+                        var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        iframeWin.contentWindow.importExcel('/ani/a/sys/user/import', function (data) {
+                            if (data.success) {
+                                jp.success(data.msg);
+                                refresh();
+                            } else {
+                                jp.error(data.msg);
+                            }
+                            jp.close(index);
+                        });//调用保存事件
+                        return false;
+                    },
+
+                    btn3: function (index) {
+                        //  jp.close(index);
+                    }
+
+                });
+            });
+
+            $("#submit").click("click", function () {// 绑定查询按扭
+                //$('#table').bootstrapTable('refresh');
+                $('#table').bootstrapTable('refresh');
+                $('#s_customer').val('');
+                $('#s_product_name').val('');
+                $('#s_date').val('');
+                $('#li_1').css('display', 'none');
+                $('#li_2').css('display', 'none');
+                $('#li_3').css('display', 'none');
+                $('#pass').prop("disabled", true);
+                $('#cancel_pass').prop("disabled", true);
+                $('#export').prop("disabled", true);
+                $('#version').prop("disabled", true);
+                refresh();
+                tree_view();
+                });
+
+            $("#reset").click("click", function () {// 绑定查询按扭
+                {#$("#ip").val("");#}
+                {#$("#ip_type").val("");#}
+                $('#table').bootstrapTable('refresh');
+            });
+
+            $('#beginInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+
+            $('#endInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+
+        });
+        function getIdSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        function getSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row
+            });
+        }
+        function get_customer() {
+            $.ajax({
+                url: '/maintain/data_in/get_customer/',
+                method: 'post',
+                async: false,
+                datatype: 'json',
+                success: function (data) {
+                    console.log('custcode1')
+                    if (data.success) {
+                        console.log('custcode2')
+                        console.log(data.data)
+                        for (var i = 0; i < data.data.length; i++) {
+                            $("#customer").append("<option value='" + data.data[i] + "'>" + data.data[i] + "</option>");
+                        }
+                    }
+
+                }
+            })
+        }
+        function tree_view() {
+//            $.getJSON("/infotree/released/tree_view_json/", {'tree_type': $('#tree_type').val()}, function (data) {
+            $.getJSON("/maintain/data_in/tree_view_json/", {'start_date': $('#start_date').val(), 'end_date': $('#end_date').val(),'customer': $('#customer').val(),'product_name': $('#product_name').val()}, function (data) {
+                $('#jstree').treeview({
+                    data: data,
+                    levels: 2,
+                    onNodeSelected: function (event, treeNode) {
+
+                        if (treeNode.level == 1) {
+                            $('#li_1').css('display', 'inline');
+                            $('#a_1').text(treeNode.name);
+
+                            $('#li_2').css('display', 'none');
+                            $('#li_3').css('display', 'none');
+                        }
+
+                        if (treeNode.level == 2) {
+                            $('#li_1').css('display', 'inline');
+                            $('#li_2').css('display', 'inline');
+                            $('#a_1').text(treeNode.tree_info_2[0]);
+                            $('#a_2').text(treeNode.name);
+
+                            $('#li_3').css('display', 'none');
+                        }
+
+                        if (treeNode.level == 3) {
+                            $('#li_1').css('display', 'inline');
+                            $('#li_2').css('display', 'inline');
+                            $('#li_3').css('display', 'inline');
+                            $('#a_1').text(treeNode.tree_info_3[0]);
+                            $('#a_2').text(treeNode.tree_info_3[1]);
+                            $('#a_3').text(treeNode.name);
+
+                        }
+
+                        if (treeNode.level == 3) {
+                            $("#s_customer").val(treeNode.tree_info_3[0]);
+                            $("#s_product_name").val(treeNode.tree_info_3[1]);
+                            $("#s_date").val(treeNode.name);
+
+
+                            $('#pass').prop("disabled", false);
+                            $('#cancel_pass').prop("disabled", false);
+                            $('#export').prop("disabled", false);
+                            $('#version').prop("disabled", false);
+                        } else {
+                            $("#s_customer").val('');
+                            $("#s_product_name").val('');
+                            $("#s_date").val('');
+
+                            $('#pass').prop("disabled", true);
+                            $('#cancel_pass').prop("disabled", true);
+                            $('#export').prop("disabled", true);
+                            $('#version').prop("disabled", true);
+                        }
+                        $('#table').bootstrapTable('refresh');
+                    },
+                });
+            });
+        }
+
+        function getIdSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        function refresh() {
+            $('#table').bootstrapTable('refresh');
+        }
+
+        function pass(ids) {
+            const data = new Array();
+            data.push($('#s_customer').val());
+            data.push($('#s_product_name').val());
+            data.push($('#s_date').val());
+
+            console.log(data);
+
+
+            if (!ids) {
+                ids = getIdSelections();
+            }
+            jp.confirm('Are you sure to pass ?', function () {
+                jp.loading();
+                jp.get("/maintain/data_in/pass/?ids=" + ids, function (data) {
+                    if (data.success) {
+                        $('#table').bootstrapTable('refresh');
+                        jp.success(data.msg);
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            })
+        }
+        function cancel_pass(ids) {
+            const data = new Array();
+            data.push($('#s_customer').val());
+            data.push($('#s_product_name').val());
+            data.push($('#s_date').val());
+
+            console.log(data);
+
+
+            if (!ids) {
+                ids = getIdSelections();
+            }
+            jp.confirm('Are you sure to cancel pass ?', function () {
+                jp.loading();
+                jp.get("/maintain/data_in/cancel_pass/?ids=" + ids, function (data) {
+                    if (data.success) {
+                        $('#table').bootstrapTable('refresh');
+                        jp.success(data.msg);
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            })
+        }
+        function maintain_export() {
+            location.href = '/maintain/data_in/export/?data=' + $('#searchForm').serialize();
+        }
+
+
+
+        function reset() {
+            $('#s_customer').val('');
+            $('#s_product_name').val('');
+            $('#s_date').val('');
+            $('#li_1').css('display', 'none');
+            $('#li_2').css('display', 'none');
+            $('#li_3').css('display', 'none');
+            $('#copy').prop("disabled", true);
+            $('#pass').prop("disabled", true);
+            $('#cancel_pass').prop("disabled", true);
+            $('#export').prop("disabled", true);
+            $('#version').prop("disabled", true);
+            refresh();
+            tree_view();
+        }
+
+        function version() {
+            console.log($('#s_customer').val());
+            jp.openTab('/maintain/data_in/release_version/list/?customer=' + $('#s_customer').val() +
+                '&product_name=' + $('#s_product_name').val() +
+                '&date=' + $('#s_date').val(), 'Release Version', false);
+        }
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+
+            laydate.render({
+                elem: '#start_date',
+                type: 'datetime',
+                range: false,
+                format: 'yyyyMMdd'
+
+            });
+            laydate.render({
+                elem: '#end_date',
+                type: 'datetime',
+                range: false,
+                format: 'yyyyMMdd'
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        // Window load event used just in case window height is dependant upon images
+        $(window).bind("load", function() {
+        var footerHeight = 0,
+        footerTop = 0,
+        $footer = $("#footer");
+        positionFooter();
+        //定义positionFooter function
+        function positionFooter() {
+        //取到div#footer高度
+        footerHeight = $footer.height();
+        //div#footer离屏幕顶部的距离
+        footerTop = ($(window).scrollTop()+$(window).height()-footerHeight)+"px";
+        /* DEBUGGING STUFF
+        console.log("Document height: ", $(document.body).height());
+        console.log("Window height: ", $(window).height());
+        console.log("Window scroll: ", $(window).scrollTop());
+        console.log("Footer height: ", footerHeight);
+        console.log("Footer top: ", footerTop);
+        console.log("-----------")
+        */
+        //如果页面内容高度小于屏幕高度，div#footer将绝对定位到屏幕底部，否则div#footer保留它的正常静态定位
+        if ( ($(document.body).height()+footerHeight) < $(window).height()) {
+        $footer.css({
+        position: "absolute"
+        }).stop().animate({
+        top: footerTop
+        });
+        } else {
+        $footer.css({
+        position: "static"
+        });
+        }
+        }
+        $(window).scroll(positionFooter).resize(positionFooter);
+        });
+    </script>
+</head>
+
+<body id="" class="" style="">
+<form id="inputForm"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"></form>
+<div class="wrapper wrapper-content">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Customer Data In</h3>
+        </div>
+        <div class="panel-body">
+            <div class="col-sm-1 col-md-1">
+                <label class="label-item single-overflow pull-left" title="Tipno：">Customer：</label>
+                <select id="customer" name="customer" class="form-control">
+                    <option></option>
+
+                </select>
+            </div>
+             <div class="col-sm-1 col-md-1">
+                <label class="label-item single-overflow pull-left" title="Tipno：">Product：</label>
+                <input id="product_name" name="product_name" class="form-control required" type="text"
+                       value="{{''}}"
+                       maxlength="50"/>
+                </select>
+            </div>
+            <div class="col-sm-2 col-md-2">
+                <label class="label-item single-overflow pull-left" title="Tipno：">Start Date：</label>
+                <input id="start_date" name="start_date" class=" form-control input-sm" type="text"
+                       value="" maxlength="50"/>
+            </div>
+            <div class="col-sm-3 col-md-2">
+                <label class="label-item single-overflow pull-left" title="Tipno：">End Date：</label>
+                <input id="end_date" name="end_date" class=" form-control input-sm" type="text"
+                       value="" maxlength="50"/>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div style="margin-top:26px">
+                    <a id="submit" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                            class="fa fa-search"></i> Search</a>
+
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-4 col-md-2">
+
+                    <br>
+                    <div id="jstree"></div>
+                </div>
+                <div class="col-sm-8 col-md-9 animated fadeInRight">
+                    <ol class="breadcrumb">
+                        <li id="li_1" name="li_1" style="display: none"><a id="a_1" name="a_1"></a></li>
+                        <li id="li_2" name="li_2" style="display: none"><a id="a_2" name="a_2"></a></li>
+                        <li id="li_3" name="li_3" style="display: none"><a id="a_3" name="a_3"></a></li>
+                    </ol>
+                    <!-- 搜索框-->
+                    <div id="search-collapse" class="collapse">
+                        <div class="accordion-inner">
+                            <form id="searchForm" class="form form-horizontal well clearfix">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                <input type="hidden" id="s_customer" name="s_customer">
+                                <input type="hidden" id="s_product_name" name="s_product_name">
+                                <input type="hidden" id="s_date" name="s_date">
+                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                    <div style="margin-top:26px">
+                                        <a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-search"></i> Query</a>
+                                        <a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-refresh"></i> Reset</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!-- 搜索框结束 -->
+
+                    <!-- 工具栏 -->
+                    <div id="toolbar">
+                        <button id="pass" class="btn btn-danger" onclick="pass()" disabled>
+                            <i class="glyphicon glyphicon-remove"></i> Pass
+                        </button>
+                        <button id="cancel_pass" class="btn btn-danger" onclick="cancel_pass()" disabled>
+                            <i class="glyphicon glyphicon-remove"></i> Pass Cancel
+                        </button>
+                        <button id="export" class="btn btn-info" onclick="maintain_export()" disabled>
+                            <i class="glyphicon glyphicon-download"></i> Export
+                        </button>
+                        <button id="version" class="btn btn-warning" onclick="version()" disabled>
+                            <i class="glyphicon glyphicon-calendar"></i> Version
+                        </button>
+                        {#                        <button id="123" class="btn btn-info" onclick="testrr()">#}
+                        {#                            <i class="glyphicon glyphicon-download"></i> Export#}
+                        {#                        </button>#}
+                    </div><!-- 工具栏结束 -->
+                    <!-- 表格 -->
+                    <table id="table"
+                           data-toolbar="#toolbar">
+                    </table>
+
+                    <!-- context menu -->
+                    <ul id="context-menu" class="dropdown-menu">
+                        <li data-item="edit"><a>编辑</a></li>
+                        <li data-item="delete"><a>删除</a></li>
+                        <li data-item="cancel"><a>取消</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div id="footer">
+                <p><span class="black">A1: </span><span class="black"> Scaning </span><span class="black"> --> </span><span class="black"> Download</span>
+                <p><span class="black">A2: </span><span class="black"> Regristeration </span><span class="black"> --> </span><span class="black"> Compare Infor</span><span class="black"> --> </span><span class="black"> Write Into Database</span>
+                <p><span class="black">A3: </span><span class="black"> Decrypt </span><span class="black"> --> </span><span class="black"> Uncompress</span><span class="black"> --> </span><span class="black"> Copy</span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

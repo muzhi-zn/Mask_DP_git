@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Exptool Change</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("{{ default_exptool }}")
+            {#select_machine()#}
+            gen_machine_options()
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+
+        });
+
+        function gen_machine_options(){
+            $.ajax({
+                url:'/catalog/tool_status_detail/gen_exptool/',
+                method: 'post',
+                data: {
+                    'exp_tool': $("#default_exp_tool").val()
+                },
+                dataType: 'json',
+                async: false,
+                success: function(data){
+                    for(let i = 0 ; i < data.exptool_list.length; i++){
+                        if(data.exptool_list[i] == '{{ default_exptool }}'){
+                            $("#machine_id").append('<option value="'+data.exptool_list[i]+'" selected>'+data.exptool_list[i]+'</option>')
+                        }else{
+                            $("#machine_id").append('<option value="'+data.exptool_list[i]+'">'+data.exptool_list[i]+'</option>')
+                        }
+                    }
+                }
+            })
+        }
+
+        function select_machine(){
+            let option = $("#machine_id option:selected");
+            $("#exp_tool").val(option.text());
+        }
+
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/catalog/catalog/change_exptool/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        jp.getParent().refresh();
+                        console.log(parent.parent.parent.layer.getFrameIndex(window.name))
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        var dialogIndex2 = dialogIndex - 1; // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        parent.layer.close(dialogIndex2);
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" action="/catalog/catalog/change_exptool/" method="post"
+      autocomplete="off">
+    <input id="id" name="id" type="hidden" value="{{ id }}"/>
+    <input id="default_exp_tool" name="default_exp_tool" type="hidden" value="{{ default_exptool }}"/>
+    <input id="token" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">MES Account : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="mes_user" name="mes_user" maxlength="200" class="form-control">
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">MES password : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="mes_pwd" name="mes_pwd" type="password" maxlength="200" class="form-control">
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">EXPTOOL : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="exp_tool" name="exp_tool" type="hidden" maxlength="200" class="form-control"
+                          value="{{ default_exptool }}"/>
+                <select id="machine_id" name="machine_id" class="form-control" onblur="select_machine()">
+                </select>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </tr>
+</form>
+</body>

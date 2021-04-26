@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Machine Manage</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/infotree/template/{{method}}/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        jp.getParent().refresh();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" autocomplete="off">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input id="menuIds" name="menuIds" type="hidden" value=""/>
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            {# id #}
+            <td class="width-15 active">
+                <label class="pull-right">ID : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_id" name="old_id" type="hidden" value="{{ cec.id or ''}}">
+                <input id="id" name="id" class="form-control" type="text"
+                       value="{{ cec.id or '' }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        <tr>
+            {# folder_name #}
+            <td class="width-15 active">
+                <label class="pull-right">Folder Name : </label>
+            </td>
+            <td class="width-35">
+                <input id="folder_name" name="folder_name" class="form-control required" type="text"
+                       value="{{ cec.folder_name or '' }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        <tr>
+            {# cec_name #}
+            <td class="width-15 active">
+                <label class="pull-right">Name : </label>
+            </td>
+            <td class="width-35">
+                <input id="cec_name" name="cec_name" class="form-control required" type="text"
+                       value="{{ cec.cec_name or '' }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        <tr>
+            {# cec_path #}
+            <td class="width-15 active">
+                <label class="pull-right">Path : </label>
+            </td>
+            <td class="width-35">
+                <input id="cec_path" name="cec_path" class="form-control required" type="text"
+                       value="{{ cec.cec_path or '' }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        <tr>
+            {# create_name #}
+            <td class="width-15 active">
+                <label class="pull-right">Create : </label>
+            </td>
+            <td class="width-35">
+                <input id="create_name" name="create_name" class="form-control required" type="text"
+                       value="{{ cec.create_name or '' }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        <tr>
+            {# create_name #}
+            <td class="width-15 active">
+                <label class="pull-right">CEC File Content : </label>
+            </td>
+            <td class="width-35">
+                <textarea id='cec_data' class="form-control" placeholder="{{ cec_data }}" readonly></textarea>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+</body>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Insert Lot</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+    <script type="text/javascript">
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/semi_automatic/lot_record/insert_lot_id/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        console.log(jp.getParent());
+                        jp.getParent().refresh();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.message);
+                    } else {
+                        jp.error(data.message);
+                    }
+                })
+            }
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" action="/semi_automatic/lot_record/insert_lot_id/" method="post"
+      autocomplete="off">
+    <input id="id" type="hidden" name="id" value="{{ id }}">
+    <input id="token" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+{#        <tr>#}
+{#            <td class="width-15 active">#}
+{#                <label class="pull-right">File Path: </label>#}
+{#            </td>#}
+{#            <td class="width-35">#}
+{#                <input id="path" name="path" class="form-control required" type="text" value="" maxlength="200"/>#}
+{#            </td>#}
+{#        </tr>#}
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Lot ID: </label>
+            </td>
+            <td class="width-35">
+                <input id="lot_id" name="lot_id" class="form-control required" type="text" value="" maxlength="200"/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+</body>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:18 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/pptEqpInfoInqResult__160_struct.xsd"/>
+  <xsd:complexType name="pptEqpInfoInqResult__160">
+    <xsd:complexContent>
+      <xsd:restriction base="tns:pptEqpInfoInqResult__160_struct">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strResult" type="tns:pptRetCode"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentBRInfo" type="tns:pptEqpBrInfo__120"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentStatusInfo" type="tns:pptEqpStatusInfo__090"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentPMInfo" type="tns:pptEqpPmInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentChamberInfo" type="tns:pptEqpChamberInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentPortInfo" type="tns:pptEqpPortInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentInprocessingControlJob" type="tns:pptEqpInprocessingControlJobSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentReservedControlJobInfo" type="tns:pptEqpReservedControlJobInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentInprocessingDurableControlJobs" type="tns:objectIdentifierSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentReservedDurableControlJobs" type="tns:objectIdentifierSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentStockerInfo" type="tns:pptEqpStockerInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentUTSInfo" type="tns:pptEqpStockerInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentSLMUTSInfo" type="tns:pptEqpStockerInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="entityInhibitions" type="tns:pptEntityInhibitAttributesSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strEquipmentAdditionalReticleAttribute" type="tns:pptEquipmentAdditionalReticleAttribute"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strEquipmentContainerSeq" type="tns:pptEqpContainerSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="siInfo" type="corba:CORBA.Any"/>
+        </xsd:sequence>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

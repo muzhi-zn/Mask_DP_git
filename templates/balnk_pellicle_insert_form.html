@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Insert Blank&Pellicle</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            {#select_machine()#}
+            gen_machine_options()
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/making/lot/blank_pellicle_insert/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        jp.getParent().refresh();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" action="/making/lot/blank_pellicle_insert/" method="post"
+      autocomplete="off">
+    <input id="token" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">MM UserName : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="mm_username" name="mm_username" type="text" maxlength="200" class="form-control"
+                          value=""/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">MM Password : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="mm_password" name="mm_password" type="password" maxlength="200" class="form-control"
+                          value=""/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">LotType : </label>
+            </td>
+            <td class="width-35">
+                <input id="p" type="radio" name="type" value="p" checked /><label for="p">Production</label>
+                <input id="e" type="radio" name="type" value="e" /><label for="e">Engineer Lot</label>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">LotID : </label>
+            </td>
+            <td class="width-35">
+                <input id="lot_id" name="lot_id" type="text" maxlength="200" class="form-control"
+                       value=""/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Blank Code : </label>
+            </td>
+            <td class="width-35">
+                <input id="blank_code" name="blank_code" type="text" maxlength="200" class="form-control"
+                       value=""/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Pellicle Code : </label>
+            </td>
+            <td class="width-35">
+                <input id="pellicle_code" name="pellicle_code" type="text" maxlength="200" class="form-control"
+                       value=""/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </tr>
+</form>
+</body>

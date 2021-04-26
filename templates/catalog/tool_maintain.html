@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Tool Maintain</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-zh-CN.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-contextmenu.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/tableExport.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-export.js') }}"></script>
+    <script>
+        {# left #}
+        $(document).ready(function () {
+            $('#table').bootstrapTable({
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                showSearch: true,
+                //显示刷新按钮
+                showRefresh: true,
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/catalog/tool_maintain/tool_info/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                    return searchParam;
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right",//pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press",//手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        del(row.id);
+                    }
+                },
+                columns: [{
+                    checkbox: true
+                }, {
+                    field: 'tool_id',
+                    title: 'Belongs to Tool',
+                    align: 'center',
+                },{
+                    field: 'group_name',
+                    title: 'Group Name',
+                    align: 'center',
+                }, {
+                    field: 'exptool',
+                    title: 'Exptool',
+                    align: 'center',
+                },{
+                    field: 'ip',
+                    title: 'IP',
+                    align: 'center',
+                }, {
+                    field: 'operate',
+                    title: 'Operation',
+                    align: 'center',
+                    events: {
+                        'click .edit': function (e, value, row, index) {
+                            jp.openSaveDialog('Edit Tool', '/catalog/tool_maintain/edit/?id=' + row.id, '850px', '500px');
+                        },
+                        'click .del': function (e, value, row, index) {
+                            del(row.id);
+                        },
+                    },
+                    formatter: function operateFormatter(value, row, index) {
+                        return [
+                            {% if '/catalog/tool_maintain/edit/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                '<a href="#" class="edit" title="Edit"><i class="fa fa-edit"></i> </a>',
+                            {% endif %}
+                            '&nbsp;',
+                            {% if '/catalog/tool_maintain/del/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                '<a href="#" class="del" title="Delete"><i class="fa fa-trash"></i> </a>',
+                            {% endif %}
+                        ].join('');
+                    }
+                }]
+
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) {//如果是移动端，默认关闭tab
+                $('#table').bootstrapTable("toggleView");
+            }
+
+            $('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table', function () {
+                $('#remove').prop('disabled', !$('#table').bootstrapTable('getSelections').length);
+                $('#edit, #auth').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);
+            });
+
+            $("#search").click("click", function () {// 绑定查询按扭
+                $('#table').bootstrapTable('refresh');
+            });
+
+            $("#reset").click("click", function () {// 绑定查询按扭
+                $("#s_design_rule").val("");
+                $("#s_layer_name").val("");
+                $('#table').bootstrapTable('refresh');
+            });
+        });
+
+        function getIdSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        function getSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row
+            });
+        }
+
+        function add() {
+            jp.openSaveDialog('Add Tool', '/catalog/tool_maintain/add/', '850px', '500px')
+        }
+
+        function edit(id) {
+            if (!id) {
+                id = getIdSelections();
+            }
+            jp.openSaveDialog('Edit Process Tooling', '/catalog/tool_maintain/edit/?id=' + id, '800px', '500px')
+        }
+
+        function del(ids) {
+            if (!ids) {
+                ids = getIdSelections();
+            }
+            jp.confirm('Are you sure you want to remove ?', function () {
+                jp.loading();
+                jp.get("/catalog/tool_maintain/del/?ids=" + ids, function (data) {
+                    if (data.success) {
+                        $('#table').bootstrapTable('refresh');
+                        jp.success(data.msg);
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            })
+        }
+
+        function refresh() {
+            $('#table').bootstrapTable('refresh');
+        }
+    </script>
+</head>
+<body id="" class="" style="">
+
+<div class="wrapper wrapper-content">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Tool Maintain</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div id="left" class="col-sm-12">
+                    <!-- 搜索 -->
+                    <div id="search-collapse" class="collapse">
+                        <div class="accordion-inner">
+                            <form id="searchForm" class="form form-horizontal well clearfix" method="post">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                <input type="hidden" name="group_id" value="">
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="tool_id">
+                                        Tool ID:</label>
+                                    <input id="tool_id" name="tool_id" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="tool_id">
+                                        Tool Code:</label>
+                                    <input id="tool_code" name="tool_code" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="tool_id">
+                                        Group ID:</label>
+                                    <input id="group_id" name="group_id" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <div style="margin-top:26px">
+                                        <a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-search"></i> Query</a>
+                                        <a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-refresh"></i> Reset</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 工具栏 -->
+                    <div id="toolbar">
+                        <a id="add" class="btn btn-primary" onclick="add()">
+                            <i class="glyphicon glyphicon-plus"></i> Add</a>
+                        <button id="remove" class="btn btn-danger" disabled onclick="del()">
+                            <i class="glyphicon glyphicon-remove"></i> Delete
+                        </button>
+                    </div>
+                    <!-- 工具栏结束 -->
+
+                    <!-- 表格 -->
+                    <table id="table"
+                           data-toolbar="#toolbar"
+                           data-id-field="id">
+                    </table>
+
+                    <!-- context menu -->
+                    <ul id="context-menu" class="dropdown-menu">
+                        <li data-item="edit"><a>编辑</a></li>
+                        <li data-item="delete"><a>删除</a></li>
+                        <li data-item="action1"><a>取消</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

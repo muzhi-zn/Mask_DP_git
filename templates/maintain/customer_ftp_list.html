@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Customer FTP Account List</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-zh-CN.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-contextmenu.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/tableExport.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-export.js') }}"></script>
+    <!--引入bootstrap-datapicker-->
+    <link rel="stylesheet" type="text/css" href="{{ static ('/bootstrap3/css/plugins/datapicker/datepicker3.css') }}">
+    <script type="text/javascript" src="{{ static ('/bootstrap3/js/plugins/datapicker/bootstrap-datepicker.js') }}"></script>
+    <script>
+
+        {# left #}
+        $(document).ready(function () {
+            $('#table').bootstrapTable({
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                showSearch: true,
+                //显示刷新按钮
+                showRefresh: true,
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/maintain/customer_ftp/list/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                    return searchParam;
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right",//pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press",//手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        del(row.id);
+                    }
+                },
+                columns: [{
+                    checkbox: true
+                },  {
+                    field: 'id',
+                    title: 'ID',
+                },{
+                    field: 'customer_code',
+                    title: 'Customer Code',
+                }, {
+                    field: 'ftp_ip',
+                    title: 'IP Address',
+                }, {
+                    field: 'account',
+                    title: 'Account',
+                }, {
+                    field: 'password',
+                    title: 'Password',
+                }, {
+                    field: 'ftp_type',
+                    title: 'Type',
+                }, {
+                    field: 'ftp_port',
+                    title: 'Port',
+                }, {
+                    field: 'ftp_path',
+                    title: 'Path',
+                }, {
+                    field: 'product',
+                    title: 'Product',
+                }, {
+
+                    field: 'enable',
+                    title: 'Enable',
+                }, {
+                    field: 'operate',
+                    title: 'Operation',
+                    align: 'center',
+                    events: {
+                        'click .view': function (e, value, row, index) {
+                            jp.openViewDialog('View process tooling', '/maintain/customer_ftp/view/?id=' + row.id, '850px', '500px');
+                        },
+                        'click .edit': function (e, value, row, index) {
+                            jp.openSaveDialog('Edit process tooling', '/maintain/customer_ftp/edit/?id=' + row.id, '850px', '500px');
+                        },
+                        'click .del': function (e, value, row, index) {
+                            del(row.id);
+                        },
+                    },
+                    formatter: function operateFormatter(value, row, index) {
+                        return [
+                            {% if '/maintain/customer_ftp/view/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                '<a href="#" class="view" title="View" ><i class="fa fa-eye"></i> </a>',
+                            {% endif %}
+                            '&nbsp;',
+                            {% if '/maintain/customer_ftp/edit/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                '<a href="#" class="edit" title="Edit"><i class="fa fa-edit"></i> </a>',
+                            {% endif %}
+                            '&nbsp;',
+                            {% if '/maintain/customer_ftp/del/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                '<a href="#" class="del" title="Delete"><i class="fa fa-trash"></i> </a>',
+                            {% endif %}
+                        ].join('');
+                    }
+                }]
+
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) {//如果是移动端，默认关闭tab
+                $('#table').bootstrapTable("toggleView");
+            }
+
+            $('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table', function () {
+                $('#remove').prop('disabled', !$('#table').bootstrapTable('getSelections').length);
+                $('#edit, #auth').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);
+            });
+
+            $("#search").click("click", function () {// 绑定查询按扭
+                $('#table').bootstrapTable('refresh');
+            });
+
+            $("#reset").click("click", function () {// 绑定查询按扭
+                $("#s_design_rule").val("");
+                $("#s_layer_name").val("");
+                $('#table').bootstrapTable('refresh');
+            });
+        });
+
+        function getIdSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        function getSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row
+            });
+        }
+
+        function add() {
+            jp.openSaveDialog('Add Customer FTP Account', '/maintain/customer_ftp/add/', '850px', '500px')
+        }
+
+        function edit(id) {
+            if (!id) {
+                id = getIdSelections();
+            }
+            jp.openSaveDialog('Edit Customer FTP Account', '/maintain/customer_ftp/edit/?id=' + id, '800px', '500px')
+        }
+
+        function del(ids) {
+            if (!ids) {
+                ids = getIdSelections();
+            }
+            jp.confirm('Are you sure you want to remove ?', function () {
+                jp.loading();
+                jp.get("/maintain/customer_ftp/del/?ids=" + ids, function (data) {
+                    if (data.success) {
+                        $('#table').bootstrapTable('refresh');
+                        jp.success(data.msg);
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            })
+        }
+
+        function refresh() {
+            $('#table').bootstrapTable('refresh');
+        }
+        function CmsNewsList() {
+
+
+
+}
+
+
+
+
+
+CmsNewsList.prototype.initDataPicker = function(){
+
+    var startPicker = $('#start-picker');
+
+    var endPicker = $('#end-picker');
+
+    var todayDate = new Date();
+
+    var todayStr = todayDate.getFullYear() + '-' + (todayDate.getMonth()+1) + '-' + todayDate.getDate();
+
+    var options = {
+
+        'showButtonPanel': true,
+
+        'format': 'yy-mm-dd',
+
+        'startDate': '',
+
+        'endDate': todayStr,
+
+        'language': 'zh-CN',
+
+        'todayBtn': 'linked',
+
+        'todayHighlight':true,
+
+        'clearBtn': true,
+
+        'autoclose':true,
+
+    };
+
+
+
+    startPicker.datepicker(options);
+
+    endPicker.datepicker(options);
+
+};
+
+
+
+CmsNewsList.prototype.run = function () {
+
+    this.initDataPicker();
+
+};
+
+
+
+$(function () {
+
+   var newsList = new CmsNewsList();
+
+   newsList.run();
+
+});
+    </script>
+</head>
+<body id="" class="" style="">
+
+<div class="wrapper wrapper-content">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Customer FTP Account List</h3>
+        </div>
+
+
+
+        <div class="panel-body">
+            <div class="row">
+                <div id="left" class="col-sm-12">
+                    <!-- 搜索 -->
+                    <div id="search-collapse" class="collapse">
+                        <div class="accordion-inner">
+                            <form id="searchForm" class="form form-horizontal well clearfix" method="post">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="Design Rule:">
+                                        Sheet Name:</label>
+                                    <input id="s_sheet_name" name="s_sheet_name" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="Layer Name:">
+                                        Customer Code:</label>
+                                    <input id="customer_code" name="customer_code" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                    <label class="label-item single-overflow pull-left" title="Layer Name:">
+                                        IP Address:</label>
+                                    <input id="ftp_ip" name="ftp_ip" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                    <label class="label-item single-overflow pull-left" title="Layer Name:">
+                                        Account:</label>
+                                    <input id="account" name="account" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                    <label class="label-item single-overflow pull-left" title="Layer Name:">
+                                        Password:</label>
+                                    <input id="password" name="password" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                    <label class="label-item single-overflow pull-left" title="Layer Name:">
+                                        FTP Type:</label>
+                                    <input id="ftp_type" name="ftp_type" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                    <label class="label-item single-overflow pull-left" title="Layer Name:">
+                                        FTP Port:</label>
+                                    <input id="ftp_port" name="ftp_port" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                    <label class="label-item single-overflow pull-left" title="Layer Name:">
+                                        FTP Path:</label>
+                                    <input id="ftp_path" name="ftp_path" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                    <label class="label-item single-overflow pull-left" title="Layer Name:">
+                                        Product:</label>
+                                    <input id="product" name="product" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                    <label class="label-item single-overflow pull-left" title="Layer Name:">
+                                        Enable:</label>
+                                    <input id="enable" name="enable" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                    <div style="margin-top:26px">
+                                        <a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-search"></i> Query</a>
+                                        <a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-refresh"></i> Reset</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 工具栏 -->
+                    <div id="toolbar">
+                        <a id="add" class="btn btn-primary" onclick="add()">
+                            <i class="glyphicon glyphicon-plus"></i> Add</a>
+                        <button id="remove" class="btn btn-danger" disabled onclick="del()">
+                            <i class="glyphicon glyphicon-remove"></i> Delete
+                        </button>
+                    </div>
+                    <!lo-- 工具栏结束 -->
+
+                    <!-- 表格 -->
+                    <table id="table"
+                           data-toolbar="#toolbar"
+                           data-id-field="id">
+                    </table>
+
+                    <!-- context menu -->
+                    <ul id="context-menu" class="dropdown-menu">
+                        <li data-item="edit"><a>编辑</a></li>
+                        <li data-item="delete"><a>删除</a></li>
+                        <li data-item="action1"><a>取消</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

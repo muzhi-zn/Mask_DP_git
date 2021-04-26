@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+    <head>
+        <title>Check List</title>
+        {% include 'base.html' %}
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+        <meta http-equiv="Expires" content="0">
+        <meta http-equiv="Cache-Control" content="no-cache">
+        <meta http-equiv="Cache-Control" content="no-store">
+        <meta name="viewport"
+              content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+        <meta name="decorator" content="ani"/>
+        <link href="{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.css') }}" rel="stylesheet"
+              type="text/css"/>
+        <script src="{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.js') }}"
+                type="text/javascript"></script>
+        <script type="text/javascript">
+            $(function () {
+
+                $('#table').bootstrapTable({
+                    //请求方法
+                    method: 'post',
+                    //类型json
+                    dataType: "json",
+                    contentType: "application/x-www-form-urlencoded",
+                    //是否显示行间隔色
+                    striped: true,
+                    //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                    cache: false,
+                    //显示检索按钮
+                    showSearch: false,
+                    //显示刷新按钮
+                    showRefresh: true,
+                    //显示切换手机试图按钮
+                    showToggle: false,
+                    //显示 内容列下拉框
+                    showColumns: true,
+                    //显示切换分页按钮
+                    showPaginationSwitch: false,
+                    //是否显示分页（*）
+                    pagination: true,
+                    //排序方式
+                    sortOrder: "asc",
+                    //初始化加载第一页，默认第一页
+                    pageNumber: 1,
+                    //每页的记录行数（*）
+                    pageSize: 10,
+                    //可供选择的每页的行数（*）
+                    pageList: [10, 25, 50, 100],
+                    //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                    url: "/tooling_form/check_list/",
+                    //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                    //queryParamsType:'',
+                    ////查询参数,每次调用是会带上这个参数，可自定义
+                    queryParams: function (params) {
+                        var searchParam = $("#searchForm").serializeJSON();
+                        searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                        searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                        searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+
+                        return searchParam;
+                    },
+                    onShowSearch: function () {
+                        $("#search-collapse").slideToggle();
+                    },
+                    //分页方式：client客户端分页，server服务端分页（*）
+                    sidePagination: "server",
+                    contextMenuTrigger: "right",//pc端 按右键弹出菜单
+                    contextMenuTriggerMobile: "press",//手机端 弹出菜单，click：单击， press：长按。
+                    contextMenu: '#context-menu',
+                    columns: [{
+                        checkbox: true
+                    }, {
+                        field: 'tip_no',
+                        title: 'Tip_no',
+                        sortable: true
+                    }, {
+                        field: 'mask_name',
+                        title: 'Mask_name',
+                        sortable: true,
+
+                    }, {
+                        field: 'sheet_name',
+                        title: 'Sheet_name',
+                        sortable: true
+                    }, {
+                        field: 'check_code',
+                        title: 'Check_code',
+                        sortable: true
+                    }, {
+                        field: 'description',
+                        title: 'Description',
+                        sortable: true
+                    }, {
+                        field: 'status',
+                        title: 'Status',
+                        sortable: true,
+                        formatter: function operateFormatter(value, row, index) {
+
+                            if (row.sheet_name) {
+
+                                if (value == 0) {
+
+                                    return 'Not synchronized';
+                                } else if (value == 1) {
+
+                                    return 'synchronization complete';
+                                }
+                                else if (value == 2) {
+
+                                    return 'Synching';
+                                }
+                            }
+                            else {
+                                if (value == 0) {
+
+                                    return 'No synchronization required';
+                                }
+                            }
+
+                        }
+                    },
+
+                        {
+                            field: 'operate',
+                            title: 'Operation',
+                            align: 'center',
+                            events: {
+                                'click .view': function (e, value, row) {
+                                    jp.openTab('/tooling_form/checkList/view/?mask_name=' + row.mask_name + '&sheet_name=' + row.sheet_name + '&tip_no=' + row.tip_no, 'Mask Data Check Result', false);
+                                },
+                                'click .delete': function (e, value, row) {
+                                    jp.confirm('Do you want to delete the data in the sheet corresponding to the ' + row.mask_name +'?', function () {
+
+                                        jp.loading();
+                                        jp.get("/tooling_form/checkList/del/?id=" + row.id, function (data) {
+debugger
+                                            if (data.success) {
+                                                jp.success(data.msg)
+                                                refresh();
+                                            } else {
+
+                                                jp.error(data.msg);
+                                            }
+                                        })
+                                    })
+                                },
+                            },
+                            formatter: function operateFormatter(value, row, index) {
+
+                                if (row.sheet_name != null &&  row.sheet_name != ""){
+
+                                    return [
+                                        '<a href="#" class="view" title="View"><i class="fa fa-eye"></i> </a>',
+                                        '<a href="#" class="delete" title="delete"><i class="fa fa-trash"></i> </a>',
+                                    ].join('');
+                                } else {
+
+                                    return [
+                                        '<a href="#" class="delete" title="delete"><i class="fa fa-trash"></i> </a>',
+                                    ].join('');
+                                }
+
+                            }
+                        }]
+                });
+
+
+            });
+
+
+            function refresh() {
+
+                $('#table').bootstrapTable('refresh');
+            }
+        </script>
+    </head>
+    <body>
+        <div class="wrapper wrapper-content">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Check List</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 ">
+                            <form id="searchForm">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                <input type="hidden" name="tip_no" value="{{ tip_no or '' }}">
+                            </form>
+                            <table id="table"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

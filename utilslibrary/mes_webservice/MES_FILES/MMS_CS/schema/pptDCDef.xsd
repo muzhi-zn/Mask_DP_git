@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:17 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/pptDCDef_struct.xsd"/>
+  <xsd:complexType name="pptDCDef">
+    <xsd:complexContent>
+      <xsd:restriction base="tns:pptDCDef_struct">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="1" name="dataCollectionDefinitionID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="description" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="dataCollectionType" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strDCItem" type="tns:pptDCItemSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="calculationRequiredFlag" type="xsd:boolean"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="specCheckRequiredFlag" type="xsd:boolean"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="dataCollectionSpecificationID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="dcSpecDescription" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strDCSpec" type="tns:pptDCSpecSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="previousDataCollectionDefinitionID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="previousOperationID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="previousOperationNumber" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="siInfo" type="corba:CORBA.Any"/>
+        </xsd:sequence>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

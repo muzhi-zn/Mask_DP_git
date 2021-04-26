@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Machine Manage</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+            jp.loading();
+            jp.post("/system/sign/{{method}}/", $('#inputForm').serialize(), function (data) {
+                if (data.success) {
+                    jp.getParent().refresh();
+                    var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                    parent.layer.close(dialogIndex);
+                    jp.success(data.msg)
+                } else {
+                    jp.error(data.msg);
+                }
+            })
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" method="post" autocomplete="off">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            {# id #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>ID : </label>
+            </td>
+            <td class="width-35">
+                <input id="id" name="id" class="form-control required" type="text"
+                       value="{{ sign.id or '' }}" maxlength="50" readonly/>
+            </td>
+            {# name #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Name : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_name" name="old_name" type="hidden" value="{{ sign.name or ''}}">
+                <input id="name" name="name" class="form-control required" type="text"
+                       value="{{ sign.name or '' }}" maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            {# enable #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Enable : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_enable" name="old_enable" type="hidden" value="{{ sign.enable or ''}}">
+                <input id="enable" name="enable" class="form-control required" type="text"
+                       value="{{ sign.enable or '' }}" maxlength="50"/>
+            </td>
+            {# description #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Description : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_description" name="old_description" type="hidden" value="{{ sign.description or ''}}">
+                <input id="description" name="description" class="form-control required" type="text"
+                       value="{{ sign.description or '' }}" maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            {# call_back_api #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Callback_api : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_call_back_api" name="old_call_back_api" type="hidden"
+                       value="{{ sign.call_back_api or ''}}">
+                <input id="call_back_api" name="call_back_api" class="form-control required" type="text"
+                       value="{{ sign.call_back_api or '' }}" maxlength="50"/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+</body>

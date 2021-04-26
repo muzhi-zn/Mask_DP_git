@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:18 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/pptEqpPortStatus.xsd"/>
+  <xsd:complexType name="pptEqpPortStatusSequence">
+    <xsd:sequence>
+      <xsd:element maxOccurs="unbounded" minOccurs="0" name="item" type="tns:pptEqpPortStatus"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>

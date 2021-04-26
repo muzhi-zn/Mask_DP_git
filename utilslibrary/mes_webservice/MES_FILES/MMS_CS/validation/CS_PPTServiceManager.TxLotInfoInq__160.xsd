@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptsm.idl
+    On Monday, October 26, 2020 2:10:28 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-WSDL/1.0/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:include schemaLocation="../../corba/corba.xsd"/>
+  <xsd:import namespace="http://www.omg.org/IDL-Mapped/" schemaLocation="../validation/CS_PPTServiceManager.TxLotInfoInq__160Request.xsd"/>
+  <xsd:element name="TxLotInfoInq__160">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="requestUserID" type="tns:pptUser"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotID" type="tns:objectIdentifierSequence"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotBasicInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotControlUseInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotFlowBatchInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotNoteFlagInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotOperationInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotOrderInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotControlJobInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotProductInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotRecipeInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotLocationInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotWipOperationInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotWaferAttributesFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotListInCassetteInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="waferMapInCassetteInfoFlag" type="xsd:boolean"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="lotBackupInfoFlag" type="xsd:boolean"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

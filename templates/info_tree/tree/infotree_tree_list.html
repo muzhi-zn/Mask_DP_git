@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Role Manage</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-zh-CN.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-contextmenu.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/tableExport.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-export.js') }}"></script>
+    <script>
+
+        {# left #}
+        $(document).ready(function () {
+            $('#table').bootstrapTable({
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                showSearch: false,
+                //显示刷新按钮
+                showRefresh: true,
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/infotree/tree/list/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                    return searchParam;
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right",//pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press",//手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        del(row.id);
+
+                    }
+                },
+                columns: [{
+                    field: 'name',
+                    title: 'Name',
+                }, {
+                    field: 'description',
+                    title: 'Description',
+                }, {
+                    field: 'operate',
+                    title: 'Operation',
+                    align: 'center',
+                    events: {
+                        'click .view': function (e, value, row, index) {
+                            view(row.id);
+                        },
+                        'click .edit': function (e, value, row, index) {
+                            edit(row.id);
+                        },
+                        'click .del': function (e, value, row, index) {
+                            del(row.id);
+                        },
+                        'click .right': function (e, value, row, index) {
+
+                            if (row.limit_type === 0) {
+                                {#jp.error('mdt = N , Not use cad layer');#}
+
+                            } else if (($("#right").css('display')) == 'none') {
+                                $("#left").attr("class", "col-sm-6");
+                                setTimeout(function () {
+                                    $("#right").fadeIn(500);
+                                }, 500)
+                                $("#roleId").val(row.id);
+                                $("#roleLabel").text(row.name);
+                                hw_col(row.limit_type);
+                                $('#userTable').bootstrapTable("refresh", {query: {id: row.id}});
+                            } else if ($("#roleId").val() == row.id) {
+                                mdt_check()
+                            } else {
+                                $("#roleId").val(row.id);
+                                $("#roleLabel").text(row.name);
+                                hw_col(row.limit_type);
+                                $('#userTable').bootstrapTable("refresh", {query: {id: row.id}});
+                            }
+                        }
+                    },
+                    formatter: function operateFormatter(value, row, index) {
+                        return [
+                            {% if '/infotree/value_range/view/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                '<a href="#" class="view" title="View" ><i class="fa fa-eye"></i> </a>',
+                            {% endif %}
+                            '&nbsp;',
+                            {% if '/infotree/value_range/edit/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                '<a href="#" class="edit" title="Edit"><i class="fa fa-edit"></i> </a>',
+                            {% endif %}
+                            '&nbsp;',
+                            {% if '/infotree/value_range/del/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                '<a href="#" class="del" title="Delete"><i class="fa fa-trash"></i> </a>',
+                            {% endif %}
+                            '&nbsp;',
+                            '<a href="#" class="right"  title="right"><i class="fa fa-users"></i> </a>'
+                        ].join('');
+                    }
+                }]
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) {//如果是移动端，默认关闭tab
+                $('#table').bootstrapTable("toggleView");
+            }
+
+            $('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table', function () {
+                $('#remove').prop('disabled', !$('#table').bootstrapTable('getSelections').length);
+                $('#edit, #auth').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);
+            });
+
+            $("#search").click("click", function () {// 绑定查询按扭
+                $('#table').bootstrapTable('refresh');
+            });
+
+            $("#reset").click("click", function () {// 绑定查询按扭
+                $("#s_name").val("");
+                $("#s_type").val("");
+                $('#table').bootstrapTable('refresh');
+            });
+        });
+
+        function getIdSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        function view(id) {
+            jp.openViewDialog('View', '/infotree/tree/view/?id=' +
+                id + "&limit_type=" + $("#limit_type").val(), '800px', '500px');
+        }
+
+        function add() {
+            jp.openSaveDialog('Add', '/infotree/tree/add/', '600px', '400px')
+        }
+
+        function edit(id) {
+            if (!id) {
+                id = getIdSelections();
+            }
+            jp.openSaveDialog('Edit', '/infotree/tree/edit/?id=' + id, '800px', '500px');
+        }
+
+        function del(ids) {
+            if (!ids) {
+                ids = getIdSelections();
+            }
+            jp.confirm('Are you sure you want to remove the data', function () {
+                jp.loading();
+                jp.get("/infotree/tree/del/?ids=" + ids, function (data) {
+                    if (data.success) {
+                        $('#table').bootstrapTable('refresh');
+                        jp.success(data.msg);
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            })
+        }
+
+        function refresh() {
+            $('#table').bootstrapTable('refresh');
+        }
+
+        {# right #}
+        $(document).ready(function () {
+            $('#userTable').bootstrapTable({
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //是否显示分页（*）
+                pagination: true,
+
+                pageList: [100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/infotree/tree_option/list/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                    searchParam.id = $('#roleId').val();
+                    return searchParam;
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                columns: [{
+                    field: 'sort',
+                    title: 'Sort'
+                }, {
+                    field: 'value',
+                    title: 'Value'
+                }, {
+                    field: 'operate',
+                    title: 'Operation',
+                    align: 'center',
+                    events: {
+                        'click .view': function (e, value, row, index) {
+                            jp.openViewDialog('View ', '/infotree/tree_option/view/?id=' + row.id, '500px', '400px');
+                        },
+                        'click .edit': function (e, value, row, index) {
+                            right_edit(row.id);
+                        },
+                        'click .del': function (e, value, row, index) {
+                            right_del(row.id);
+                        },
+                    },
+                    formatter: function operateFormatter(value, row, index) {
+                        return [
+                            {% if '/infotree/template_option/view/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                '<a href="#" class="view" title="View" ><i class="fa fa-eye"></i> </a>',
+                            {% endif %}
+                            '&nbsp;',
+                            {% if '/infotree/template_option/edit/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                '<a href="#" class="edit" title="Edit"><i class="fa fa-edit"></i> </a>',
+                            {% endif %}
+                            '&nbsp;',
+                            {% if '/infotree/template_option/del/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                '<a href="#" class="del" title="Delete"><i class="fa fa-trash"></i> </a>',
+                            {% endif %}
+                        ].join('');
+                    }
+                }]
+
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) {//如果是移动端
+                $('#userTable').bootstrapTable("toggleView");
+            }
+        });
+
+        function right_add() {
+            var c_row = $('#userTable').bootstrapTable('getOptions').totalRows;
+            jp.openSaveDialog('Add', '/infotree/tree_option/add/?set_id=' + $("#roleId").val(), '500px', '400px')
+        }
+
+        function right_edit(id) {
+            jp.openSaveDialog('Edit', '/infotree/tree_option/edit/?id=' + id, '500px', '400px');
+        }
+
+        function right_del(ids) {
+            if (!ids) {
+                ids = getIdSelections();
+            }
+            jp.confirm('Are you sure you want to remove the error message ?', function () {
+                jp.loading();
+                jp.get("/infotree/tree_option/del/?ids=" + ids, function (data) {
+                    if (data.success) {
+                        $('#table').bootstrapTable('refresh');
+                        refreshLayer()
+                        jp.success(data.msg);
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            })
+        }
+
+        function mdt_check() {
+            $("#left").attr("class", "col-sm-12");
+            $("#right").attr("style", "display:none;");
+        }
+
+        function hw_col(value) {
+            if (value === 1) {
+                $('#userTable').bootstrapTable('hideColumn', 'start');
+                $('#userTable').bootstrapTable('hideColumn', 'end');
+                $('#userTable').bootstrapTable('showColumn', 'option');
+            } else {
+                $('#userTable').bootstrapTable('hideColumn', 'option');
+                $('#userTable').bootstrapTable('showColumn', 'start');
+                $('#userTable').bootstrapTable('showColumn', 'end');
+            }
+        }
+
+        function refreshLayer() {
+            $('#userTable').bootstrapTable("refresh", {query: {id: $("#roleId").val()}});
+        }
+    </script>
+</head>
+<body id="" class="" style="">
+
+<div class="wrapper wrapper-content">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Tree</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div id="left" class="col-sm-12">
+                    <!-- 搜索 -->
+                    <div id="search-collapse" class="collapse">
+                        <div class="accordion-inner">
+                            <form id="searchForm" class="form form-horizontal well clearfix" method="post">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left"
+                                           title="Design Rule:">Name:</label>
+                                    <input id="s_name" name="s_name" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left"
+                                           title="Layer Name:">Type:</label>
+                                    <input id="s_type" name="s_type" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                    <div style="margin-top:26px">
+                                        <a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-search"></i> Query</a>
+                                        <a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-refresh"></i> Reset</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 工具栏 -->
+                    <div id="toolbar">
+                        <a id="add" class="btn btn-primary" onclick="add()">
+                            <i class="glyphicon glyphicon-plus"></i> Add</a>
+                    </div>
+                    <!-- 工具栏结束 -->
+
+                    <!-- 表格 -->
+                    <table id="table"
+                           data-toolbar="#toolbar"
+                           data-id-field="id">
+                    </table>
+
+                    <!-- context menu -->
+                    <ul id="context-menu" class="dropdown-menu">
+                        <li data-item="edit"><a>编辑</a></li>
+                        <li data-item="delete"><a>删除</a></li>
+                        <li data-item="action1"><a>取消</a></li>
+                    </ul>
+                </div>
+                {#                                hidden#}
+                <div id="right" class="panel panel-default col-sm-6" style="display:none">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><label>Option : &nbsp;</label><font id="roleLabel"></font><input
+                                type="hidden" id="roleId"/></h3>
+                    </div>
+                    <div class="panel-body">
+                        <!-- 搜索 -->
+                        <div id="search-collapse" class="collapse">
+                            <div class="accordion-inner">
+                                <form id="right_searchForm" class="form form-horizontal well clearfix" method="post">
+                                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                    <div class="col-xs-12 col-sm-6 col-md-4">
+                                        <div style="margin-top:26px">
+                                            <a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                    class="fa fa-search"></i> Query</a>
+                                            <a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                    class="fa fa-refresh"></i> Reset</a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- 工具栏 -->
+                        <div id="userToolbar">
+                            <button id="layerButton" class="btn btn-outline btn-primary" title="Add"
+                                    onclick="right_add()">
+                                <i class="fa fa-user-plus"></i>Add
+                            </button>
+                        </div>
+
+                        <!-- 表格 -->
+                        <table id="userTable"
+                               data-toolbar="#userToolbar"
+                               data-id-field="id">
+                        </table>
+                    </div>
+                </div>
+                {#                hidden#}
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

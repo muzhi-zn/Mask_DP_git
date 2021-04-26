@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:18 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/pptEqpStatusInfo__090_struct.xsd"/>
+  <xsd:complexType name="pptEqpStatusInfo__090">
+    <xsd:complexContent>
+      <xsd:restriction base="tns:pptEqpStatusInfo__090_struct">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentStatusCode" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="E10Status" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentStatusName" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentStatusDescription" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="changeTimeStamp" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="changeUserID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="actualStatusCode" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="actualE10Status" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="actualStatusName" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="actualStatusDescription" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="actualChangeTimeStamp" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="equipmentAvailableFlag" type="xsd:boolean"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="lastRecipeID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="maxCountForFlowBatch" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="reservedFlowBatchID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="reservedControlJobID" type="tns:objectIdentifierSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="reservedFlowBatchIDs" type="tns:objectIdentifierSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="siInfo" type="corba:CORBA.Any"/>
+        </xsd:sequence>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

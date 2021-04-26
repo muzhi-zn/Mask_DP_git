@@ -1,0 +1,174 @@
+
+
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+	<title>机构管理</title>
+	
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<script>var d = "";</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+{% include 'base.html' %}
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $('input.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square-blue',
+            increaseArea: '20%' // optional
+        });
+    });
+
+
+</script>
+
+	
+	
+	<meta name="decorator" content="ani"/>
+	<script type="text/javascript">
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if(!isValidate){
+                return false;
+            }else{
+                jp.loading();
+                jp.post("/system/office/{{method}}/",$('#inputForm').serialize(),function(data){
+                    if(data.success){
+                        jp.getParent().refreshNode(data);
+                        jp.success(data.msg);
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                    }else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+
+        }
+	</script>
+
+</head>
+<body id="" class="bg-white"  style="">
+	
+	<form id="inputForm" class="form-horizontal" action="/system/office/{{method}}/" method="post">
+		<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+		{% if office %}
+		<input id="id" name="id" type="hidden" value="{{office.id or ''}}"/>
+		{% endif%}
+		<table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+		   <tbody>
+		      <tr>
+		         <td class="width-15 active"><label class="pull-right">上级机构:</label></td>
+		         <td class="width-35">
+
+	<input id="officeId" name="parent_id" class="form-control form-control" type="hidden" value="{{office.parent_id or ''}}"/>
+	<div class="input-group" style="width:100%">
+		<input id="officeName" name="parent_name" readonly="readonly"  type="text" value="{{office.parent_name or ''}}" data-msg-required=""
+		class="form-control" style=""/>
+       		 <span class="input-group-btn">
+	       		 <button type="button"  id="officeButton" class="btn   btn-primary  "><i class="fa fa-search"></i>
+	             </button> 
+	             
+	             	 <button type="button" id="officeDelButton" class="close" data-dismiss="alert" style="position: absolute; top: 5px; right: 53px; z-index: 999; display: block;">×</button>
+	             
+	             
+	             
+       		 </span>
+       		
+    </div>
+	<label id="officeName-error" class="error" for="officeName" style="display:none"></label>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#officeButton, #officeName").click(function(){
+		// 是否限制选择，如果限制，设置为disabled
+		if ($("#officeButton").hasClass("disabled")){
+			return true;
+		}
+		// 正常打开	
+		top.layer.open({
+		    type: 2, 
+		    area: ['300px', '420px'],
+		    title:"选择机构",
+		    ajaxData:{selectIds: $("#officeId").val()},
+		    content: "/system/tree/select/?url="+encodeURIComponent("/system/office/tree/data/")+"&module=&checked=&extId=&isAll=&allowSearch=" ,
+		    btn: ['确定', '关闭']
+    	       ,yes: function(index, layero){ //或者使用btn1
+						var tree = layero.find("iframe")[0].contentWindow.tree;//h.find("iframe").contents();
+						var ids = [], names = [], nodes = [];
+						if ("" == "true"){
+							nodes = tree.get_checked(true);
+						}else{
+							nodes = tree.get_selected(true);
+						}
+						for(var i=0; i<nodes.length; i++) {//
+							ids.push(nodes[i].id);
+							names.push(nodes[i].text);//
+							break; // 如果为非复选框选择，则返回第一个选择  
+						}
+						$("#officeId").val(ids.join(",").replace(/u_/ig,""));
+						$("#officeName").val(names.join(","));
+						$("#officeName").focus();
+						top.layer.close(index);
+				    	       },
+    	cancel: function(index){ //或者使用btn2
+    	           //按钮【按钮二】的回调
+    	       }
+		}); 
+	
+	});
+	
+	$("#officeDelButton").click(function(){
+		// 是否限制选择，如果限制，设置为disabled
+		if ($("#officeButton").hasClass("disabled")){
+			return true;
+		}
+		// 清除	
+		$("#officeId").val("");
+		$("#officeName").val("");
+		$("#officeName").focus();
+	
+	});
+})
+</script></td>
+		         <td class="width-15 active"><label class="pull-right"><font color="red">*</font>Office Name:</label></td>
+		         <td class="width-35"><input id="name" name="name" class="form-control required" type="text" value="{{office.name or ''}}" maxlength="50"/></td>
+		         
+		      </tr>
+		       <tr>
+		         <td  class="width-15"  class="active"><label class="pull-right">Office Code:</label></td>
+		         <td class="width-35"><input id="code" name="code" class="form-control" type="text" value="{{office.code or ''}}" maxlength="50"/></td>
+		      
+			  <td class="width-15 active"><label class="pull-right">Office Type:{{office.type}}</label></td>
+			  <td class="width-35"><select id="type" name="type" class="form-control">
+			  					<option value="1" {% if  office.type == "1" %} selected {% endif %}>公司</option>
+								<option value="2" {% if  office.type == "2" %} selected {% endif %}>部门</option>
+								<option value="3" {% if  office.type == "3" %} selected {% endif %}>小组</option>
+								<option value="4" {% if  office.type == "4" %} selected {% endif %}>其它</option>
+			  					</select></td>
+			  
+			  </tr>
+		       <tr>
+		         <td class="width-15 active"><label class="pull-right">Useable:</label></td>
+		         <td class="width-35"><select id="useable" name="useable" class="form-control">
+		         					<option value="1"{% if  office.useable == 1 %} selected {% endif %}>Yes</option>
+									<option value="0"{% if  office.useable == 0 %} selected {% endif %}>No</option>
+		         					</select>
+		         					
+		         <td  class="width-15" class="active"><label class="pull-right">Remarks:</label></td>
+		         		         <td class="width-35"><textarea id="remarks" name="remarks" maxlength="200" class="form-control" rows="3">{{office.remarks or ''}}</textarea></td>
+		      </tr>
+		      
+	      </tbody>
+	      </table>
+	</form>
+
+</body>
+</html>

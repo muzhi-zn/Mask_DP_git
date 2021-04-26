@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Instruction Template</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+
+    <meta name="decorator" content="ani"/>
+</head>
+<body id="" class="bg-white" style="">
+
+<form id="inputForm" class="form-horizontal">
+    <input id="token" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+    {#		<input id="id" name="id" type="hidden" value="{{user_o.id or ''}}"/>#}
+    <table class="table table-bordered">
+        <tbody>
+
+        <tr>
+            <td class="active""><label class="pull-right">Record No:</label></td>
+            <td align="center">{{ i_o.record_no or ''}}</td>
+        </tr>
+
+        <tr>
+            <td class="active"><label class="pull-right">Data ID:</label></td>
+            <td align="center">{{ i_o.data_id or ''}}</td>
+        </tr>
+
+        <tr>
+            <td class="active"><label class="pull-right">Result Code:</label></td>
+            <td align="center">{{ i_o.result_code or '' }}</td>
+        </tr>
+
+
+        <tr>
+            <td class="active"><label class="pull-right">Result Content:</label></td>
+            <td align="center">{{ i_o.result_content or ''}}</td>
+        </tr>
+
+
+        <tr>
+            <td class="active"><label class="pull-right">Call Back Date:</label></td>
+            <td align="center">{{ i_o.callback_date or ''}}</td>
+        </tr>
+
+        <tr>
+            <td class="active" width="25%"><label class="pull-right">Call Back Return Status:</label></td>
+            <td align="center">
+                {{ i_o.callback_return_status or ''}}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
+</body>
+</html>

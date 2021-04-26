@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Tooling Form Download</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script src="{{ static ('bootstrap3/js/plugins/pace/pace.min.js') }}"></script>
+    {% include 'base.html' %}
+    <!--引入CSS-->
+    <link rel="stylesheet" type="text/css" href="{{ static ('/css/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <!--引入JS-->
+    <script type="text/javascript" src="{{ static ('/js/jquery-3.4.1.js') }}"></script>
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+
+    <!-- Ladda style -->
+    <link href="{{ static ('bootstrap3/css/plugins/ladda/ladda-themeless.min.css') }}" rel="stylesheet">
+    <!-- Ladda -->
+    <script src="{{ static ('bootstrap3/js/plugins/ladda/spin.min.js') }}"></script>
+    <script src="{{ static ('bootstrap3/js/plugins/ladda/ladda.min.js') }}"></script>
+    <script src="{{ static ('bootstrap3/js/plugins/ladda/ladda.jquery.min.js') }}"></script>
+    <link href="{{ static ('bootstrap3/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ static ('bootstrap3/font-awesome/css/font-awesome.css') }}" rel="stylesheet">
+
+    <link href="{{ static ('bootstrap3/css/animate.css') }}" rel="stylesheet">
+    <link href="{{ static ('bootstrap3/css/style.css') }}" rel="stylesheet">
+
+    <script>
+        $(document).ready(function () {
+
+            // Bind normal buttons
+            Ladda.bind('.ladda-button');
+        });
+    </script>
+    <style>
+        .arrow {
+            float: left;
+            position: relative;
+            top: 20%;
+        }
+
+        .arrow-down {
+            position: absolute;
+            top: 27%;
+        }
+
+        .station {
+            border-radius: 10px;
+            border: 1px solid #808080;
+            position: relative;
+            top: 25%;
+            width: 11%;
+            height: 45%;
+            text-align: center;
+            float: left;
+            margin-left: 2%;
+            margin-right: 2%;
+        }
+
+        .flow-div {
+            border-bottom: 1px dashed grey;
+            width: 100%;
+            height: 28%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .wait {
+            background: #f8f9fa;
+        }
+
+        .og {
+            background: #47DB82;
+        }
+
+        .done {
+            background: #4BBAFA;
+        }
+
+        .noclean {
+            background: #DD8C77;
+        }
+
+        .fail {
+            background: mediumpurple;
+        }
+
+        .hold {
+            background: #ffc107;
+        }
+
+        .subscript {
+            color: #000;
+            height: 30%;
+            width: 50%;
+            position: absolute;
+            text-align: center;
+            line-height: 20px;
+            right: -10%;
+        }
+
+        h3 {
+            color: black;
+        }
+
+        .header-1 {
+            height: 80px;
+            position: relative;
+        }
+
+        .header-1-1 {
+            position: absolute;
+            z-index: 100;
+            right: 0px;
+            top: 0px;
+        }
+
+        .btn {
+            border-radius: 3px;
+            border: 1px solid #808080;
+        }
+
+        .float-e-margins .btn {
+            margin-bottom: 5px;
+        }
+
+
+    </style>
+    <script>
+        let arrow = "<h1 class='arrow'><i class=\"fa fa-arrow-right\"></i></h1>"
+        let arrow_down = "<h1 class='arrow-down'><i class=\"fa fa-long-arrow-down\"></i></h1>"
+        let lock = "<div class=\"subscript\"><i class=\"fa fa-lock\"></i></div>"
+        let release = "<div class=\"subscript\"><i class=\"fa fa-check\"></i></div>"
+        let skip = "<div class=\"subscript\"><i class=\"fa fa-share\"></i></div>"
+
+        let form, layer;
+        layui.use('form', function () {
+            form = layui.form;
+            form.on('select(mask_name)', function (data) {
+                gen_lot_id()
+            })
+            form.on('select(lot_id)', function (data) {
+                get_device_by_lot_id()
+            })
+        });
+        layui.use('layer', function () {
+            layer = layui.layer;
+        });
+        /*
+        $(document).ready(function () {
+            $(".flow-div").on("click", ".station", function () {
+                $(this).find(".subscript").remove()
+                $(this).prepend(lock)
+                $(this).removeClass()
+                $(this).addClass("station hold")
+            })
+        });*/
+
+        $(function () {
+            $(".flow-div").on("click", ".station", function () {
+                let stage_id = this.id;
+                let device_info_id = $(this).attr("device_info_id");
+                if (device_info_id != "" && device_info_id != null) {
+                    {#jp.openSaveDialog('Edit Role', "/making/lot/convert/status/stage_operation_form/?stage_id=" + stage_id + "&device_info_id=" + device_info_id, '800px', '500px');#}
+                    open_dialog('800px', '500px', "/making/lot/convert/status/stage_operation_form/?stage_id=" + stage_id + "&device_info_id=" + device_info_id)
+                } else {
+                    jp.error("device没有对应的站点数据,请联系管理员");
+                }
+            })
+        })
+
+        function open_dialog(width, heigth, url) {
+            layer.open({
+                type: 2,
+                area: [width, heigth],
+                title: "Convert Info",
+                auto: true,
+                content: url,
+                maxmin: true,
+                btn: ['confirm', 'cancel'],
+                yes: function (index, layero) {
+                    var iframeWin = layero.find('iframe')[0]; //得到弹出的窗口对象，执行窗口内iframe页的方法：iframeWin.method();
+                    iframeWin.contentWindow.save();//调用保存事件，在 弹出页内，需要定义save方法。处理保存事件。
+                },
+                cancel: function (index) {
+                }
+            });
+        }
+
+        function get_mask_name_list() {
+            //clear log id
+            $('#lot_id').val('')
+            device_table_clear()
+            let product = $("#product").val()
+            var l = $('#load_layer_btn').ladda();
+
+            if (product != '') {
+                l.ladda('start');
+                $('#layer_loading_div').attr("style", "display:block;");
+                $('#layer_loaded_div').attr("style", "display:none;");
+                $.ajax({
+                    method: "post",
+                    url: "/making/lot/convert/status/get_mask_name_list/",
+                    data: {
+                        product: product
+                    },
+                    dataType: "json",
+                    async: true,
+                    success: function (data) {
+                        $('#layer_loading_div').attr("style", "display:none;");
+                        setTimeout(function () {
+                            l.ladda('stop');
+                        }, 100);
+                        if (data && data.mask_list) {
+                            $('#layer_loaded_div').attr("style", "display:block;");
+
+                            empty_station()
+                            $("#tip_no").val(data.tip_no)
+                            $("#mask_name").empty()
+                            $("#mask_name").append('<option value="">select mask name</option>')
+
+                            for (let i = 0; i < data.mask_list.length; i++) {
+                                $("#mask_name").append('<option value="' + data.mask_list[i].mask_name + '">' + data.mask_list[i].mask_name + '</option>')
+                            }
+                            form.render('select');
+                        } else if ('message') {
+                            jp.error('Please return to the FTP service and perform the done operation')
+                        } else {
+                            jp.error('no data')
+                        }
+
+                    }
+                })
+            } else {
+                jp.error('Input product please')
+                setTimeout(function () {
+                    l.ladda('stop');
+                }, 100)
+            }
+        }
+
+        {#function get_device_by_mask_name() {#}
+        {#    device_table_clear()#}
+        {#    $('#device_loading_div').attr("style", "display:block;");#}
+        {##}
+        {#    let tip_no = $("#tip_no").val()#}
+        {#    let mask_name = $("#mask_name").val()#}
+        {##}
+        {#    if (tip_no != "" && mask_name != "") {#}
+        {##}
+        {#        $.ajax({#}
+        {#            method: "post",#}
+        {#            url: "/making/lot/convert/status/get_device_by_mask_name/",#}
+        {#            data: {#}
+        {#                tip_no: tip_no,#}
+        {#                mask_name: mask_name#}
+        {#            },#}
+        {#            dataType: "json",#}
+        {#            success: function (data) {#}
+        {#                if (data.success) {#}
+        {#                    $('#device_loading_div').attr("style", "display:none;");#}
+        {#                    empty_station()#}
+        {#                    $("#hidden_mask_name").val(data.mask_name)#}
+        {#                    $("#hidden_lot_mask_name").val('Mask Name:' + data.mask_name)#}
+        {#                    $("#device_table thead").append("<tr><td>Lot#</td><td>" + data.mask_name + "</td></tr>")#}
+        {#                    $("#device_table thead").append("<tr><td>LotID</td><td id='list_lot_id'>" + data.lot_id + "</td></tr>")#}
+        {#                    if (data && data.device_list) {#}
+        {#                        for (let i = 0; i < data.device_list.length; i++) {#}
+        {#                            let device = data.device_list[i]#}
+        {#                            if (device.device_type == "Main") {#}
+        {#                                $("#device_table tbody").append("<tr><td>device-" + (i + 1) + "</td><td><a href='#' onclick='show_device_convert(this)'>" + device.device_name + "</a></td></tr>")#}
+        {#                            } else {#}
+        {#                                $("#device_table tbody").append("<tr><td>frame</td><td><a href='#' onclick='show_frame_convert(this)'>" + device.device_name + "</a></td></tr>")#}
+        {#                            }#}
+        {#                        }#}
+        {#                    }#}
+        {#                } else {#}
+        {#                    jp.error('lotID has not been generated yet, please wait')#}
+        {#                    $('#device_loading_div').attr("style", "display:none;");#}
+        {#                }#}
+        {##}
+        {##}
+        {#            }#}
+        {#        })#}
+        {#    } else {#}
+        {#        jp.error('data error')#}
+        {##}
+        {#        $('#device_loading_div').attr("style", "display:none;");#}
+        {#    }#}
+        {# }#}
+
+        function gen_lot_id() {
+            let tip_no = $("#tip_no").val()
+            let mask_name = $("#mask_name").val()
+
+            $.ajax({
+                method: 'post',
+                url: '/making/lot/convert/status/gen_lot_id/',
+                data: {
+                    tip_no: tip_no,
+                    mask_name: mask_name
+                },
+                async: false,
+                success: function (data) {
+                    if (data.success) {
+                        $("#lot_id").empty()
+                        $("#lot_id").append('<option value="">----------</option>')
+                        for (let i = 0; i < data.lot_id_list.length; i++) {
+                            $("#lot_id").append('<option value="' + data.lot_id_list[i] + '">' + data.lot_id_list[i] + '</option>')
+                        }
+                        form.render('select');
+                    } else {
+                        jp.error("Can't find lot")
+                    }
+                }
+            })
+        }
+
+        function get_device_by_lot_id() {
+            var l = $('#load_device_btn').ladda();
+
+            let lot_id = $("#lot_id").val()
+            if (lot_id != "") {
+                l.ladda('start');
+                //clear device table
+                device_table_clear();
+                $('#device_loading_div').attr("style", "display:block;");
+                //clear product name and layer select
+                {#product_layer_clear();#}
+                $.ajax({
+                    method: "post",
+                    url: "/making/lot/convert/status/get_device_by_lot_id/",
+                    data: {
+                        lot_id: lot_id
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        empty_station()
+                        $("#tip_no").val(data.tip_no)
+                        $("#hidden_mask_name").val(data.mask_name)
+                        $("#hidden_lot_mask_name").val('Mask Name:' + data.mask_name + ' LotID:' + lot_id)
+                        if (data && data.device_list) {
+                            setTimeout(function () {
+                                l.ladda('stop');
+                            }, 100);
+                            $('#device_loading_div').attr("style", "display:none;");
+                            $("#device_table thead").append("<tr><td>Lot#</td><td>" + data.mask_name + "</td></tr>")
+                            $("#device_table thead").append("<tr><td>LotID</td><td id='list_lot_id'>" + data.lot_id + "</td></tr>")
+
+                            for (let i = 0; i < data.device_list.length; i++) {
+                                let device = data.device_list[i]
+                                if (device.device_type == "Main") {
+                                    $("#device_table tbody").append("<tr><td>device-" + (i + 1) + "</td><td><a href='#' onclick='show_device_convert(this)'>" + device.device_name + "</a></td></tr>")
+                                } else {
+                                    $("#device_table tbody").append("<tr><td>frame</td><td><a href='#' onclick='show_frame_convert(this)'>" + device.device_name + "</a></td></tr>")
+                                }
+                            }
+                        } else {
+                            jp.error('no data')
+                            setTimeout(function () {
+                                l.ladda('stop');
+                            }, 100);
+                            $('#device_loading_div').attr("style", "display:none;");
+                        }
+
+                    }
+                })
+            } else {
+                jp.error('input lotid')
+                setTimeout(function () {
+                    l.ladda('stop');
+                }, 100);
+                $('#device_loading_div').attr("style", "display:none;");
+            }
+        }
+
+        function device_table_clear() {
+
+            $("#device_table thead").empty()
+            $("#device_table tbody").empty()
+        }
+
+        function product_layer_clear() {
+            //clear product name and layer select
+            $('#product').val('')
+            $('#layer_loaded_div').attr("style", "display:none;");
+        }
+
+        function show_device_convert(a) {
+            let device_name = ''
+            if (a != null) {
+                device_name = $(a).html()
+            } else {
+                device_name = $("#device_name_cache").val()
+            }
+            $("#convert_status_header").empty().append($('#hidden_lot_mask_name').val() + ' Device Name:' + device_name + " Convert Status")
+            $("#device_name_cache").val(device_name)
+            $("#device_type_cache").val("device")
+            empty_station()
+            {#$("#pd_div").append('<div id="db" class="station done"><h3>DB</h3></div>' + arrow + '<div class="station og"><h3>Fracture</h3></div>' + arrow + '<div class="station wait"><h3 style="color: black">Writer</h3></div>')#}
+            {#$("#qa_div").append(arrow_down + '<div class="station done"><h3>XOR</h3></div>')#}
+            jp.loading('loading...')
+            $.ajax({
+                method: 'post',
+                url: '/making/lot/convert/status/get_device_stages/',
+                data: {
+                    tip_no: $("#tip_no").val(),
+                    mask_name: $("#hidden_mask_name").val(),
+                    device_name: device_name
+                },
+                dataType: 'json',
+                success: function (data) {
+
+                    for (let i = 0, l = data.stage_list.length; i < l; i++) {
+                        let stage = data.stage_list[i]
+                        if (stage.flow == 'PD') {
+                            if ($("#pd_div").children().length == 0) {
+                                $("#pd_div").append('<div id="' + stage.id + '" flow="' + stage.flow + '" device_info_id="' + get_device_info_id(stage.device_info) + '" class="station '
+                                    + get_status_class(stage.device_info) + '"><h3>'
+                                    + stage.stage_name + '</h3></div>')
+                            } else {
+                                if (stage.stage_name == 'Fracture') {
+                                    $("#pd_div").append(arrow + '<div id="' + stage.id + '" flow="' + stage.flow + '" device_info_id="' + get_device_info_id(stage.device_info) + '" class="station ' + get_status_class(stage.device_info) + '"><h3>' + stage.stage_name + '</h3><h3 id="'+ get_device_info_id(stage.device_info) + '_progress">' + stage.device_info.progress + '</h3></div>')
+                                } else if (stage.stage_name == 'Writer') {
+                                    $("#pd_div").append(arrow + '<div id="' + stage.id + '" flow="' + stage.flow + '" device_info_id="' + get_device_info_id(stage.device_info) + '" class="station ' + get_status_class(stage.device_info) + '"><h3>' + stage.stage_name + '</h3><h3 id="'+ get_device_info_id(stage.device_info) + '_progress">' + stage.device_info.progress + '</h3></div>')
+                                } else {
+                                    $("#pd_div").append(arrow + '<div id="' + stage.id + '" flow="' + stage.flow + '" device_info_id="' + get_device_info_id(stage.device_info) + '" class="station ' + get_status_class(stage.device_info) + '"><h3>' + stage.stage_name + '</h3><h3></div>')
+                                }
+                            }
+                        } else if (stage.flow == 'QA') {
+                            $("#qa_div").append(arrow_down + '<div id="' + stage.id + '" flow="' + stage.flow + '" device_info_id="' + get_device_info_id(stage.device_info) + '" class="station ' + get_status_class(stage.device_info) + '"><h3>' + stage.stage_name + '</h3><h3 id="'+ get_device_info_id(stage.device_info) + '_progress">' + stage.device_info.progress + '</h3></div>')
+                        }
+                        set_hold_class(stage.device_info)
+                    }
+                    jp.success('success')
+                }
+            })
+        }
+
+        function show_frame_convert(a) {
+            let device_name = ''
+            if (a != null) {
+                device_name = $(a).html()
+            } else {
+                device_name = $("#device_name_cache").val()
+            }
+            $("#convert_status_header").empty().append($('#hidden_lot_mask_name').val() + ' Device Name:' + device_name + " Convert Status")
+            $("#device_name_cache").val(device_name)
+            $("#device_type_cache").val("frame")
+            empty_station()
+            {#$("#pd_div").append('<div id="db" class="station done"><h3>DB</h3></div>' + arrow + '<div class="station og"><h3>Fracture</h3></div>' + arrow + '<div class="station wait"><h3 style="color: black">Writer</h3></div>')#}
+            {#$("#qa_div").append(arrow_down + '<div class="station done"><h3>XOR</h3></div>')#}
+            {#$("#mm_div").append('<div class="station fail"><h3>JDV</h3></div><div class="station hold" style="margin-left: 5%">' + lock + '<h3>CCD</h3></div>')#}
+            jp.loading('loading...')
+            $.ajax({
+                method: 'post',
+                url: '/making/lot/convert/status/get_frame_stages/',
+                data: {
+                    tip_no: $("#tip_no").val(),
+                    mask_name: $("#hidden_mask_name").val(),
+                    device_name: device_name
+                },
+                dataType: 'json',
+                success: function (data) {
+                    for (let i = 0, l = data.stage_list.length; i < l; i++) {
+                        let stage = data.stage_list[i]
+                        if (stage.flow == 'PD') {
+                            if ($("#pd_div").children().length == 0) {
+                                $("#pd_div").append('<div id="' + stage.id + '" flow="' + stage.flow
+                                    + '" device_info_id="' + get_device_info_id(stage.device_info) + '" class="station '
+                                    + get_status_class(stage.device_info) + '"><h3>'
+                                    + stage.stage_name + '</h3></div>')
+                            } else {
+                                if (stage.stage_name == 'Fracture') {
+                                    console.log(stage)
+                                    $("#pd_div").append(arrow + '<div id="' + stage.id
+                                        + '" flow="' + stage.flow + '" device_info_id="'
+                                        + get_device_info_id(stage.device_info) + '" class="station '
+                                        + get_status_class(stage.device_info) + '"><h3>'
+                                        + stage.stage_name + '</h3><h3 id="'+ get_device_info_id(stage.device_info) + '_progress">' + stage.device_info.progress + '</h3></div>')
+                                } else if (stage.stage_name == 'Writer') {
+                                    console.log(stage)
+                                    $("#pd_div").append(arrow + '<div id="' + stage.id
+                                        + '" flow="' + stage.flow + '" device_info_id="'
+                                        + get_device_info_id(stage.device_info) + '" class="station '
+                                        + get_status_class(stage.device_info) + '"><h3>'
+                                        + stage.stage_name + '</h3><h3 id="'+ get_device_info_id(stage.device_info) + '_progress">' + stage.device_info.progress + '</h3></div>')
+                                } else {
+                                    $("#pd_div").append(arrow + '<div id="' + stage.id
+                                        + '" flow="' + stage.flow + '" device_info_id="'
+                                        + get_device_info_id(stage.device_info) + '" class="station '
+                                        + get_status_class(stage.device_info) + '"><h3>'
+                                        + stage.stage_name + '</h3></div>')
+                                }
+                            }
+                        } else if (stage.flow == 'QA') {
+                            $("#qa_div").append(arrow_down + '<div id="' + stage.id + '" flow="' + stage.flow
+                                + '" device_info_id="' + get_device_info_id(stage.device_info)
+                                + '" class="station ' + get_status_class(stage.device_info)
+                                + '"><h3>' + stage.stage_name + '</h3><h3 id="'+ get_device_info_id(stage.device_info) + '_progress">' + stage.device_info.progress + '</h3></div>')
+                        } else if (stage.flow == 'MM') {
+                            $("#mm_div").append('<div id="' + stage.id + '" flow="' + stage.flow
+                                + '" device_info_id="' + get_device_info_id(stage.device_info)
+                                + '" class="station ' + get_status_class(stage.device_info)
+                                + '"><h3>' + stage.stage_name + '</h3></div>')
+                        }
+                        set_hold_class(stage.device_info)
+                    }
+                    jp.success('success')
+                }
+            })
+        }
+
+        function empty_station() {
+            $("#pd_div").empty()
+            $("#qa_div").empty()
+            $("#mm_div").empty()
+        }
+
+        function get_status_class(device) {
+            if (device != null) {
+                switch (device.status) {
+                    case {{CONVERT_STATUS_WAIT}}:
+                        return 'wait';
+                    case {{CONVERT_STATUS_ON_GOING}}:
+                        return 'og';
+                    case {{CONVERT_STATUS_DONE}}:
+                        return 'done';
+                    case {{CONVERT_STATUS_JOB_FAIL}}:
+                        return 'fail'
+                    case {{CONVERT_STATUS_NO_CLEAN}}:
+                        return 'noclean'
+                    default:
+                        return 'wait'
+                }
+            } else {
+                return 'wait'
+            }
+        }
+
+        function set_hold_class(device) {
+            if (device != null) {
+                if (device.operation_status == {{CONVERT_OPERATION_HOLD}}) {
+                    $("#" + device.stage_id).find(".subscript").remove()
+                    $("#" + device.stage_id).prepend(lock)
+                    //$("#"+device.stage_id).removeClass()
+                    //$("#"+device.stage_id).addClass("station hold")
+                } else if (device.operation_status == {{CONVERT_OPERATION_SKIP}}) {
+                    $("#" + device.stage_id).find(".subscript").remove()
+                    $("#" + device.stage_id).prepend(skip)
+                    //$("#"+device.stage_id).removeClass()
+                    //$("#"+device.stage_id).addClass("station done")
+                } else {
+                    $("#" + device.stage_id).find(".subscript").remove()
+                    $("#" + device.stage_id).prepend(release)
+                }
+            }
+        }
+
+        function get_device_info_id(device) {
+            if (device != null) {
+                return device.id
+            } else {
+                return ""
+            }
+        }
+
+        function refresh() {
+            empty_station()
+            if ($("#device_type_cache").val() == "frame") {
+                show_frame_convert(null)
+            } else if ($("#device_type_cache").val() == "device") {
+                show_device_convert(null)
+            }
+        }
+
+        let websocket = init_websocket()
+        websocket.onmessage = function (event) {
+            let data = JSON.parse(event.data);
+            console.log(data)
+            if (data.is_convert_msg) {
+                var class_attr = 'station ' + get_status_class(stage.device_info)
+                $("#"+data.device_info.id).html(data.progress)
+                $("#"+data.stage_id).removeClass().addClass(class_attr)
+            }
+        };
+        websocket.onclose = function (event) {
+            console.log("已断开websocket服务器，无法接收消息提示（请重新刷新页面）")
+            websocket.close()
+        }
+
+    </script>
+</head>
+<body class="layui-bg-gray">
+<div class="layui-row layui-col-space5" style="margin: 5px;">
+    <div class="layui-col-md3">
+        <div class="layui-card">
+            <div class="layui-card-header">Query Form</div>
+            <div class="layui-card-body layui-form" style="max-height: 550px">
+                <div class="layui-form-item">
+                    <input type="hidden" id="tip_no" name="tip_no" value=""/>
+                    <input type="hidden" id="hidden_mask_name" name="mask_name" value=""/>
+
+                    <input type="hidden" id="hidden_lot_mask_name" name="mask_name" value=""/>
+
+                    <input type="hidden" id="device_name_cache" name="device_name_cache" value=""/>
+                    <input type="hidden" id="device_type_cache" name="device_type_cache" value=""/>
+                    <label class="layui-form-label">Product</label>
+                    <div class="layui-input-block">
+                        <input id="product" type="text" name="product" lay-verify="title"
+                               autocomplete="off" placeholder="input product" class="layui-input">
+                        <button id="load_layer_btn" class="button_style ladda-button btn btn-primary "
+                                onclick="get_mask_name_list()"
+                                data-style="expand-right">&nbsp;&nbsp;Load Layer&nbsp;&nbsp;
+                        </button>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Layer</label>
+
+
+                    <div class="layui-input-block" style="position: relative;">
+                        <div id='layer_loading_div' style="display: none;position: absolute;margin-top: 10px;"
+                             class="sk-spinner sk-spinner-fading-circle">
+                            <div class="sk-circle1 sk-circle"></div>
+                            <div class="sk-circle2 sk-circle"></div>
+                            <div class="sk-circle3 sk-circle"></div>
+                            <div class="sk-circle4 sk-circle"></div>
+                            <div class="sk-circle5 sk-circle"></div>
+                            <div class="sk-circle6 sk-circle"></div>
+                            <div class="sk-circle7 sk-circle"></div>
+                            <div class="sk-circle8 sk-circle"></div>
+                            <div class="sk-circle9 sk-circle"></div>
+                            <div class="sk-circle10 sk-circle"></div>
+                            <div class="sk-circle11 sk-circle"></div>
+                            <div class="sk-circle12 sk-circle"></div>
+                        </div>
+                        <div id='layer_loaded_div' style="display: none;">
+                            <select id="mask_name" name="mask_name" class="layui-select" style="width: 100%;"
+                                    lay-filter="mask_name" lay-search>
+                                <option value="">mask_name</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">LotID</label>
+                    <div class="layui-input-block">
+                        <select id="lot_id" name="lot_id" lay-verify="title" autocomplete="off"
+                                placeholder="input lot id" value=""
+                                class="layui-input">
+                            <option value="">----------</option>
+                        </select>
+                        <button id="load_device_btn" class="button_style ladda-button btn btn-primary "
+                                onclick="get_device_by_lot_id()"
+                                data-style="expand-right">&nbsp;&nbsp;Load Device&nbsp;&nbsp;
+                        </button>
+
+                    </div>
+                </div>
+                <hr/>
+                <div class="layui-form">
+                    <div id='device_loading_div' style="display: none;position: absolute;margin-top: 10px;"
+                         class="sk-spinner sk-spinner-fading-circle">
+                        <div class="sk-circle1 sk-circle"></div>
+                        <div class="sk-circle2 sk-circle"></div>
+                        <div class="sk-circle3 sk-circle"></div>
+                        <div class="sk-circle4 sk-circle"></div>
+                        <div class="sk-circle5 sk-circle"></div>
+                        <div class="sk-circle6 sk-circle"></div>
+                        <div class="sk-circle7 sk-circle"></div>
+                        <div class="sk-circle8 sk-circle"></div>
+                        <div class="sk-circle9 sk-circle"></div>
+                        <div class="sk-circle10 sk-circle"></div>
+                        <div class="sk-circle11 sk-circle"></div>
+                        <div class="sk-circle12 sk-circle"></div>
+                    </div>
+                    <table id="device_table" class="layui-table">
+                        <thead>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md9">
+        <div class="layui-card">
+            <div class="layui-card-header header-1">
+                <div id="convert_status_header">Convert Status</div>
+                <div class="header-1-1">
+                    <div>
+
+                        <button type="button" class="btn wait">wait</button>
+                        <button type="button" class="btn og">O/G</button>
+                        <button type="button" class="btn done">done</button>
+                        <button type="button" class="btn noclean">noclean</button>
+                        <button type="button" class="btn fail">fail</button>
+
+                    </div>
+                    <div>
+                        <div>
+                            <i class="fa fa-check"></i>:release
+                            <i class="fa fa-share"></i>:skip
+                            <i class="fa fa-lock"></i>:hold
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-card-body" style="height: 550px">
+                PD
+                <div id="pd_div" class="flow-div"></div>
+                QA
+                <div id="qa_div" class="flow-div"></div>
+                MM
+                <div id="mm_div" class="flow-div"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

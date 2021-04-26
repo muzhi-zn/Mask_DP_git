@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+  (c) Copyright: IBM Japan Services Company Ltd, 2010. All rights reserved.
+  (c) Copyright: International Business Machines Corporation, 2010. All rights reserved.
+
+    Description: Web Service Definition for CORBA namespace
+    Name: corba.wsdl
+
+    Change history:
+
+    Date       Defect#     Person      Comments
+    ========== =========== =========== ==================================================
+    2010/01/22 SIV00001600 C.Tsuchiya  Initial release
+    
+-->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.omg.org/IDL-Mapped/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="corba" targetNamespace="http://www.omg.org/IDL-WSDL/1.0/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.omg.org/IDL-WSDL/1.0/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/">
+      <xsd:include schemaLocation="corba.xsd"/>
+      <xsd:element name="CORBA.SystemException" type="corba:CORBA.SystemException"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="CORBA.SystemExceptionMessage">
+    <wsdl:part name="_return" element="corba:CORBA.SystemException"/>
+  </wsdl:message>
+</wsdl:definitions>
+
+

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Template option</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+
+            var limit_type = '{{ limit_type }}';
+            if (limit_type === '1') {
+                $('#tr_option').show();
+                $('#tr_range').hide();
+            } else {
+                $('#tr_option').hide();
+                $('#tr_range').show();
+            }
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/infotree/template_option/{{method}}/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        jp.getParent().refresh();
+                        jp.getParent().refreshLayer();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" autocomplete="off">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input id="menuIds" name="menuIds" type="hidden" value=""/>
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            {# id #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>ID : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_id" name="old_id" type="hidden" value="{{ temp_option.id or ''}}">
+                <input id="id" name="id" class="form-control" type="text"
+                       value="{{ temp_option.id or '' }}" maxlength="50" readonly/>
+            </td>
+            {# temp_id #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Temp ID : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_temp_id" name="old_temp_id" type="hidden" value="{{ temp_option.temp_id or temp_id}}">
+                <input id="temp_id" name="temp_id" class="form-control" type="text"
+                       value="{{ temp_option.temp_id or temp_id }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        <tr>
+            {# sort #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Sort : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="old_sort" name="old_sort" type="hidden" value="{{ temp_option.sort or ''}}">
+                <input id="sort" name="sort" class="form-control required" type="text"
+                       value="{{ temp_option.sort or '0' }}" maxlength="50"/>
+            </td>
+        </tr>
+        <tr id="tr_range">
+            {# start #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Start : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_start" name="old_start" type="hidden" value="{{ temp_option.start or 0}}">
+                <input id="start" name="start" class="form-control required" type="text"
+                       value="{{ temp_option.start or 0 }}" maxlength="50"/>
+            </td>
+            {# end #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>End : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_end" name="old_end" type="hidden" value="{{ temp_option.end or 0}}">
+                <input id="end" name="end" class="form-control required" type="text"
+                       value="{{ temp_option.end or 0 }}" maxlength="50"/>
+            </td>
+        </tr>
+        <tr id="tr_option">
+            {# option #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Option : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="old_option" name="old_option" type="hidden" value="{{ temp_option.option or ''}}">
+                <input id="option" name="option" class="form-control required" type="text"
+                       value="{{ temp_option.option or '' }}" maxlength="50"/>
+            </td>
+        </tr>
+        <tr rowspan="4">
+            {# remark #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Remark : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="old_remark" name="old_remark" type="hidden" value="{{ temp_option.remark or ''}}">
+                {#                <input id="remark" name="remark" class="form-control required" type="text"#}
+                {#                       value="{{ temp_option.remark or '' }}" maxlength="50"/>#}
+                <textarea id="remark" name="remark" class="form-control" rows="5"
+                          maxlength="256">{{ temp_option.remark or '' }}</textarea>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+</body>

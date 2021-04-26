@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Edit Tooling Form Value</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>
+        var d = "";
+    </script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+
+    <meta name="decorator" content="ani"/>
+    <script type="text/javascript">
+   // alert('{{ import_error_list.regex_no }}')
+        function save() {
+            {% if import_error_list.regex_no > 0 %}
+                var reg1 =  {{import_error_list.validate_value|safe}};
+
+                //alert("{{import_error_list.validate_value|safe}}");
+                var dict = $("#import_data").val()
+                var flag = reg1.test(dict);
+                //alert(flag);
+                //return false;
+                if (!flag) {
+                    jp.error('input error!');
+                    return false;
+                    //alert('must input 1-100 2')
+                }
+            {% endif %}
+
+            //var _reg = {{import_error_list.validate_value|safe  or ''}};
+            //alert(_reg);
+
+            var isValidate = jp.validateForm('#inputForm'); //校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/tooling_form/wrong_form_type1/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        jp.getParent().refresh();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+        }
+
+        {#$(document).ready(function () {#}
+        {#    $("#no").focus();#}
+        {#    $("#inputForm").validate({#}
+        {#        rules: {#}
+        {#            loginName: {#}
+        {#                remote: "/system/user_check_loginname/?oldLoginName=" + encodeURIComponent(#}
+        {#                    '{{user.loginname or ''}}')#}
+        {#            }#}
+        {#        },#}
+        {#        messages: {#}
+        {#            loginName: {#}
+        {#                remote: "用户登录名已存在"#}
+        {#            },#}
+        {#            confirmNewPassword: {#}
+        {#                equalTo: "输入与上面相同的密码"#}
+        {#            }#}
+        {#        }#}
+        {#    });#}
+        //});
+    </script>
+
+</head>
+<body id="" class="bg-white" style="">
+
+<form id="inputForm" class="form-horizontal" action="/wrong_form_type2/" method="post">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+    <input id="id" name="id" type="hidden" value="{{ import_error_list.id }}"/>
+    <input id="import_data_id" name="import_data_id" type="hidden"
+           value="{{ import_error_list.import_data_id }}"/>
+    <input id="tip_no" name="tip_no" type="hidden" value="{{ import_error_list.tip_no }}"/>
+    <input id="parent_id" name="parent_id" type="hidden" value="{{ import_error_list.parent_id }}"/>
+    <input id="regex_no" name="regex_no" type="hidden" value="{{ import_error_list.regex_no }}"/>
+
+    <table class="table table-bordered">
+        <tbody>
+        <!-- id = request.POST.get('id')
+         import_error_list  -->
+        <tr>
+            <td class="active"><label class="pull-right">
+                <font color="red"></font>Tip NO:
+            </label></td>
+            <td>{{ import_error_list.tip_no or ''}}</td>
+        </tr>
+
+        <tr>
+            <td class="active"><label class="pull-right">
+                <font color="red"></font>Error Code:
+            </label></td>
+            <td>{{ import_error_list.error_code or ''}}</td>
+        </tr>
+
+
+        <tr>
+            <td class="active"><label class="pull-right">Error Description:</label></td>
+            <td>{{ import_error_list.error_description or ''}}</td>
+        </tr>
+        {% if import_error_list.parent_id > 0 %}
+            <tr>
+                <td class="active"><label class="pull-right">Dict:</label></td>
+                <td>
+                    <select id="import_data" name="import_data">
+
+                        {% for item in dict_list %}
+                            <option>{{ item }}</option>
+                        {% endfor %}
+                    </select></td>
+            </tr>
+        {% endif %}
+        {% if import_error_list.regex_no > 0 %}
+            <tr>
+                <td class="active"><label class="pull-right">Dict:</label></td>
+                <td>
+                    <input type="text" id="import_data" name="import_data" value=""/>
+                </td>
+            </tr>
+        {% endif %}
+        {% if import_error_list.error_code == 'ERROR_OPERATION_001' %}
+            <tr>
+                <td class="active"><label class="pull-right">Operation:</label></td>
+                <td>
+                    <input type="text" id="operation_import_data" name="operation_import_data" value=""/>
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</form>
+
+</body>
+</html>

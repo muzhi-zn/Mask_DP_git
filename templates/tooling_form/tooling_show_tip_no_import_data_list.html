@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Show tip no list</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-lynch',
+                radioClass: 'iradio_square-lynch',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.js') }}"
+            type="text/javascript"></script>
+    <script type="text/javascript">
+        {#product_info#}
+        $(document).ready(function () {
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+            //表格初始化
+            $('#table').bootstrapTable({
+
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                {#showSearch: true,#}
+                //显示刷新按钮
+                {#showRefresh: true,#}
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                showPaginationSwitch: true,
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/tooling_form/ShowTipNo/data_view/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+
+                    csrfmiddlewaretoken = token;
+                    return searchParam;
+                },
+                data: {
+                    csrfmiddlewaretoken: token
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right", //pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        deleteAll(row.id);
+                    }
+                },
+
+                onClickRow: function (row, $el) {
+                },
+                columns: [{
+                    field: 'tip_no',
+                    title: 'Tip_No'
+                }, {
+                    field: 'customer',
+                    title: 'Customer'
+                }, {
+                    field: 'fab',
+                    title: 'FAB'
+                }, {
+                    field: 'product',
+                    title: 'Product'
+                }, {
+                    field: 'layout_type_application_type',
+                    title: 'Type'
+                }, {
+                    field: 'mask_size',
+                    title: 'Mask_Size'
+                }, {
+                    field: 'product_type',
+                    title: 'Product_type'
+                }, {
+                    field: 'd_h',
+                    title: 'D_H'
+                }, {
+                    field: 'payment',
+                    title: 'Payment'
+                }, {
+                    field: 'tooling_version',
+                    title: 'Tooling_version'
+                }, {
+                    field: 'delivery_fab',
+                    title: 'Delivery_fab'
+                }, {
+                    field: 'order_type',
+                    title: 'Order_type'
+                }, {
+                    field: 'priority',
+                    title: 'Priority'
+                }, {
+                    field: 'security_type',
+                    title: 'Security_type'
+                }, {
+                    field: 'tech_process',
+                    title: 'Tech_process'
+                }, {
+                    field: 'Cr_Border_extend',
+                    title: 'Tech_process'
+                }]
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) { //如果是移动端
+                $('#table').bootstrapTable("toggleView");
+            }
+
+            $('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table',
+                function () {
+                    $('#remove').prop('disabled', !$('#table').bootstrapTable('getSelections').length);
+                    $('#edit').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);
+                });
+
+            $("#search").click("click", function () { // 绑定查询按扭
+                $('#table').bootstrapTable('refresh');
+            });
+            $("#reset").click("click", function () { // 绑定查询按扭
+                $("#tipno").val("");
+                $("#errorcode").val("");
+                $("#isadmin").val("");
+                //$("#searchForm  select").val("");
+                $('#table').bootstrapTable('refresh');
+            });
+
+            $('#beginInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+            $('#endInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+
+        });
+
+        {#tapeout_info#}
+        $(document).ready(function () {
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+            //表格初始化
+            $('#table_2').bootstrapTable({
+
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                {#showSearch: true,#}
+                //显示刷新按钮
+                {#showRefresh: true,#}
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                showPaginationSwitch: true,
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/tooling_form/ShowTipNo/tapeout_info/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+
+                    csrfmiddlewaretoken = token;
+                    return searchParam;
+                },
+                data: {
+                    csrfmiddlewaretoken: token
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right", //pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        deleteAll(row.id);
+                    }
+                },
+
+                onClickRow: function (row, $el) {
+                },
+                columns: [{
+                    field: 'tip_no',
+                    title: 'Tip_No'
+                }, {
+                    field: 't_o',
+                    title: 'T_O'
+                }, {
+                    field: 'layer_name',
+                    title: 'Layer Name'
+                }, {
+                    field: 'mask_name',
+                    title: 'Mask Name'
+                }, {
+                    field: 'grade',
+                    title: 'Grade'
+                }, {
+                    field: 'mask_mag',
+                    title: 'Mask Mag'
+                }, {
+                    field: 'mask_type',
+                    title: 'Mask Type'
+                }, {
+                    field: 'alignment',
+                    title: 'Alignment'
+                }, {
+                    field: 'pellicle',
+                    title: 'Pellicle'
+                }, {
+                    field: 'light_sourse',
+                    title: 'Light Source'
+                }, {
+                    field: 'rotation',
+                    title: 'Rotation'
+                }, {
+                    field: 'barcode',
+                    title: 'Barcode'
+                }, {
+                    field: 'inspection',
+                    title: 'Inspection'
+                }]
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) { //如果是移动端
+                $('#table_2').bootstrapTable("toggleView");
+            }
+
+            $('#table_2').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table',
+                function () {
+                    $('#remove').prop('disabled', !$('#table_2').bootstrapTable('getSelections').length);
+                    $('#edit').prop('disabled', $('#table_2').bootstrapTable('getSelections').length != 1);
+                });
+
+            $("#search_2").click("click", function () { // 绑定查询按扭
+                $('#table_2').bootstrapTable('refresh');
+            });
+            $("#reset").click("click", function () { // 绑定查询按扭
+                $("#tipno").val("");
+                $("#errorcode").val("");
+                $("#isadmin").val("");
+                //$("#searchForm  select").val("");
+                $('#table_2').bootstrapTable('refresh');
+            });
+
+            $('#beginInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+            $('#endInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+
+        });
+
+        {#device_info#}
+        $(document).ready(function () {
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+            //表格初始化
+            $('#table_3').bootstrapTable({
+
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                {#showSearch: true,#}
+                //显示刷新按钮
+                {#showRefresh: true,#}
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                showPaginationSwitch: true,
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/tooling_form/ShowTipNo/device_info/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+
+                    csrfmiddlewaretoken = token;
+                    return searchParam;
+                },
+                data: {
+                    csrfmiddlewaretoken: token
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right", //pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        deleteAll(row.id);
+                    }
+                },
+
+                onClickRow: function (row, $el) {
+                },
+                columns: [{
+                    field: 'tip_no',
+                    title: 'Tip_No'
+                }, {
+                    field: 'mask_name',
+                    title: 'Mask_name'
+                }, {
+                    field: 'psm',
+                    title: 'PSM'
+                }, {
+                    field: 'source_db',
+                    title: 'Source DB'
+                }, {
+                    field: 'device_type',
+                    title: 'Device type'
+                }, {
+                    field: 'device_name',
+                    title: 'Device Name'
+                }, {
+                    field: 'boolean_index',
+                    title: 'Boolean Index'
+                }, {
+                    field: 'bias_sequence',
+                    title: 'Bias Sequence'
+                }, {
+                    field: 'rotate',
+                    title: 'Rotate'
+                }, {
+                    field: 'file_name',
+                    title: 'File Name'
+                }, {
+                    field: 'top_structure',
+                    title: 'Top Structure'
+                }, {
+                    field: 'source_mag',
+                    title: 'Source Mag'
+                }, {
+                    field: 'shrink',
+                    title: 'Shrink'
+                }, {
+                    field: 'lb_x',
+                    title: 'LB_X'
+                }, {
+                    field: 'lb_y',
+                    title: 'LB_Y'
+                }, {
+                    field: 'rt_x',
+                    title: 'RT_X'
+                }, {
+                    field: 'rt_y',
+                    title: 'RT_Y'
+                }, {
+                    field: 'check_method',
+                    title: 'Check Method'
+                }, {
+                    field: 'value',
+                    title: 'Value'
+                }, {
+                    field: 'file_size',
+                    title: 'File Size'
+                }]
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) { //如果是移动端
+                $('#table_3').bootstrapTable("toggleView");
+            }
+
+            $('#table_3').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table',
+                function () {
+                    $('#remove').prop('disabled', !$('#table_3').bootstrapTable('getSelections').length);
+                    $('#edit').prop('disabled', $('#table_3').bootstrapTable('getSelections').length != 1);
+                });
+
+            $("#search_2").click("click", function () { // 绑定查询按扭
+                $('#table_3').bootstrapTable('refresh');
+            });
+            $("#reset").click("click", function () { // 绑定查询按扭
+                $("#tipno").val("");
+                $("#errorcode").val("");
+                $("#isadmin").val("");
+                //$("#searchForm  select").val("");
+                $('#table_3').bootstrapTable('refresh');
+            });
+
+            $('#beginInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+            $('#endInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+
+        });
+
+        {#ccd_table#}
+        $(document).ready(function () {
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+            //表格初始化
+            $('#table_4').bootstrapTable({
+
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                {#showSearch: true,#}
+                //显示刷新按钮
+                {#showRefresh: true,#}
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                showPaginationSwitch: true,
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/tooling_form/ShowTipNo/ccd_table/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+
+                    csrfmiddlewaretoken = token;
+                    return searchParam;
+                },
+                data: {
+                    csrfmiddlewaretoken: token
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right", //pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        deleteAll(row.id);
+                    }
+                },
+
+                onClickRow: function (row, $el) {
+                },
+                columns: [{
+                    field: 'tip_no',
+                    title: 'Tip_No'
+                }, {
+                    field: 'no',
+                    title: 'No'
+                }, {
+                    field: 'type',
+                    title: 'Type'
+                }, {
+                    field: 'coor_x',
+                    title: 'Coor_X'
+                }, {
+                    field: 'coor_y',
+                    title: 'Coor_y'
+                }, {
+                    field: 'item',
+                    title: 'Item'
+                }, {
+                    field: 'tone',
+                    title: 'Tone'
+                }, {
+                    field: 'direction',
+                    title: 'Direction'
+                }, {
+                    field: 'cd_4x_nm',
+                    title: 'CD_4X_nm'
+                }]
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) { //如果是移动端
+                $('#table_4').bootstrapTable("toggleView");
+            }
+
+            $('#table_4').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table',
+                function () {
+                    $('#remove').prop('disabled', !$('#table_4').bootstrapTable('getSelections').length);
+                    $('#edit').prop('disabled', $('#table_4').bootstrapTable('getSelections').length != 1);
+                });
+
+            $("#search_4").click("click", function () { // 绑定查询按扭
+                $('#table_4').bootstrapTable('refresh');
+            });
+            $("#reset").click("click", function () { // 绑定查询按扭
+                $("#tipno").val("");
+                $("#errorcode").val("");
+                $("#isadmin").val("");
+                //$("#searchForm  select").val("");
+                $('#table_4').bootstrapTable('refresh');
+            });
+
+            $('#beginInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+            $('#endInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+
+        });
+
+        {#boolean_info#}
+        $(document).ready(function () {
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+            //表格初始化
+            $('#table_5').bootstrapTable({
+
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                {#showSearch: true,#}
+                //显示刷新按钮
+                {#showRefresh: true,#}
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                showPaginationSwitch: true,
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/tooling_form/ShowTipNo/boolean_info/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+
+                    csrfmiddlewaretoken = token;
+                    return searchParam;
+                },
+                data: {
+                    csrfmiddlewaretoken: token
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right", //pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        deleteAll(row.id);
+                    }
+                },
+
+                onClickRow: function (row, $el) {
+                },
+                columns: [{
+                    field: 'tip_no',
+                    title: 'Tip_No'
+                }, {
+                    field: 'boolean_index',
+                    title: 'Boolean Index'
+                }, {
+                    field: 'source_db',
+                    title: 'Source DB'
+                }, {
+                    field: 'mask_name',
+                    title: 'Mask Name'
+                }, {
+                    field: 'grid',
+                    title: 'Grid'
+                }, {
+                    field: 'operation',
+                    title: 'Operation'
+                }, {
+                    field: 'total_bias',
+                    title: 'Totla Bias'
+                }, {
+                    field: 'tone',
+                    title: 'Tone'
+                }]
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) { //如果是移动端
+                $('#table_5').bootstrapTable("toggleView");
+            }
+
+            $('#table_5').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table',
+                function () {
+                    $('#remove').prop('disabled', !$('#table_5').bootstrapTable('getSelections').length);
+                    $('#edit').prop('disabled', $('#table_5').bootstrapTable('getSelections').length != 1);
+                });
+
+            $("#search_5").click("click", function () { // 绑定查询按扭
+                $('#table_5').bootstrapTable('refresh');
+            });
+            $("#reset").click("click", function () { // 绑定查询按扭
+                $("#tipno").val("");
+                $("#errorcode").val("");
+                $("#isadmin").val("");
+                //$("#searchForm  select").val("");
+                $('#table_5').bootstrapTable('refresh');
+            });
+
+            $('#beginInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+            $('#endInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+
+        });
+
+        {#layout_info#}
+        $(document).ready(function () {
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+            //表格初始化
+            $('#table_6').bootstrapTable({
+
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                {#showSearch: true,#}
+                //显示刷新按钮
+                {#showRefresh: true,#}
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                showPaginationSwitch: true,
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/tooling_form/ShowTipNo/layout_info/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+
+                    csrfmiddlewaretoken = token;
+                    return searchParam;
+                },
+                data: {
+                    csrfmiddlewaretoken: token
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right", //pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        deleteAll(row.id);
+                    }
+                },
+
+                onClickRow: function (row, $el) {
+                },
+                columns: [{
+                    field: 'tip_no',
+                    title: 'Tip_No'
+                }, {
+                    field: 'psm',
+                    title: 'PSM'
+                }, {
+                    field: 'device_name',
+                    title: 'Device Name'
+                }, {
+                    field: 'mask_mag',
+                    title: 'Mask Mag'
+                }, {
+                    field: 'source_mag',
+                    title: 'Source Mag'
+                }, {
+                    field: 'original',
+                    title: 'Original'
+                }, {
+                    field: 'x1',
+                    title: 'X1'
+                }, {
+                    field: 'y1',
+                    title: 'Y1'
+                }, {
+                    field: 'pitch_x',
+                    title: 'Pitch_X'
+                }, {
+                    field: 'pitch_y',
+                    title: 'Pitch_Y'
+                }, {
+                    field: 'array_x',
+                    title: 'Array_X'
+                }, {
+                    field: 'array_y',
+                    title: 'Array_Y'
+                },{
+                    field: 'mask_name',
+                    title: 'Mask_name'
+                }]
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) { //如果是移动端
+                $('#table_6').bootstrapTable("toggleView");
+            }
+
+            $('#table_6').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table',
+                function () {
+                    $('#remove').prop('disabled', !$('#table_6').bootstrapTable('getSelections').length);
+                    $('#edit').prop('disabled', $('#table_6').bootstrapTable('getSelections').length != 1);
+                });
+
+            $("#search_6").click("click", function () { // 绑定查询按扭
+                $('#table_6').bootstrapTable('refresh');
+            });
+            $("#reset").click("click", function () { // 绑定查询按扭
+                $("#tipno").val("");
+                $("#errorcode").val("");
+                $("#isadmin").val("");
+                //$("#searchForm  select").val("");
+                $('#table_6').bootstrapTable('refresh');
+            });
+
+            $('#beginInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+            $('#endInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+
+        });
+
+        {#mlr_info#}
+        {#mlm_info#}
+        $(document).ready(function () {
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+            //表格初始化
+            $('#table_7').bootstrapTable({
+
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                {#showSearch: true,#}
+                //显示刷新按钮
+                {#showRefresh: true,#}
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                showPaginationSwitch: true,
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                {#url: "/tooling_form/ShowTipNo/mlr_info/",#}
+                url: "/tooling_form/ShowTipNo/mlm_info/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm_6").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+
+                    csrfmiddlewaretoken = token;
+                    return searchParam;
+                },
+                data: {
+                    csrfmiddlewaretoken: token
+                },
+                onShowSearch: function () {
+                    $("#search-collapse_6").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right", //pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        deleteAll(row.id);
+                    }
+                },
+
+                onClickRow: function (row, $el) {
+                },
+                columns: [{
+                    field: 'tip_no',
+                    title: 'Tip_No'
+                }, {
+                    field: 'mlr_mask_id',
+                    title: 'MLR Mask ID'
+                }, {
+                    field: 'mask_name',
+                    title: 'Mask Name'
+                }, {
+                    field: 'field_name',
+                    title: 'Field Name'
+                }, {
+                    field: 'shift_x',
+                    title: 'Shift X'
+                }, {
+                    field: 'shift_y',
+                    title: 'Shift Y'
+                }]
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) { //如果是移动端
+                $('#table_7').bootstrapTable("toggleView");
+            }
+
+            $('#table_7').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table',
+                function () {
+                    $('#remove').prop('disabled', !$('#table_7').bootstrapTable('getSelections').length);
+                    $('#edit').prop('disabled', $('#table_7').bootstrapTable('getSelections').length != 1);
+                });
+
+            $("#search_7").click("click", function () { // 绑定查询按扭
+                $('#table_7').bootstrapTable('refresh');
+            });
+            $("#reset").click("click", function () { // 绑定查询按扭
+                $("#tipno").val("");
+                $("#errorcode").val("");
+                $("#isadmin").val("");
+                //$("#searchForm  select").val("");
+                $('#table_7').bootstrapTable('refresh');
+            });
+
+            $('#beginInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+            $('#endInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+
+        });
+
+        function getIdSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        function refresh() {
+            $('#table').bootstrapTable('refresh');
+        }
+    </script>
+</head>
+<body>
+<div>
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab1" data-toggle="tab">Product_Info</a></li>
+        <li><a href="#tab2" data-toggle="tab">Tapeout_Info</a></li>
+        <li><a href="#tab3" data-toggle="tab">Device_Info</a></li>
+        <li><a href="#tab4" data-toggle="tab">CCD_Table</a></li>
+        <li><a href="#tab5" data-toggle="tab">Boolean_Info</a></li>
+        <li><a href="#tab6" data-toggle="tab">Layout_Info</a></li>
+        {#        <li><a href="#tab7" data-toggle="tab">MLR_Info</a></li>#}
+        <li><a href="#tab7" data-toggle="tab">MLM_Info</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="tab1">
+            <form id="inputForm"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"></form>
+            <div class="wrapper wrapper-content">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 animated fadeInRight">
+                                <!-- 			搜索框-->
+                                <div id="search-collapse" class="collapse">
+                                    <div class="accordion-inner">
+                                        <form id="searchForm" class="form form-horizontal well clearfix" method="post">
+                                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                            <input id="tip_no" type="hidden" name="tip_no" value="{{ tip_no }}">
+                                            <input id="sheet_name" type="hidden" name="sheet_name" value="1">
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <label class="label-item single-overflow pull-left" title="Tipno：">Tipno：</label>
+                                                <input id="tipno" name="tipno" class=" form-control input-sm"
+                                                       type="text" value=""
+                                                       maxlength="50"/>
+                                            </div>
+                                            <input id="isadmin" name="isadmin" type="hidden" value="" maxlength="50"/>
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <div style="margin-top:26px">
+                                                    <a id="search"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-search"></i> Query</a>
+                                                    <a id="reset"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-refresh"></i> Reset</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- 搜索框结束 -->
+                                <!-- 表格 -->
+                                <table id="table" data-toolbar="#toolbar">
+                                </table>
+                                <!-- 表格結束 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab2">
+            {#            <iframe src="/tooling_form/ShowTipNo/tapout_info/" width="100%" height="570px" frameborder="0"></iframe>#}
+            <form id="inputForm"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"></form>
+            <div class="wrapper wrapper-content">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 animated fadeInRight">
+                                <!-- 			搜索框-->
+                                <div id="search-collapse_2" class="collapse">
+                                    <div class="accordion-inner">
+                                        <form id="searchForm_2" class="form form-horizontal well clearfix"
+                                              method="post">
+                                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                            <input id="tip_no" type="hidden" name="tip_no" value="{{ tip_no }}">
+                                            <input id="sheet_name" type="hidden" name="sheet_name" value="1">
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <label class="label-item single-overflow pull-left" title="Tipno：">Tipno：</label>
+                                                <input id="tipno" name="tipno" class=" form-control input-sm"
+                                                       type="text" value=""
+                                                       maxlength="50"/>
+                                            </div>
+                                            <input id="isadmin" name="isadmin" type="hidden" value="" maxlength="50"/>
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <div style="margin-top:26px">
+                                                    <a id="search"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-search"></i> Query</a>
+                                                    <a id="reset"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-refresh"></i> Reset</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- 搜索框结束 -->
+                                <!-- 表格 -->
+                                <table id="table_2" data-toolbar="#toolbar">
+                                </table>
+                                <!-- 表格結束 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab3">
+            <form id="inputForm"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"></form>
+            <div class="wrapper wrapper-content">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 animated fadeInRight">
+                                <!-- 			搜索框-->
+                                <div id="search-collapse_3" class="collapse">
+                                    <div class="accordion-inner">
+                                        <form id="searchForm_3" class="form form-horizontal well clearfix"
+                                              method="post">
+                                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                            <input id="tip_no" type="hidden" name="tip_no" value="{{ tip_no }}">
+                                            <input id="sheet_name" type="hidden" name="sheet_name" value="1">
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <label class="label-item single-overflow pull-left" title="Tipno：">Tipno：</label>
+                                                <input id="tipno" name="tipno" class=" form-control input-sm"
+                                                       type="text" value=""
+                                                       maxlength="50"/>
+                                            </div>
+                                            <input id="isadmin" name="isadmin" type="hidden" value="" maxlength="50"/>
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <div style="margin-top:26px">
+                                                    <a id="search"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-search"></i> Query</a>
+                                                    <a id="reset"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-refresh"></i> Reset</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- 搜索框结束 -->
+                                <!-- 表格 -->
+                                <table id="table_3" data-toolbar="#toolbar">
+                                </table>
+                                <!-- 表格結束 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab4">
+            <form id="inputForm"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"></form>
+            <div class="wrapper wrapper-content">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 animated fadeInRight">
+                                <!-- 			搜索框-->
+                                <div id="search-collapse_4" class="collapse">
+                                    <div class="accordion-inner">
+                                        <form id="searchForm_4" class="form form-horizontal well clearfix"
+                                              method="post">
+                                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                            <input id="tip_no" type="hidden" name="tip_no" value="{{ tip_no }}">
+                                            <input id="sheet_name" type="hidden" name="sheet_name" value="1">
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <label class="label-item single-overflow pull-left" title="Tipno：">Tipno：</label>
+                                                <input id="tipno" name="tipno" class=" form-control input-sm"
+                                                       type="text" value=""
+                                                       maxlength="50"/>
+                                            </div>
+                                            <input id="isadmin" name="isadmin" type="hidden" value="" maxlength="50"/>
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <div style="margin-top:26px">
+                                                    <a id="search"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-search"></i> Query</a>
+                                                    <a id="reset"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-refresh"></i> Reset</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- 搜索框结束 -->
+                                <!-- 表格 -->
+                                <table id="table_4" data-toolbar="#toolbar">
+                                </table>
+                                <!-- 表格結束 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab5">
+            <form id="inputForm"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"></form>
+            <div class="wrapper wrapper-content">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 animated fadeInRight">
+                                <!-- 			搜索框-->
+                                <div id="search-collapse_5" class="collapse">
+                                    <div class="accordion-inner">
+                                        <form id="searchForm_5" class="form form-horizontal well clearfix"
+                                              method="post">
+                                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                            <input id="tip_no" type="hidden" name="tip_no" value="{{ tip_no }}">
+                                            <input id="sheet_name" type="hidden" name="sheet_name" value="1">
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <label class="label-item single-overflow pull-left" title="Tipno：">Tipno：</label>
+                                                <input id="tipno" name="tipno" class=" form-control input-sm"
+                                                       type="text" value=""
+                                                       maxlength="50"/>
+                                            </div>
+                                            <input id="isadmin" name="isadmin" type="hidden" value="" maxlength="50"/>
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <div style="margin-top:26px">
+                                                    <a id="search"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-search"></i> Query</a>
+                                                    <a id="reset"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-refresh"></i> Reset</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- 搜索框结束 -->
+                                <!-- 表格 -->
+                                <table id="table_5" data-toolbar="#toolbar">
+                                </table>
+                                <!-- 表格結束 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab6">
+            <form id="inputForm"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"></form>
+            <div class="wrapper wrapper-content">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 animated fadeInRight">
+                                <!-- 			搜索框-->
+                                <div id="search-collapse_6" class="collapse">
+                                    <div class="accordion-inner">
+                                        <form id="searchForm_6" class="form form-horizontal well clearfix"
+                                              method="post">
+                                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                            <input id="tip_no" type="hidden" name="tip_no" value="{{ tip_no }}">
+                                            <input id="sheet_name" type="hidden" name="sheet_name" value="1">
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <label class="label-item single-overflow pull-left" title="Tipno：">Tipno：</label>
+                                                <input id="tipno" name="tipno" class=" form-control input-sm"
+                                                       type="text" value=""
+                                                       maxlength="50"/>
+                                            </div>
+                                            <input id="isadmin" name="isadmin" type="hidden" value="" maxlength="50"/>
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <div style="margin-top:26px">
+                                                    <a id="search"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-search"></i> Query</a>
+                                                    <a id="reset"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-refresh"></i> Reset</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- 搜索框结束 -->
+                                <!-- 表格 -->
+                                <table id="table_6" data-toolbar="#toolbar">
+                                </table>
+                                <!-- 表格結束 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab7">
+            <form id="inputForm"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"></form>
+            <div class="wrapper wrapper-content">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 animated fadeInRight">
+                                <!-- 			搜索框-->
+                                <div id="search-collapse_7" class="collapse">
+                                    <div class="accordion-inner">
+                                        <form id="searchForm_7" class="form form-horizontal well clearfix"
+                                              method="post">
+                                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                            <input id="tip_no" type="hidden" name="tip_no" value="{{ tip_no }}">
+                                            <input id="sheet_name" type="hidden" name="sheet_name" value="1">
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <label class="label-item single-overflow pull-left" title="Tipno：">Tipno：</label>
+                                                <input id="tipno" name="tipno" class=" form-control input-sm"
+                                                       type="text" value=""
+                                                       maxlength="50"/>
+                                            </div>
+                                            <input id="isadmin" name="isadmin" type="hidden" value="" maxlength="50"/>
+                                            <div class="col-xs-12 col-sm-6 col-md-4">
+                                                <div style="margin-top:26px">
+                                                    <a id="search"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-search"></i> Query</a>
+                                                    <a id="reset"
+                                                       class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                            class="fa fa-refresh"></i> Reset</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- 搜索框结束 -->
+                                <!-- 表格 -->
+                                <table id="table_7" data-toolbar="#toolbar">
+                                </table>
+                                <!-- 表格結束 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

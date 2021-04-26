@@ -1,0 +1,130 @@
+
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+	<head>
+		<title>Edit IP Authorized</title>
+
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<meta name="author"  />
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+		<meta http-equiv="Expires" content="0">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Cache-Control" content="no-store">
+		<script>
+			var d = "";
+		</script>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		{% include 'base.html' %}
+		
+
+
+		<meta name="decorator" content="ani" />
+		<script type="text/javascript">
+			function save() {
+				var isValidate = jp.validateForm('#inputForm'); //校验表单
+				if (!isValidate) {
+					return false;
+				} else {
+					jp.loading();
+					jp.post("/system/ip/{{method}}/",$('#inputForm').serialize(), function(data) {
+						if (data.success) {
+							jp.getParent().refresh();
+							var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+							parent.layer.close(dialogIndex);
+							jp.success(data.msg)
+
+						} else {
+							jp.error(data.msg);
+						}
+					})
+				}
+
+			}
+/*			$(document).ready(function() {
+				$("#no").focus();
+				$("#inputForm").validate({
+					rules: {
+						loginName: {
+							remote: "/system/user_check_loginname/?oldLoginName=" + encodeURIComponent(
+								'{{user.loginname or ''}}')
+						}
+					},
+					messages: {
+						loginName: {
+							remote: "用户登录名已存在"
+						},
+						confirmNewPassword: {
+							equalTo: "输入与上面相同的密码"
+						}
+					}
+				});
+
+			}); */
+		</script>
+
+	</head>
+	<body id="" class="bg-white" style="">
+
+		<form id="inputForm" class="form-horizontal" action="/system/ip/{{method}}/" method="post">
+			<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+
+			<input id="id" name="id" type="hidden" value="{{ip_o.id or ''}}" />
+			
+			<table class="table table-bordered">
+				<tbody>
+					<!-- id = request.POST.get('id')
+					 ip_authorize_info  -->
+					<tr>
+		         <td class="active">
+                     <label class="pull-right">
+                         <font color="red">
+                             *
+                         </font>
+                            ip:
+                     </label>
+                 </td>
+		         <td>
+                     <input id="ip" name="ip" class="form-control required" type="text" value="{{ip_o.ip or ''}}" maxlength="50"/>
+                 </td>
+					</tr>
+
+					<tr>
+		         <td class="active">
+                     <label class="pull-right">
+                         <font color="red">
+                             *
+                         </font>
+                            time:
+                     </label>
+                 </td>
+		         <td>
+                     <input id="time" name="time" class="form-control required" type="text" value="{{ip_o.time or ''}}" maxlength="50"/>
+                 </td>
+					</tr>
+
+					<tr>
+		         <td class="active">
+                     <label class="pull-right">
+                         <font color="red">
+                             *
+                         </font>
+                            ip type:
+                     </label>
+                 </td>
+		         <td>
+{#                     <input id="ip_type" name="ip_type" class="form-control required" type="text" value="{{ip_o.ip_type or ''}}" maxlength="50"/>#}
+                       <select id="ip_type" name="ip_type" class="form-control required">
+                           <option value="0"{% if ip_o.ip_type == 0%} selected {% endif %} >白名单</option>
+                           <option value="1"{% if ip_o.ip_type == 1%} selected {% endif %} >黑名单</option>
+                       </select>
+                 </td>
+					</tr>
+
+				</tbody>
+			</table>
+		</form>
+
+	</body>
+</html>

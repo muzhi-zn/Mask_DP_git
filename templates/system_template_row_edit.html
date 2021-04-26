@@ -1,0 +1,125 @@
+
+
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+	<title>Row</title>
+	
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<script>var d = "";</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+ <!-- CodeMirror -->
+    <script src= "{{ static ('bootstrap3/js/plugins/codemirror/codemirror.js') }}"></script>
+    <script src= "{{ static ('bootstrap3/js/plugins/codemirror/mode/javascript/javascript.js') }}"></script>
+  <link href= "{{ static ('bootstrap3/css/plugins/codemirror/codemirror.css'%}" rel="stylesheet">
+{% include 'base.html' %}
+  
+<script type="text/javascript">
+	var code_editer = null;
+    $(document).ready(function(){
+       code_editer = CodeMirror.fromTextArea(document.getElementById("coder"), {
+       				 lineNumbers: true,
+       				 autofocus: true,
+       				 matchBrackets: true,
+       				 styleActiveLine: true
+       			 });	
+       
+    });
+function undo(){
+		code_editer.undo();
+	}
+	
+	
+	function redo(){
+		code_editer.redo();
+	}
+function insertInfotreeAction(){
+		var cursor = code_editer.getCursor();
+		code_editer.replaceRange('hello',cursor,cursor);
+		
+	}
+</script>
+
+	
+	
+	<meta name="decorator" content="ani"/>
+	<script type="text/javascript">
+		
+        function save() {
+            jp.getParent().saveRow('aaa');
+            //jp.success(data.msg);
+            var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+            parent.layer.close(dialogIndex);
+
+        }
+	</script>
+
+</head>
+<body id="" class="bg-white"  style="">
+	
+	<form id="inputForm" class="form-horizontal" action="" method="post">
+		<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+		
+		<input id="id" name="id" type="hidden" value="{{office.id or ''}}"/>
+		<table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+		   <tbody>
+		      
+		       <tr>
+				   <td  class="width-15"  class="active">
+					   <select id="infotree" onchange="changeIntofree();">
+					   					  <option>Insert Info Tree</option>
+					   </select>
+					   </td>
+				   
+		         <td class="width-35">
+				<input type="button" class="btn btn-primary" id="insertInfotree" value="InsertInfotree" onclick="insertInfotreeAction();" />
+				
+				</td>
+				
+		      
+			  <td class="width-15 active">
+				  <select id="floorplan">
+				  					  <option>Insert Floor Plan</option>
+				  </select>
+				  </td>
+			  <td class="width-35">
+				  
+			  </td>
+			  
+			  </tr>
+		       <tr>
+		         <td class="width-15 active">
+					 <select id="filename">
+				  					  <option>Insert File Name</option>
+				  </select></td>
+		         <td class="width-35">
+					 
+		         </td>					
+		         <td  class="width-15" class="active">
+					 
+					<input type="button" class="btn btn-primary" id="undo-input" value="UnDo" onclick="undo();" />
+					 
+				 </td>
+		        <td class="width-35">
+					<input type="button" class="btn btn-primary" id="redo-input" value="ReDo" onclick="redo();" />
+					
+				</td>
+		      </tr>
+		      <tr>
+				  <td colspan="4">
+					  <textarea id="coder"  class="form-control" rows="20"></textarea>
+				  </td>
+			  </tr>
+	      </tbody>
+	      </table>
+	</form>
+
+</body>
+</html>

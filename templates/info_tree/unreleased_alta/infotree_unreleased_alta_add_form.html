@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Machine Manage</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+            jp.loading();
+            jp.post("/infotree/unreleased_alta/{{method}}/", $('#inputForm').serialize(), function (data) {
+                if (data.success) {
+                    jp.getParent().reset();
+                    var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                    parent.layer.close(dialogIndex);
+                    jp.success(data.msg)
+                } else {
+                    jp.error(data.msg);
+                }
+            })
+        }
+    </script>
+    <script>
+        $(function () {
+            gen_options();
+        });
+
+        function gen_options() {
+            $.ajax({
+                url: '/infotree/unreleased_alta/dict/',
+                method: "post",
+                async: false,
+                datatype: 'json',
+                success: function (arr) {
+                    console.log(arr);
+                    for (var i = 0; i < arr.Tool.length; i++) {
+                        $("#tool").append("<option value='" + arr.Tool[i] + "'>" + arr.Tool[i] + "</option>");
+                    }
+                    for (var i = 0; i < arr.Node.length; i++) {
+                        $("#node").append("<option value='" + arr.Node[i] + "'>" + arr.Node[i] + "</option>");
+                    }
+                    for (var i = 0; i < arr.Tone.length; i++) {
+                        $("#tone").append("<option value='" + arr.Tone[i] + "'>" + arr.Tone[i] + "</option>");
+                    }
+                    for (var i = 0; i < arr.Blank.length; i++) {
+                        $("#blank").append("<option value='" + arr.Blank[i] + "'>" + arr.Blank[i] + "</option>");
+                    }
+                    for (var i = 0; i < arr.Grade.length; i++) {
+                        $("#grade").append("<option value='" + arr.Grade[i] + "'>" + arr.Grade[i] + "</option>");
+                    }
+                    for (var i = 0; i < arr.Pattern_density.length; i++) {
+                        $("#pattern_density").append("<option value='" + arr.Pattern_density[i] + "'>" + arr.Pattern_density[i] + "</option>");
+                    }
+                    for (var i = 0; i < arr.Layer.length; i++) {
+                        $("#layer").append("<option value='" + arr.Layer[i] + "'>" + arr.Layer[i] + "</option>");
+                    }
+                    for (var i = 0; i < arr.Customer.length; i++) {
+                        $("#customer").append("<option value='" + arr.Customer[i] + "'>" + arr.Customer[i] + "</option>");
+                    }
+                    for (var i = 0; i < arr.Level.length; i++) {
+                        $("#level").append("<option value='" + arr.Level[i] + "'>" + arr.Level[i] + "</option>");
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" method="post" autocomplete="off">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input type="hidden" name="s_tool" value="{{ s_tool }}">
+    <input type="hidden" name="s_node" value="{{ s_node }}">
+    <input type="hidden" name="s_tone" value="{{ s_tone }}">
+    <input type="hidden" name="s_blank" value="{{ s_blank }}">
+    <input type="hidden" name="s_grade" value="{{ s_grade }}">
+    <input type="hidden" name="s_pattern_density" value="{{ s_pattern_density }}">
+    <input type="hidden" name="s_layer" value="{{ s_layer }}">
+    <input type="hidden" name="s_level" value="{{ s_level }}">
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            {# tool #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right"><font color="red">*</font>Customer : </label>
+            </td>
+            <td class="width-35">
+                <select id="customer" name="customer" class="form-control required">
+                    <option></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            {# tool #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right"><font color="red">*</font>Tool : </label>
+            </td>
+            <td class="width-35">
+                <select id="tool" name="tool" class="form-control required">
+                    <option></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            {# node #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right"><font color="red">*</font>Node : </label>
+            </td>
+            <td class="width-35">
+                <select id="node" name="node" class="form-control required">
+                    <option></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            {# tone #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right"><font color="red">*</font>Tone : </label>
+            </td>
+            <td class="width-35">
+                <select id="tone" name="tone" class="form-control required">
+                    <option></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            {# blank #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right"><font color="red">*</font>Blank : </label>
+            </td>
+            <td class="width-35">
+                <select id="blank" name="blank" class="form-control required">
+                    <option></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            {# grade #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right"><font color="red">*</font>Grade : </label>
+            </td>
+            <td class="width-35">
+                <select id="grade" name="grade" class="form-control required">
+                    <option></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            {# pattern_density #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right"><font color="red">*</font>Pattern density : </label>
+            </td>
+            <td class="width-35">
+                <select id="pattern_density" name="pattern_density" class="form-control required">
+                    <option></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            {# layer #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right"><font color="red">*</font>Layer : </label>
+            </td>
+            <td class="width-35">
+                <select id="layer" name="layer" class="form-control required">
+                    <option></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            {# level #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right"><font color="red">*</font>Level : </label>
+            </td>
+            <td class="width-35">
+                <select id="level" name="level" class="form-control required">
+                    <option></option>
+                </select>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <input id="menuIds" name="menuIds" type="hidden" value=""/>
+</form>
+<script type='text/javascript'>
+</script>
+</body>

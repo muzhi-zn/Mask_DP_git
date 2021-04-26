@@ -1,0 +1,769 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptsm.idl
+    On Monday, October 26, 2020 2:10:28 PM CST
+    by IBM CORBA 2.3 WSDL emitter 2.30
+--><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="CS_PPTServiceManager" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.omg.org/IDL-Mapped/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:import location="../../corba/corba.wsdl" namespace="http://www.omg.org/IDL-WSDL/1.0/"/>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.omg.org/IDL-WSDL/1.0/">
+      <xsd:include schemaLocation="../../corba/corba.xsd"/>
+    </xsd:schema>
+    <xsd:schema targetNamespace="http://www.omg.org/IDL-Mapped/">
+      <xsd:include schemaLocation="../schema/pptLoadingLotRptResult.xsd"/>
+      <xsd:include schemaLocation="../schema/pptUnloadingLotRptResult.xsd"/>
+      <xsd:include schemaLocation="../schema/pptForceOpeCompReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/csUniversalHoldLotReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/pptUserParameterValueInqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/pptHoldLotReleaseReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/csExTIPLayerDataParmSetReqInParm.xsd"/>
+      <xsd:include schemaLocation="../schema/pptOpeCompWithDataReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/pptLotsInfoForOpeStartInqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/csCollectedDataAfterOpeCompRptInParm.xsd"/>
+      <xsd:include schemaLocation="../schema/pptLotInfoInqResult__160.xsd"/>
+      <xsd:include schemaLocation="../schema/csCollectedDataAfterOpeCompRptResult.xsd"/>
+      <xsd:include schemaLocation="../schema/pptLotOperationListInqResult__160.xsd"/>
+      <xsd:include schemaLocation="../schema/pptUser.xsd"/>
+      <xsd:include schemaLocation="../schema/pptLotListInqResult__180.xsd"/>
+      <xsd:include schemaLocation="../schema/pptRunningHoldReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/objectIdentifierSequence.xsd"/>
+      <xsd:include schemaLocation="../schema/pptUserDataInqInParm__101.xsd"/>
+      <xsd:include schemaLocation="../schema/pptVirtualOperationLotListInqInParam.xsd"/>
+      <xsd:include schemaLocation="../schema/pptUserDataInqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/csCollectedDataInfoForAfterOpeCompInqInParm.xsd"/>
+      <xsd:include schemaLocation="../schema/pptVirtualOperationLotListInqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/pptOpeLocateReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/csUniversalHoldLotReqInParm.xsd"/>
+      <xsd:include schemaLocation="../schema/pptOpeStartCancelReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/pptHoldListSequence.xsd"/>
+      <xsd:include schemaLocation="../schema/pptRouteOperationListInqResult__160.xsd"/>
+      <xsd:include schemaLocation="../schema/pptOpeStartReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/csCollectedDataInfoForAfterOpeCompInqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/objectIdentifier.xsd"/>
+      <xsd:include schemaLocation="../schema/pptLogOnCheckReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/csExTIPLayerDataParmSetReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/pptProcessRef.xsd"/>
+      <xsd:include schemaLocation="../schema/csExTIPLayerDataParmInqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/pptEqpInfoInqResult__160.xsd"/>
+      <xsd:include schemaLocation="../schema/csExTIPLayerDataParmInqInParm.xsd"/>
+      <xsd:include schemaLocation="../schema/pptStartCassetteSequence.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="CS_PPTServiceManager.TxEqpInfoInq__160">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="equipmentID" type="tns:objectIdentifier"/>
+    <wsdl:part name="requestFlagForBRInfo" type="xsd:boolean"/>
+    <wsdl:part name="requestFlagForStatusInfo" type="xsd:boolean"/>
+    <wsdl:part name="requestFlagForPMInfo" type="xsd:boolean"/>
+    <wsdl:part name="requestFlagForPortInfo" type="xsd:boolean"/>
+    <wsdl:part name="requestFlagForChamberInfo" type="xsd:boolean"/>
+    <wsdl:part name="requestFlagForStockerInfo" type="xsd:boolean"/>
+    <wsdl:part name="requestFlagForInprocessingLotInfo" type="xsd:boolean"/>
+    <wsdl:part name="requestFlagForReservedControlJobInfo" type="xsd:boolean"/>
+    <wsdl:part name="requestFlagForRSPPortInfo" type="xsd:boolean"/>
+    <wsdl:part name="requestFlagForEqpContainerInfo" type="xsd:boolean"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxLoadingLotRpt">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="equipmentID" type="tns:objectIdentifier"/>
+    <wsdl:part name="cassetteID" type="tns:objectIdentifier"/>
+    <wsdl:part name="portID" type="tns:objectIdentifier"/>
+    <wsdl:part name="loadPurposeType" type="xsd:string"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxRunningHoldReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="equipmentID" type="tns:objectIdentifier"/>
+    <wsdl:part name="controlJobID" type="tns:objectIdentifier"/>
+    <wsdl:part name="holdReasonCodeID" type="tns:objectIdentifier"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_PPTServiceManager_uninitResponse"/>
+  <wsdl:message name="CS_PPTServiceManager.TxLotsInfoForOpeStartInqResponse">
+    <wsdl:part name="_return" type="tns:pptLotsInfoForOpeStartInqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxVirtualOperationLotListInq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="strVirtualOperationLotListInqInParam" type="tns:pptVirtualOperationLotListInqInParam"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxRouteOperationListInq__160Response">
+    <wsdl:part name="_return" type="tns:pptRouteOperationListInqResult__160"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxOpeStartCancelReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="equipmentID" type="tns:objectIdentifier"/>
+    <wsdl:part name="controlJobID" type="tns:objectIdentifier"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxForceOpeCompReqResponse">
+    <wsdl:part name="_return" type="tns:pptForceOpeCompReqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxLotListInq__180Response">
+    <wsdl:part name="_return" type="tns:pptLotListInqResult__180"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxUnloadingLotRpt">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="equipmentID" type="tns:objectIdentifier"/>
+    <wsdl:part name="cassetteID" type="tns:objectIdentifier"/>
+    <wsdl:part name="portID" type="tns:objectIdentifier"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxOpeLocateReqResponse">
+    <wsdl:part name="_return" type="tns:pptOpeLocateReqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxOpeCompWithDataReqResponse">
+    <wsdl:part name="_return" type="tns:pptOpeCompWithDataReqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxLogOnCheckReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="subSystemID" type="xsd:string"/>
+    <wsdl:part name="categoryID" type="xsd:string"/>
+    <wsdl:part name="bProductRequestFlag" type="xsd:boolean"/>
+    <wsdl:part name="bRecipeRequestFlag" type="xsd:boolean"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxForceOpeCompReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="equipmentID" type="tns:objectIdentifier"/>
+    <wsdl:part name="controlJobID" type="tns:objectIdentifier"/>
+    <wsdl:part name="spcResultRequiredFlag" type="xsd:boolean"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxHoldLotReleaseReqResponse">
+    <wsdl:part name="_return" type="tns:pptHoldLotReleaseReqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxEqpInfoInq__160Response">
+    <wsdl:part name="_return" type="tns:pptEqpInfoInqResult__160"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_TxExTIPLayerDataParmInq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="strExTIPLayerDataParmInqInParm" type="tns:csExTIPLayerDataParmInqInParm"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxOpeStartCancelReqResponse">
+    <wsdl:part name="_return" type="tns:pptOpeStartCancelReqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxVirtualOperationLotListInqResponse">
+    <wsdl:part name="_return" type="tns:pptVirtualOperationLotListInqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_TxExTIPLayerDataParmInqResponse">
+    <wsdl:part name="_return" type="tns:csExTIPLayerDataParmInqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxHoldLotReleaseReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="lotID" type="tns:objectIdentifier"/>
+    <wsdl:part name="releaseReasonCodeID" type="tns:objectIdentifier"/>
+    <wsdl:part name="strLotHoldReleaseReqList" type="tns:pptHoldListSequence"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxOpeStartReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="equipmentID" type="tns:objectIdentifier"/>
+    <wsdl:part name="portGroupID" type="xsd:string"/>
+    <wsdl:part name="controlJobID" type="tns:objectIdentifier"/>
+    <wsdl:part name="strStartCassette" type="tns:pptStartCassetteSequence"/>
+    <wsdl:part name="processJobPauseFlag" type="xsd:boolean"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxLotInfoInq__160">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="lotID" type="tns:objectIdentifierSequence"/>
+    <wsdl:part name="lotBasicInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotControlUseInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotFlowBatchInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotNoteFlagInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotOperationInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotOrderInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotControlJobInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotProductInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotRecipeInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotLocationInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotWipOperationInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotWaferAttributesFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotListInCassetteInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="waferMapInCassetteInfoFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotBackupInfoFlag" type="xsd:boolean"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_PPTServiceManager_initResponse"/>
+  <wsdl:message name="CS_PPTServiceManager.TxLogOnCheckReqResponse">
+    <wsdl:part name="_return" type="tns:pptLogOnCheckReqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxOpeStartReqResponse">
+    <wsdl:part name="_return" type="tns:pptOpeStartReqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxLotOperationListInq__160Response">
+    <wsdl:part name="_return" type="tns:pptLotOperationListInqResult__160"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxLotListInq__180">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="bankID" type="tns:objectIdentifier"/>
+    <wsdl:part name="lotStatus" type="xsd:string"/>
+    <wsdl:part name="lotType" type="xsd:string"/>
+    <wsdl:part name="productID" type="tns:objectIdentifier"/>
+    <wsdl:part name="orderNumber" type="xsd:string"/>
+    <wsdl:part name="customerCode" type="xsd:string"/>
+    <wsdl:part name="manufacturingLayerID" type="tns:objectIdentifier"/>
+    <wsdl:part name="routeID" type="tns:objectIdentifier"/>
+    <wsdl:part name="operationNumber" type="xsd:string"/>
+    <wsdl:part name="bankInRequiredFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotID" type="tns:objectIdentifier"/>
+    <wsdl:part name="requiredCassetteCategory" type="xsd:string"/>
+    <wsdl:part name="backupProcessingFlag" type="xsd:boolean"/>
+    <wsdl:part name="subLotType" type="xsd:string"/>
+    <wsdl:part name="deleteLotFlag" type="xsd:boolean"/>
+    <wsdl:part name="holdReasonCodeID" type="tns:objectIdentifier"/>
+    <wsdl:part name="sorterJobCreationCheckFlag" type="xsd:boolean"/>
+    <wsdl:part name="interFabXferState" type="xsd:string"/>
+    <wsdl:part name="autoDispatchControlLotFlag" type="xsd:boolean"/>
+    <wsdl:part name="virtualOperationFlag" type="xsd:boolean"/>
+    <wsdl:part name="operationID" type="tns:objectIdentifier"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_TxUniversalHoldLotReqResponse">
+    <wsdl:part name="_return" type="tns:csUniversalHoldLotReqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxLotInfoInq__160Response">
+    <wsdl:part name="_return" type="tns:pptLotInfoInqResult__160"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_TxUniversalHoldLotReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="strUniversalHoldLotReqInParm" type="tns:csUniversalHoldLotReqInParm"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxLoadingLotRptResponse">
+    <wsdl:part name="_return" type="tns:pptLoadingLotRptResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxUserDataInq__101">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="strUserDataInqInParm" type="tns:pptUserDataInqInParm__101"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxRunningHoldReqResponse">
+    <wsdl:part name="_return" type="tns:pptRunningHoldReqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_TxExTIPLayerDataParmSetReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="strExTIPLayerDataParmSetReqInParm" type="tns:csExTIPLayerDataParmSetReqInParm"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_PPTServiceManager_uninit"/>
+  <wsdl:message name="CS_PPTServiceManager.TxLotsInfoForOpeStartInq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="equipmentID" type="tns:objectIdentifier"/>
+    <wsdl:part name="cassetteID" type="tns:objectIdentifierSequence"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_PPTServiceManager_init"/>
+  <wsdl:message name="CS_PPTServiceManager.TxUserParameterValueInq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="parameterClass" type="xsd:string"/>
+    <wsdl:part name="identifier" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_TxCollectedDataAfterOpeCompRpt">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="strCollectedDataAfterOpeCompRptInParm" type="tns:csCollectedDataAfterOpeCompRptInParm"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_TxExTIPLayerDataParmSetReqResponse">
+    <wsdl:part name="_return" type="tns:csExTIPLayerDataParmSetReqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxLotOperationListInq__160">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="searchDirection" type="xsd:boolean"/>
+    <wsdl:part name="posSearchFlag" type="xsd:boolean"/>
+    <wsdl:part name="searchCount" type="xsd:int"/>
+    <wsdl:part name="currentFlag" type="xsd:boolean"/>
+    <wsdl:part name="lotID" type="tns:objectIdentifier"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxUserDataInq__101Response">
+    <wsdl:part name="_return" type="tns:pptUserDataInqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxOpeLocateReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="locateDirection" type="xsd:boolean"/>
+    <wsdl:part name="lotID" type="tns:objectIdentifier"/>
+    <wsdl:part name="currentRouteID" type="tns:objectIdentifier"/>
+    <wsdl:part name="currentOperationNumber" type="xsd:string"/>
+    <wsdl:part name="routeID" type="tns:objectIdentifier"/>
+    <wsdl:part name="operationID" type="tns:objectIdentifier"/>
+    <wsdl:part name="operationNumber" type="xsd:string"/>
+    <wsdl:part name="processRef" type="tns:pptProcessRef"/>
+    <wsdl:part name="seqno" type="xsd:int"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_TxCollectedDataAfterOpeCompRptResponse">
+    <wsdl:part name="_return" type="tns:csCollectedDataAfterOpeCompRptResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxOpeCompWithDataReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="equipmentID" type="tns:objectIdentifier"/>
+    <wsdl:part name="controlJobID" type="tns:objectIdentifier"/>
+    <wsdl:part name="spcResultRequiredFlag" type="xsd:boolean"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_TxCollectedDataInfoForAfterOpeCompInq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="strCollectedDataInfoForAfterOpeCompInqInParm" type="tns:csCollectedDataInfoForAfterOpeCompInqInParm"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxRouteOperationListInq__160">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="routeID" type="tns:objectIdentifier"/>
+    <wsdl:part name="operationID" type="tns:objectIdentifier"/>
+    <wsdl:part name="operationNumber" type="xsd:string"/>
+    <wsdl:part name="pdType" type="xsd:string"/>
+    <wsdl:part name="searchCount" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.CS_TxCollectedDataInfoForAfterOpeCompInqResponse">
+    <wsdl:part name="_return" type="tns:csCollectedDataInfoForAfterOpeCompInqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxUserParameterValueInqResponse">
+    <wsdl:part name="_return" type="tns:pptUserParameterValueInqResult"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxUnloadingLotRptResponse">
+    <wsdl:part name="_return" type="tns:pptUnloadingLotRptResult"/>
+  </wsdl:message>
+  <wsdl:portType name="CS_PPTServiceManager">
+    <wsdl:operation name="CS_PPTServiceManager_init">
+      <wsdl:input message="tns:CS_PPTServiceManager.CS_PPTServiceManager_init"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.CS_PPTServiceManager_initResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="CS_PPTServiceManager_uninit">
+      <wsdl:input message="tns:CS_PPTServiceManager.CS_PPTServiceManager_uninit"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.CS_PPTServiceManager_uninitResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxOpeStartReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxOpeStartReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxOpeStartReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxOpeStartCancelReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxOpeStartCancelReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxOpeStartCancelReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxOpeCompWithDataReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxOpeCompWithDataReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxOpeCompWithDataReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxHoldLotReleaseReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxHoldLotReleaseReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxHoldLotReleaseReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxRunningHoldReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxRunningHoldReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxRunningHoldReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxForceOpeCompReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxForceOpeCompReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxForceOpeCompReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="CS_TxUniversalHoldLotReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.CS_TxUniversalHoldLotReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.CS_TxUniversalHoldLotReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxLotsInfoForOpeStartInq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxLotsInfoForOpeStartInq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxLotsInfoForOpeStartInqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="CS_TxExTIPLayerDataParmSetReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.CS_TxExTIPLayerDataParmSetReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.CS_TxExTIPLayerDataParmSetReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="CS_TxExTIPLayerDataParmInq">
+      <wsdl:input message="tns:CS_PPTServiceManager.CS_TxExTIPLayerDataParmInq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.CS_TxExTIPLayerDataParmInqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxLotListInq__180">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxLotListInq__180"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxLotListInq__180Response"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxVirtualOperationLotListInq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxVirtualOperationLotListInq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxVirtualOperationLotListInqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxLoadingLotRpt">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxLoadingLotRpt"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxLoadingLotRptResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxUnloadingLotRpt">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxUnloadingLotRpt"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxUnloadingLotRptResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxLotOperationListInq__160">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxLotOperationListInq__160"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxLotOperationListInq__160Response"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxRouteOperationListInq__160">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxRouteOperationListInq__160"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxRouteOperationListInq__160Response"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxLotInfoInq__160">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxLotInfoInq__160"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxLotInfoInq__160Response"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxUserParameterValueInq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxUserParameterValueInq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxUserParameterValueInqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxUserDataInq__101">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxUserDataInq__101"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxUserDataInq__101Response"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxLogOnCheckReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxLogOnCheckReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxLogOnCheckReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxEqpInfoInq__160">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxEqpInfoInq__160"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxEqpInfoInq__160Response"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="CS_TxCollectedDataInfoForAfterOpeCompInq">
+      <wsdl:input message="tns:CS_PPTServiceManager.CS_TxCollectedDataInfoForAfterOpeCompInq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.CS_TxCollectedDataInfoForAfterOpeCompInqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="CS_TxCollectedDataAfterOpeCompRpt">
+      <wsdl:input message="tns:CS_PPTServiceManager.CS_TxCollectedDataAfterOpeCompRpt"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.CS_TxCollectedDataAfterOpeCompRptResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+    <wsdl:operation name="TxOpeLocateReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxOpeLocateReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxOpeLocateReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CS_PPTServiceManagerBinding" type="tns:CS_PPTServiceManager">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="CS_PPTServiceManager_init">
+      <soap:operation soapAction="CS_PPTServiceManager#CS_PPTServiceManager_init"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CS_PPTServiceManager_uninit">
+      <soap:operation soapAction="CS_PPTServiceManager#CS_PPTServiceManager_uninit"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxOpeStartReq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxOpeStartReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxOpeStartCancelReq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxOpeStartCancelReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxOpeCompWithDataReq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxOpeCompWithDataReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxHoldLotReleaseReq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxHoldLotReleaseReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxRunningHoldReq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxRunningHoldReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxForceOpeCompReq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxForceOpeCompReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CS_TxUniversalHoldLotReq">
+      <soap:operation soapAction="CS_PPTServiceManager#CS_TxUniversalHoldLotReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxLotsInfoForOpeStartInq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxLotsInfoForOpeStartInq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CS_TxExTIPLayerDataParmSetReq">
+      <soap:operation soapAction="CS_PPTServiceManager#CS_TxExTIPLayerDataParmSetReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CS_TxExTIPLayerDataParmInq">
+      <soap:operation soapAction="CS_PPTServiceManager#CS_TxExTIPLayerDataParmInq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxLotListInq__180">
+      <soap:operation soapAction="CS_PPTServiceManager#TxLotListInq__180"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxVirtualOperationLotListInq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxVirtualOperationLotListInq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxLoadingLotRpt">
+      <soap:operation soapAction="CS_PPTServiceManager#TxLoadingLotRpt"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxUnloadingLotRpt">
+      <soap:operation soapAction="CS_PPTServiceManager#TxUnloadingLotRpt"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxLotOperationListInq__160">
+      <soap:operation soapAction="CS_PPTServiceManager#TxLotOperationListInq__160"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxRouteOperationListInq__160">
+      <soap:operation soapAction="CS_PPTServiceManager#TxRouteOperationListInq__160"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxLotInfoInq__160">
+      <soap:operation soapAction="CS_PPTServiceManager#TxLotInfoInq__160"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxUserParameterValueInq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxUserParameterValueInq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxUserDataInq__101">
+      <soap:operation soapAction="CS_PPTServiceManager#TxUserDataInq__101"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxLogOnCheckReq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxLogOnCheckReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxEqpInfoInq__160">
+      <soap:operation soapAction="CS_PPTServiceManager#TxEqpInfoInq__160"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CS_TxCollectedDataInfoForAfterOpeCompInq">
+      <soap:operation soapAction="CS_PPTServiceManager#CS_TxCollectedDataInfoForAfterOpeCompInq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CS_TxCollectedDataAfterOpeCompRpt">
+      <soap:operation soapAction="CS_PPTServiceManager#CS_TxCollectedDataAfterOpeCompRpt"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TxOpeLocateReq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxOpeLocateReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CS_PPTServiceManager">
+    <wsdl:port binding="tns:CS_PPTServiceManagerBinding" name="CS_PPTServiceManagerSOAP">
+      <soap:address location="http://myhost.mydomain:80/CS_PPTServiceManager/mymarker"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

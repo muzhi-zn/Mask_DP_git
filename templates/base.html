@@ -1,0 +1,114 @@
+<!-- 设置浏览器图标 -->
+<link rel="shortcut icon" href="{{ static ('/ani/static/favicon.ico') }}">
+<!-- 引入jeeplus ajax版本库文件，该文件压缩了jQuery，datatime等常用js文件以提高加载速度 -->
+<link rel="stylesheet" href="{{ static ('/ani/static/common/css/vendor.css') }}"/>
+<script src="{{ static ('/ani/static/common/js/vendor.js') }}"></script>
+<!-- 引入依赖的第三方插件 -->
+<link href="{{ static ('/ani/static/plugin/awesome/4.4/css/font-awesome.min.css') }}" rel="stylesheet"/>
+<script src="{{ static ('/ani/static/plugin/jquery-validation/1.14.0/jquery.validate.js') }}"
+        type="text/javascript"></script>
+<script src="{{ static ('/ani/static/plugin/jquery-validation/1.14.0/localization/messages_zh.min.js') }}"
+        type="text/javascript"></script>
+<script src="{{ static ('/ani/static/plugin/jquery-validation/1.14.0/validation-methods.js') }}"
+        type="text/javascript"></script>
+<link href="{{ static ('/ani/static/plugin/icheck-1.x/skins/square/_all.css') }}" rel="stylesheet"/>
+<script src="{{ static ('/ani/static/plugin/icheck-1.x/icheck.js') }}"></script>
+
+<!--省市区三级联动插件-->
+<link href="{{ static ('/ani/static/plugin/city-picker/css/city-picker.css') }}" rel="stylesheet" type="text/css"/>
+<script src="{{ static ('/ani/static/plugin/city-picker/js/city-picker.data.js') }}" type="text/javascript"></script>
+<script src="{{ static ('/ani/static/plugin/city-picker/js/city-picker.js') }}" type="text/javascript"></script>
+
+<!-- 引入layer插件,当做独立组件使用，不使用layui模块，该版本修复了chrome下花屏的bug -->
+<script src="{{ static ('/ani/static/plugin/layui/layer/layer.js') }}"></script>
+<script src="{{ static ('/ani/static/plugin/layui/laytpl/laytpl.js') }}"></script>
+
+
+<!--引入webuploader-->
+<link rel="stylesheet" type="text/css" href="{{ static ('/ani/static/plugin/webuploader-0.1.5/webuploader.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ static ('/ani/static/plugin/webuploader-0.1.5/demo.css') }}">
+<script type="text/javascript" src="{{ static ('/ani/static/plugin/webuploader-0.1.5/webuploader.js') }}"></script>
+
+<!-- 引入toastr -->
+<link rel="stylesheet" type="text/css" href="{{ static ('/ani/static/plugin/toastr/toastr.css') }}">
+<script type="text/javascript" src="{{ static ('/ani/static/plugin/toastr/toastr.min.js') }}"></script>
+
+<!--引入select2-->
+<link rel="stylesheet" type="text/css" href="{{ static ('/ani/static/plugin/select2/css/select2.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ static ('/ani/static/plugin/select2/css/select2-bootstrap.css') }}">
+<script type="text/javascript" src="{{ static ('/ani/static/plugin/select2/js/select2.min.js') }}"></script>
+<script type="text/javascript" src="{{ static ('/ani/static/plugin/select2/js/i18n/zh-CN.js') }}"></script>
+
+<!--引入bootstrap-toggle-->
+<link rel="stylesheet" type="text/css" href="{{ static ('/bootstrap-toggle/css/bootstrap-toggle.min.css') }}">
+<script type="text/javascript" src="{{ static ('/bootstrap-toggle/js/bootstrap-toggle.min.js') }}"></script>
+
+<!--引入bootstrap-select-->
+<link rel="stylesheet" type="text/css" href="{{ static ('/bootstrap-select/bootstrap-select.min.css') }}">
+<script type="text/javascript" src="{{ static ('/bootstrap-select/bootstrap-select.min.js') }}"></script>
+
+<!--引入bootstrap-datapicker-->
+<link rel="stylesheet" type="text/css" href="{{ static ('/bootstrap3/css/plugins/datapicker/datepicker3.css') }}">
+<script type="text/javascript"
+        src="{{ static ('/bootstrap3/js/plugins/datapicker/bootstrap-datepicker.js') }}"></script>
+
+<!--引入bootstrap-datetimepiker-->
+<link rel="stylesheet" type="text/css"
+      href="{{ static ('/bootstrap-datetimepiker/css/bootstrap-datetimepicker.min.css') }}">
+<script type="text/javascript"
+        src="{{ static ('/bootstrap-datetimepiker/js/bootstrap-datetimepicker.min.js') }}"></script>
+
+
+<!-- bootstrap-table-fixed-columns -->
+<link rel="stylesheet" type="text/css"
+      href="{{ static ('/bootstrap-table-fixed-columns/bootstrap-table-fixed-columns.css') }}">
+<script type="text/javascript"
+        src="{{ static ('/bootstrap-table-fixed-columns/bootstrap-table-fixed-columns.js') }}"></script>
+
+<!-- 引入自定义文件 -->
+<script type="text/javascript">var ctx = '/ani/a', ctxStatic = '/ani/static';</script>
+<link rel="stylesheet" id="theme" href="{{ static ('/ani/static/common/css/app-blue.css') }}"/>
+<script src="{{ static ('/ani/static/common/js/jeeplus.js') }}"></script>
+
+
+<script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-zh-CN.js') }}"></script>
+<script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-contextmenu.js') }}"></script>
+<script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-export.js') }}"></script>
+<script src="{{ static ('/ani/static/plugin/bootstrapTable/tableExport.js') }}"></script>
+<script>
+    function init_websocket() {
+        let websocket
+        // 首先判断是否 支持 WebSocket  name身份标识  我当前用的 用户名，
+        let url = 'ws://{{ request.get_host() }}/system/websocket_connect/'
+        {#let url = 'ws://172.16.20.242:8088/system/websocket_connect/'#}
+
+        if (!websocket) {
+            if ('WebSocket' in window) {
+                websocket = new WebSocket(url);
+            } else if ('MozWebSocket' in window) {
+                websocket = new MozWebSocket(url);
+            } else {
+                websocket = new SockJS(url);
+            }
+        }
+        // 打开连接时    formatMsg是我自定义的消息提示
+        websocket.onopen = function (event) {
+            console.log("您已连接 ，消息提示系统！！")
+        };
+        return websocket;
+        /*
+        // 收到消息时
+        websocket.onmessage = function (event) {
+            let data = JSON.parse(event.data);
+            alert(data)
+        };
+        // 错误时
+        websocket.onerror = function (event) {
+            console.log("websocket.onerror");
+        };
+        // 断开连接时
+        websocket.onclose = function (event) {
+            console.log("已断开websocket服务器，无法接收消息提示（请重新刷新页面）")
+        }*/
+    }
+</script>

@@ -1,0 +1,203 @@
+
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Ftp Service</title>
+        {% include 'base.html' %}
+		<!--引入CSS-->
+		<link rel="stylesheet" type="text/css" href= "{{ static ('/css/bootstrap.css') }}">
+		<link rel="stylesheet" type="text/css" href= "{{ static ('/layui/css/layui.css') }}">
+		<link rel="stylesheet" type="text/css" href= "{{ static ('/webuploader/webuploader.css') }}">
+		<link href= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.css') }}" rel="stylesheet" type="text/css" />
+		<!--引入JS-->
+		<script type="text/javascript" src= "{{ static ('/js/jquery-3.4.1.js') }}"></script>
+		<script type="text/javascript" src= "{{ static ('/layui/layui.js') }}"></script>
+		<script type="text/javascript" src= "{{ static ('/webuploader/webuploader.js') }}"></script>
+		<script src= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.js') }}" type="text/javascript"></script>
+	</head>
+	<body class="layui-bg-gray">
+		<div class="layui-card" style="margin: 10px;">
+			<div class="layui-card-header" style="background-color: #6C7A89;height: 48px;">
+				<p style="font-size: 16px;color: #fff;">Upload Tooling Form</p>
+			</div>
+			<div class="layui-card-body" style="text-align: center;padding-top: 100px;">
+				<div class="layui-card layui-bg-gray" style="width: 40%;margin-left: 30%;">
+				  <div id="file_name" class="layui-card-header"></div>
+				  <div id="msg_div" class="layui-card-body"style="min-height: 100px;">
+				  </div>
+				</div>
+				<div class="layui-upload">
+					<button type="button" class="layui-btn layui-btn-normal" id="choseFile">SElECT FILE</button>
+					<button type="button" class="layui-btn" id="uploadFile">UPLOAD</button>
+				</div>
+				<h4 style="margin-top: 20px;">Please upload the edited template file. If you don't have one, please click <a href='../formDownload/file/'
+					 style='color:blue'><u>here</u></a> to download</h4>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			layui.use('upload', function() {
+				var upload = layui.upload;
+				//选完文件后不自动上传
+				upload.render({
+					elem: '#choseFile',
+					url: '/tooling_form/upload_status/?tip_no={{tip_no}}', //改成您自己的上传接口
+					auto: false,
+					data:{
+						'tip_no':"{{tip_no or ''}}"
+					},
+					//,multiple: true
+					accept: 'file',
+					acceptMime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel',
+					exts: 'xls|xlsx',
+					bindAction: '#uploadFile',
+					choose: function(obj){
+						var files = obj.pushFile();
+						//预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+						obj.preview(function(index, file, result){
+							$('#file_name').empty()
+							$('#msg_div').empty()
+							$('#file_name').append(file.name)
+						});
+					},
+					before: function(obj) { //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+						// layer.load(2);
+						$('#uploadFile').html("UPLOAD&nbsp;<i class='layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop'></i>")
+						$('#uploadFile').addClass('layui-btn-primary')
+						$('#uploadFile').attr('disabled','disabled')
+						$('#choseFile').removeClass('layui-btn-normal')
+						$('#choseFile').addClass('layui-btn-primary')
+						$('#choseFile').attr('disabled','disabled')
+					},
+					done: function(res) {
+						// layer.closeAll('loading');
+						$('#uploadFile').html("UPLOAD")
+						$('#uploadFile').removeClass('layui-btn-primary')
+						$('#uploadFile').removeAttr('disabled')
+						$('#choseFile').removeClass('layui-btn-primary')
+						$('#choseFile').removeAttr('disabled')
+						$('#choseFile').addClass('layui-btn-normal')
+						if (res.success == 'true') {
+							// layer.alert('File upload and check successful,Generated tip_no is' + res.tip_no + ',Please proceed to the next step', {icon: 1});
+							layer.confirm('File upload and check successful,Generated tip_no is ' + res.tip_no +
+								',This page will jump to FTP page, please upload data file.', {
+									icon: 1,
+									title: 'Info',
+									btn: ['ok'] //按钮
+								},
+								function(index) {
+									location.href = "/tooling_form/ftp_service/?tip_no=" + res.tip_no;
+								})
+						} else {
+
+							if(res.flag == '0'){
+								//alert(res.msg)
+								layer.confirm(res.msg, {
+									title: 'Error',
+									btn: ['check'] //按钮
+								}, function() {
+									location.href = "/tooling_form/formDownload/file/";
+								});
+							}else if (res.flag == '1') {
+                                layer.confirm(res.msg, {
+                                    title: 'Error',
+                                    btn: ['check'] //按钮
+                                }, function() {
+                                    if(res.tip_no){
+                                        location.href = "/tooling_form/wrong_list/?tip_no="+res.tip_no;
+                                    }else{
+                                        location.href = "/tooling_form/wrong_list/?tip_no=";
+                                    }
+                                });
+							}else if (res.flag == '2') {
+                                layer.confirm(res.msg, {
+                                    title: 'Error',
+                                    btn: ['ok'] //按钮
+                                }, function() {
+                                    if(res.tip_no){
+                                        location.href = "/tooling_form/check_list/?tip_no="+res.tip_no;
+                                    }
+                                });
+							} else {
+
+							    layer.confirm(res.msg, {
+                                    title: 'Error',
+                                    btn: ['close'] //按钮
+                                }, function(index) {
+                                    layer.close(index)
+                                });
+                            }
+						}
+					},
+					error: function(index, upload) {
+						// layer.closeAll('loading');
+						$('#uploadFile').html("UPLOAD")
+						$('#uploadFile').removeClass('layui-btn-primary')
+						$('#uploadFile').removeAttr('disabled')
+						$('#choseFile').removeClass('layui-btn-primary')
+						$('#choseFile').removeAttr('disabled')
+						$('#choseFile').addClass('layui-btn-normal')
+						layer.confirm('There is an error in the process of file upload, please upload again', {
+							title: 'Error',
+							btn: ['close'] //按钮
+						}, function(index) {
+							layer.close(index)
+						});
+					}
+				});
+			})
+			// 生成UUID
+			function uuid(len, radix) {
+			     var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+			     var uuid = [], i;
+			     radix = radix || chars.length;
+			  
+			     if (len) {
+			       // Compact form
+			       for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random()*radix];
+			     } else {
+			       // rfc4122, version 4 form
+			       var r;
+			  
+			       // rfc4122 requires these characters
+			       uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+			       uuid[14] = '4';
+			  
+			       // Fill in random data.  At i==19 set the high bits of clock sequence as
+			       // per rfc4122, sec. 4.1.5
+			       for (i = 0; i < 36; i++) {
+			         if (!uuid[i]) {
+			           r = 0 | Math.random()*16;
+			           uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+			         }
+			       }
+			     }
+			     return uuid.join('');
+			 }
+
+            let websocket = init_websocket()
+            websocket.onmessage = function (event) {
+             let data = JSON.parse(event.data);
+             console.log(data)
+             if(data.is_tooling_msg){
+                 $("#msg_div").append("<p style='color:#228B22'>" + data.msg + "</p>")
+             }
+            };
+			websocket.onclose = function (event) {
+                console.log("已断开websocket服务器，无法接收消息提示（请重新刷新页面）")
+                websocket.close()
+            }
+
+
+			window.onbeforeunload = function(){
+			    websocket.close()
+            }
+            window.onunload = function () {
+                websocket.close()
+
+            };
+		</script>
+	</body>
+</html>

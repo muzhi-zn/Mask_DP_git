@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Info Tree Maintain</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-lynch',
+                radioClass: 'iradio_square-lynch',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+
+    <link href="{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.css') }}" rel="stylesheet"
+          type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.js') }}" type="text/javascript">
+    </script>
+    <script>
+        $(document).ready(function () {
+            //zTree初始化
+
+            $(function () {
+                tree_view();
+            });
+
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+
+            //表格初始化
+            $('#table').bootstrapTable({
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                showSearch: false,
+                //显示刷新按钮
+                showRefresh: true,
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                {#showPaginationSwitch: true,#}
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/infotree/released_alta/list/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    //alert(searchParam.pageNo)
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                    csrfmiddlewaretoken = token;
+                    return searchParam;
+                },
+                data: {csrfmiddlewaretoken: token},
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right",//pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press",//手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        deleteAll(row.id);
+                    }
+                },
+
+                columns: [{
+                    field: 'type',
+                    title: 'Type',
+                }, {
+                    field: 'item',
+                    title: 'Item',
+                    title: 'Item',
+                }, {
+                    field: 'value',
+                    title: 'Value',
+                }, {
+                    field: 'version',
+                    title: 'Version',
+                }, {
+                    field: 'operate',
+                    title: 'Operation',
+                    align: 'center',
+                    events: {
+                        'click .view': function (e, value, row, index) {
+                            jp.openViewDialog('View', '/infotree/released_alta/view/?id=' + row.id, '600px', '500px');
+                        },
+                        'click .mdt': function (e, value, row, index) {
+                            jp.openViewDialog('MDT', '/infotree/released_alta/mdt/list/?id=' + row.id, '850px', '650px');
+                        },
+                    },
+                    formatter: function operateFormatter(value, row, index) {
+                        if ((row.item === 'MDT') && (row.value === 'Y')) {
+                            return [
+                                {% if '/infotree/released_alta/view/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                    '<a href="#" class="view" title="View" ><i class="fa fa-eye"></i> </a>',
+                                {% endif %}
+                                '&nbsp;',
+                                {% if '/infotree/released_alta/mdt/list/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                    '<a href="#" class="mdt"  title="MDT"><i class="fa fa-users"></i> </a>',
+                                {% endif %}
+                            ].join('');
+                        } else {
+                            return [
+                                {% if '/infotree/released_alta/view/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                    '<a href="#" class="view" title="View" ><i class="fa fa-eye"></i> </a>',
+                                {% endif %}
+                            ].join('');
+                        }
+                    }
+                }]
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) {//如果是移动端
+                $('#table').bootstrapTable("toggleView");
+            }
+
+            $('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table', function () {
+                {#$('#remove').prop('disabled', !$('#table').bootstrapTable('getSelections').length);#}
+                {#$('#edit').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);#}
+            });
+
+            $("#btnImport").click(function () {
+                jp.open({
+                    type: 2,
+                    area: [500, 200],
+                    auto: true,
+                    title: "导入数据",
+                    content: "/ani/a/tag/importExcel",
+                    btn: ['下载模板', '确定', '关闭'],
+
+                    btn1: function (index, layero) {
+                        jp.downloadFile('/ani/a/sys/user/import/template');
+                    },
+                    btn2: function (index, layero) {
+                        var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        iframeWin.contentWindow.importExcel('/ani/a/sys/user/import', function (data) {
+                            if (data.success) {
+                                jp.success(data.msg);
+                                refresh();
+                            } else {
+                                jp.error(data.msg);
+                            }
+                            jp.close(index);
+                        });//调用保存事件
+                        return false;
+                    },
+
+                    btn3: function (index) {
+                        //  jp.close(index);
+                    }
+
+                });
+            });
+
+            $("#search").click("click", function () {// 绑定查询按扭
+                $('#table').bootstrapTable('refresh');
+            });
+
+            $("#reset").click("click", function () {// 绑定查询按扭
+                {#$("#ip").val("");#}
+                {#$("#ip_type").val("");#}
+                $('#table').bootstrapTable('refresh');
+            });
+
+            $('#beginInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+
+            $('#endInDate').datetimepicker({
+                format: "YYYY-MM-DD HH:mm:ss"
+            });
+
+        });
+
+        function tree_view() {
+            $.getJSON("/infotree/released_alta/tree_view_json/", {'tree_type': $('#tree_type').val()}, function (data) {
+                {#alert(data);#}
+                $('#jstree').treeview({
+                    data: data,
+                    levels: 2,
+                    onNodeSelected: function (event, treeNode) {
+
+                        if (treeNode.level == 1) {
+                            $('#li_1').css('display', 'inline');
+                            $('#a_1').text(treeNode.name);
+                            {#$('#li_1').attr('title', treeNode.m_title);#}
+
+                            $('#li_2').css('display', 'none');
+                            $('#li_3').css('display', 'none');
+                            $('#li_4').css('display', 'none');
+                            $('#li_5').css('display', 'none');
+                            $('#li_6').css('display', 'none');
+                            $('#li_7').css('display', 'none');
+                            $('#li_8').css('display', 'none');
+                        }
+
+                        if (treeNode.level == 2) {
+                            $('#li_1').css('display', 'inline');
+                            $('#li_2').css('display', 'inline');
+                            $('#a_1').text(treeNode.tree_info_2[0]);
+                            $('#a_2').text(treeNode.name);
+
+                            $('#li_3').css('display', 'none');
+                            $('#li_4').css('display', 'none');
+                            $('#li_5').css('display', 'none');
+                            $('#li_6').css('display', 'none');
+                            $('#li_7').css('display', 'none');
+                            $('#li_8').css('display', 'none');
+                        }
+
+                        if (treeNode.level == 3) {
+                            $('#li_1').css('display', 'inline');
+                            $('#li_2').css('display', 'inline');
+                            $('#li_3').css('display', 'inline');
+                            $('#a_1').text(treeNode.tree_info_3[0]);
+                            $('#a_2').text(treeNode.tree_info_3[1]);
+                            $('#a_3').text(treeNode.name);
+
+                            $('#li_4').css('display', 'none');
+                            $('#li_5').css('display', 'none');
+                            $('#li_6').css('display', 'none');
+                            $('#li_7').css('display', 'none');
+                            $('#li_8').css('display', 'none');
+                        }
+
+                        if (treeNode.level == 4) {
+                            $('#li_1').css('display', 'inline');
+                            $('#li_2').css('display', 'inline');
+                            $('#li_3').css('display', 'inline');
+                            $('#li_4').css('display', 'inline');
+                            $('#a_1').text(treeNode.tree_info_4[0]);
+                            $('#a_2').text(treeNode.tree_info_4[1]);
+                            $('#a_3').text(treeNode.tree_info_4[2]);
+                            $('#a_4').text(treeNode.name);
+
+                            $('#li_5').css('display', 'none');
+                            $('#li_6').css('display', 'none');
+                            $('#li_7').css('display', 'none');
+                            $('#li_8').css('display', 'none');
+                        }
+
+                        if (treeNode.level == 5) {
+                            $('#li_1').css('display', 'inline');
+                            $('#li_2').css('display', 'inline');
+                            $('#li_3').css('display', 'inline');
+                            $('#li_4').css('display', 'inline');
+                            $('#li_5').css('display', 'inline');
+                            $('#a_1').text(treeNode.tree_info_5[0]);
+                            $('#a_2').text(treeNode.tree_info_5[1]);
+                            $('#a_3').text(treeNode.tree_info_5[2]);
+                            $('#a_4').text(treeNode.tree_info_5[3]);
+                            $('#a_5').text(treeNode.name);
+
+                            $('#li_6').css('display', 'none');
+                            $('#li_7').css('display', 'none');
+                            $('#li_8').css('display', 'none');
+                        }
+
+                        if (treeNode.level == 6) {
+                            $('#li_1').css('display', 'inline');
+                            $('#li_2').css('display', 'inline');
+                            $('#li_3').css('display', 'inline');
+                            $('#li_4').css('display', 'inline');
+                            $('#li_5').css('display', 'inline');
+                            $('#li_6').css('display', 'inline');
+                            $('#a_1').text(treeNode.tree_info_6[0]);
+                            $('#a_2').text(treeNode.tree_info_6[1]);
+                            $('#a_3').text(treeNode.tree_info_6[2]);
+                            $('#a_4').text(treeNode.tree_info_6[3]);
+                            $('#a_5').text(treeNode.tree_info_6[4]);
+                            $('#a_6').text(treeNode.name);
+
+                            $('#li_7').css('display', 'none');
+                            $('#li_8').css('display', 'none');
+                        }
+
+                        if (treeNode.level == 7) {
+                            $('#li_1').css('display', 'inline');
+                            $('#li_2').css('display', 'inline');
+                            $('#li_3').css('display', 'inline');
+                            $('#li_4').css('display', 'inline');
+                            $('#li_5').css('display', 'inline');
+                            $('#li_6').css('display', 'inline');
+                            $('#li_7').css('display', 'inline');
+                            $('#a_1').text(treeNode.tree_info_7[0]);
+                            $('#a_2').text(treeNode.tree_info_7[1]);
+                            $('#a_3').text(treeNode.tree_info_7[2]);
+                            $('#a_4').text(treeNode.tree_info_7[3]);
+                            $('#a_5').text(treeNode.tree_info_7[4]);
+                            $('#a_6').text(treeNode.tree_info_7[5]);
+                            $('#a_7').text(treeNode.name);
+                            $('#a_8').css('display', 'none');
+                        }
+
+                        if (treeNode.level == 8) {
+                            $('#li_1').css('display', 'inline');
+                            $('#li_2').css('display', 'inline');
+                            $('#li_3').css('display', 'inline');
+                            $('#li_4').css('display', 'inline');
+                            $('#li_5').css('display', 'inline');
+                            $('#li_6').css('display', 'inline');
+                            $('#li_7').css('display', 'inline');
+                            $('#li_8').css('display', 'inline');
+                            $('#a_1').text(treeNode.tree_info_8[0]);
+                            $('#a_2').text(treeNode.tree_info_8[1]);
+                            $('#a_3').text(treeNode.tree_info_8[2]);
+                            $('#a_4').text(treeNode.tree_info_8[3]);
+                            $('#a_5').text(treeNode.tree_info_8[4]);
+                            $('#a_6').text(treeNode.tree_info_8[5]);
+                            $('#a_7').text(treeNode.tree_info_8[6]);
+                            $("#a_8").text(treeNode.tree_info_8[7]);
+                        }
+
+                        if (treeNode.level == 9) {
+                            console.log(treeNode.tree_info_9)
+                            console.log(treeNode.name)
+                            $('#li_1').css('display', 'inline');
+                            $('#li_2').css('display', 'inline');
+                            $('#li_3').css('display', 'inline');
+                            $('#li_4').css('display', 'inline');
+                            $('#li_5').css('display', 'inline');
+                            $('#li_6').css('display', 'inline');
+                            $('#li_7').css('display', 'inline');
+                            $('#li_8').css('display', 'inline');
+                            $('#li_9').css('display', 'inline');
+                            $('#a_1').text(treeNode.tree_info_9[0]);
+                            $('#a_2').text(treeNode.tree_info_9[1]);
+                            $('#a_3').text(treeNode.tree_info_9[2]);
+                            $('#a_4').text(treeNode.tree_info_9[3]);
+                            $('#a_5').text(treeNode.tree_info_9[4]);
+                            $('#a_6').text(treeNode.tree_info_9[5]);
+                            $('#a_7').text(treeNode.tree_info_9[6]);
+                            $("#a_8").text(treeNode.tree_info_9[7]);
+                            $("#a_9").text(treeNode.name);
+                            $("#s_customer").val(treeNode.tree_info_9[0]);
+                            $("#s_tool").val(treeNode.tree_info_9[1]);
+                            $("#s_node").val(treeNode.tree_info_9[2]);
+                            $("#s_tone").val(treeNode.tree_info_9[3]);
+                            $("#s_blank").val(treeNode.tree_info_9[4]);
+                            $("#s_grade").val(treeNode.tree_info_9[5]);
+                            $("#s_pattern_density").val(treeNode.tree_info_9[6]);
+                            $("#s_layer").val(treeNode.tree_info_9[7]);
+                            $("#s_level").val(treeNode.name);
+
+                            $('#remove').prop("disabled", false);
+                            $('#copy').prop("disabled", false);
+                            $('#export').prop("disabled", false);
+                        } else {
+                            $("#s_tool").val('');
+                            $("#s_node").val('');
+                            $("#s_tone").val('');
+                            $("#s_blank").val('');
+                            $("#s_grade").val('');
+                            $("#s_pattern_density").val('');
+                            $("#s_layer").val('');
+                            $("#s_level").val('');
+
+                            $('#remove').prop("disabled", true);
+                            $('#copy').prop("disabled", true);
+                            $('#export').prop("disabled", true);
+                        }
+                        $('#table').bootstrapTable('refresh');
+                    },
+                });
+            });
+        }
+
+        function getIdSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        function refresh() {
+            $('#table').bootstrapTable('refresh');
+        }
+
+        function del() {
+            const data = new Array();
+            data.push($('#s_customer').val());
+            data.push($('#s_tool').val());
+            data.push($('#s_node').val());
+            data.push($('#s_tone').val());
+            data.push($('#s_blank').val());
+            data.push($('#s_grade').val());
+            data.push($('#s_pattern_density').val());
+            data.push($('#s_layer').val());
+
+            console.log(data);
+
+            jp.loading();
+            jp.confirm('Are you sure delete?', function () {
+                $.get("/infotree/released_alta/del/", {
+                    'customer': $('#s_customer').val(),
+                    'tool': $('#s_tool').val(),
+                    'node': $('#s_node').val(),
+                    'tone': $('#s_tone').val(),
+                    'blank': $('#s_blank').val(),
+                    'grade': $('#s_grade').val(),
+                    'pattern_density': $('#s_pattern_density').val(),
+                    'layer': $('#s_layer').val(),
+                    'level': $('#s_level').val(),
+                }, function (data) {
+                    if (data.success) {
+                        reset();
+                        jp.success(data.msg);
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            })
+        }
+
+        function maintain_export() {
+            location.href = '/infotree/released_alta/export/?data=' + $('#searchForm').serialize();
+        }
+
+        $(document).on('change', '#tree_type', function () {
+            $('#s_customer').val('');
+            $('#s_tool').val('');
+            $('#s_node').val('');
+            $('#s_tone').val('');
+            $('#s_blank').val('');
+            $('#s_grade').val('');
+            $('#s_pattern_density').val('');
+            $('#s_layer').val('');
+            $('#li_1').css('display', 'none');
+            $('#li_2').css('display', 'none');
+            $('#li_3').css('display', 'none');
+            $('#li_4').css('display', 'none');
+            $('#li_5').css('display', 'none');
+            $('#li_6').css('display', 'none');
+            $('#li_7').css('display', 'none');
+            $('#li_8').css('display', 'none');
+            $('#li_9').css('display', 'none');
+            $('#remove').prop("disabled", true);
+            $('#export').prop("disabled", true);
+            refresh();
+            tree_view();
+        });
+
+        function reset() {
+            $('#s_customer').val('');
+            $('#s_tool').val('');
+            $('#s_node').val('');
+            $('#s_tone').val('');
+            $('#s_blank').val('');
+            $('#s_grade').val('');
+            $('#s_pattern_density').val('');
+            $('#s_layer').val('');
+            $('#li_1').css('display', 'none');
+            $('#li_2').css('display', 'none');
+            $('#li_3').css('display', 'none');
+            $('#li_4').css('display', 'none');
+            $('#li_5').css('display', 'none');
+            $('#li_6').css('display', 'none');
+            $('#li_7').css('display', 'none');
+            $('#li_8').css('display', 'none');
+            $('#li_9').css('display', 'none');
+            $('#copy').prop("disabled", true);
+            $('#remove').prop("disabled", true);
+            $('#export').prop("disabled", true);
+            refresh();
+            tree_view();
+        }
+
+        function testrr() {
+            var $table = $('#table');
+
+            $table.bootstrapTable('hideColumn', 'limit');
+        }
+    </script>
+</head>
+<body id="" class="" style="">
+<form id="inputForm"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"></form>
+<div class="wrapper wrapper-content">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Released Alta</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-4 col-md-3">
+                    <select class="form-control select_1" id="tree_type" name="tree_type">
+                        <option value="0">Normal</option>
+                        <option value="1">Lock</option>
+                    </select>
+                    <br>
+                    <div id="jstree"></div>
+                </div>
+                <div class="col-sm-8 col-md-9 animated fadeInRight">
+                    <ol class="breadcrumb">
+                        <li id="li_1" name="li_1" style="display: none"><a id="a_1" name="a_1"></a></li>
+                        <li id="li_2" name="li_2" style="display: none"><a id="a_2" name="a_2"></a></li>
+                        <li id="li_3" name="li_3" style="display: none"><a id="a_3" name="a_3"></a></li>
+                        <li id="li_4" name="li_4" style="display: none"><a id="a_4" name="a_4"></a></li>
+                        <li id="li_5" name="li_5" style="display: none"><a id="a_5" name="a_5"></a></li>
+                        <li id="li_6" name="li_6" style="display: none"><a id="a_6" name="a_6"></a></li>
+                        <li id="li_7" name="li_7" style="display: none"><a id="a_7" name="a_7"></a></li>
+                        <li id="li_8" name="li_8" style="display: none"><a id="a_8" name="a_8"></a></li>
+                        <li id="li_9" name="li_9" style="display: none"><a id="a_9" name="a_9"></a></li>
+                    </ol>
+                    <!-- 搜索框-->
+                    <div id="search-collapse" class="collapse">
+                        <div class="accordion-inner">
+                            <form id="searchForm" class="form form-horizontal well clearfix">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                <input type="hidden" id="s_customer" name="s_customer">
+                                <input type="hidden" id="s_tool" name="s_tool">
+                                <input type="hidden" id="s_node" name="s_node">
+                                <input type="hidden" id="s_tone" name="s_tone">
+                                <input type="hidden" id="s_blank" name="s_blank">
+                                <input type="hidden" id="s_grade" name="s_grade">
+                                <input type="hidden" id="s_pattern_density" name="s_pattern_density">
+                                <input type="hidden" id="s_layer" name="s_layer">
+                                <input type="hidden" id="s_level" name="s_level">
+                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                    <div style="margin-top:26px">
+                                        <a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-search"></i> Query</a>
+                                        <a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-refresh"></i> Reset</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!-- 搜索框结束 -->
+
+                    <!-- 工具栏 -->
+                    <div id="toolbar">
+                        <button id="remove" class="btn btn-danger" onclick="del()" disabled>
+                            <i class="glyphicon glyphicon-remove"></i> Delete
+                        </button>
+                        <button id="export" class="btn btn-info" onclick="maintain_export()" disabled>
+                            <i class="glyphicon glyphicon-download"></i> Export
+                        </button>
+                        {#                        <button id="123" class="btn btn-info" onclick="testrr()">#}
+                        {#                            <i class="glyphicon glyphicon-download"></i> Export#}
+                        {#                        </button>#}
+                    </div><!-- 工具栏结束 -->
+                    <!-- 表格 -->
+                    <table id="table"
+                           data-toolbar="#toolbar">
+                    </table>
+
+                    <!-- context menu -->
+                    <ul id="context-menu" class="dropdown-menu">
+                        <li data-item="edit"><a>编辑</a></li>
+                        <li data-item="delete"><a>删除</a></li>
+                        <li data-item="cancel"><a>取消</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

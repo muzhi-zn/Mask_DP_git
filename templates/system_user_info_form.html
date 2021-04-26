@@ -1,0 +1,61 @@
+
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+	<title>Info Edit</title>
+	
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<script>var d = "";</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+{% include 'base.html' %}
+	
+	
+	<meta name="decorator" content="ani"/>
+
+</head>
+<body id="" class="bg-white"  style="">
+	
+	<form id="inputForm" class="form-horizontal form-group" action="/system/user/info/edit/" method="post">
+		<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+		<div class="control-group">
+		</div>
+		<div class="control-group">
+			<label class="col-sm-3 control-label">Name:</label>
+			<div class="controls">
+				<input id="name" name="name" class="form-control  max-width-250 required" type="text" value="{{user_o.realname or ''}}" maxlength="50"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="col-sm-3 control-label">Email:</label>
+			<div class="controls">
+				<input id="email" name="email" class="form-control  max-width-250 email" type="text" value="{{user_o.email or ''}}" maxlength="50"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="col-sm-3 control-label">Phone:</label>
+			<div class="controls">
+				<input id="phone" name="phone" class="form-control  max-width-250 " type="text" value="{{user_o.phone or ''}}" maxlength="50"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="col-sm-3 control-label">Mobile:</label>
+			<div class="controls">
+				<input id="mobile" name="mobile" class="form-control  max-width-250 required" type="text" value="{{user_o.mobile or ''}}" maxlength="50"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="col-sm-3 control-label">Remarks:</label>
+			<div class="controls">
+				<textarea id="remarks" name="remarks" maxlength="200" class="form-control  max-width-250 " rows="3">{{user_o.remarks or ''}}</textarea>
+			</div>
+		</div>
+	</form>
+
+</body>
+</html>

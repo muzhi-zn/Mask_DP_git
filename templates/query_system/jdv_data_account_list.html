@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JDV Data Account List</title>
+    {% include 'base.html' %}
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src="{{ static ('/js/jquery-3.4.1.js') }}"></script>
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+    <script>
+        var layer;
+        $(function (){
+            layui.use(['layer'], function (){
+                layer = layui.layer;
+            });
+            get_sgd_account_list();
+        });
+
+        //获取sgd 账号相关数据
+        function get_sgd_account_list(){
+            $.ajax({
+                url: '/query_system/jdv/account_list/',
+                method: 'post',
+                data: {
+                    tip_no: $("#tip_no").val(),
+                    csrfmiddlewaretoken: $("#token").val()
+                },
+                dataType: 'json',
+                success: function (data){
+                    console.log(data)
+                    let rows = data.data;
+                    for(let i = 0 ; i < rows.length ; i++){
+                        let jd = rows[i]
+                        $("#jdv_account_tbody").append("<tr ondblclick='show_jdv_data_upload_dialog(\""+jd.id+"\")'>" +
+                            "<td>" + jd.jdv_account + "</td>" +
+                            "<td>" + jd.job_deck_name + "</td>" +
+                            "<td style='word-wrap:break-word;word-break:break-all;'>" + jd.layers + "</td>" +
+                            "<td style='word-wrap:break-word;word-break:break-all;'>" + jd.chips + "</td>" +
+                            "<td>" + jd.start_date + "~" + jd.end_date + "</td></tr>")
+                    }
+                }
+            });
+        }
+        // 显示jdv_data_upload界面
+        function show_jdv_data_upload_dialog(jdv_data_id){
+            jp.openSaveDialog("Upload JDV Data", "/query_system/jdv_data/upload_form/?jdv_data_id=" + jdv_data_id, "600px", "600px");
+        }
+
+        function save(){
+            alert(1);
+            var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+            parent.layer.close(dialogIndex);
+        }
+    </script>
+</head>
+<body>
+<input id="tip_no" type="hidden" value="{{ tip_no }}"/>
+<input id="token" type="hidden" value="{{ csrf_token }}"/>
+<table class="layui-table">
+    <thead>
+    <tr>
+        <th>JDV Account</th>
+        <th>Job Name</th>
+        <th>Layer Name</th>
+        <th>Chip Name</th>
+        <th>Duration</th>
+    </tr>
+    </thead>
+    <tbody id="jdv_account_tbody">
+    </tbody>
+</table>
+</body>
+</html>

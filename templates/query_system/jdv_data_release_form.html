@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Release JDV Data</title>
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src="{{ static ('/js/jquery-3.4.1.js') }}"></script>
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+    <script>
+        var tree;
+        $(function (){
+            layui.use(['form', 'tree', 'util'], function () {
+                tree = layui.tree;
+
+                let layers_data = $("#layers_data").val();
+
+                tree.render({
+                    elem: '#layers'  //绑定元素
+                    , showCheckbox: true
+                    , id: 'layers_tree'
+                    , data: [{
+                        id: 1,
+                        spread: true,
+                        title: 'All Layers',
+                        children: JSON.parse(layers_data)
+                    }]
+                });
+            });
+        });
+
+        function save(){
+            let layers = [];
+            let layersData = tree.getChecked("layers_tree")
+            if (layersData.length > 0) {
+                let layers_children = layersData[0].children
+                for (let i = 0; i < layers_children.length; i++) {
+                    layers.push(layers_children[i].title)
+                }
+            }
+            $.ajax({
+                url: '/query_system/jdv_data/release/',
+                method: 'post',
+                data: {
+                    jdv_data_id: $("#jdv_data_id").val(),
+                    layers: layers,
+                    note: $("#note").val(),
+                    csrfmiddlewaretoken: $("#token").val()
+                },
+                traditional: true,
+                success: function(data){
+                    alert(data.msg);
+                }
+            });
+            var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+            parent.layer.close(dialogIndex);
+            parent.refresh();
+        }
+    </script>
+</head>
+<body>
+    <input id="token" type="hidden" value="{{ csrf_token }}"/>
+    <input id="jdv_data_id" type="hidden" value="{{ jdv_data.id }}">
+    <input id="layers_data" type="hidden" value="{{ layers }}">
+    <div class="layui-card">
+        <div class="layui-card-header">Layers</div>
+        <div class="layui-card-body" id="layers">
+
+        </div>
+    </div>
+    <div class="layui-card" >
+        <div class="layui-card-header">Note</div>
+        <div class="layui-card-body" id="layers">
+            <textarea id="note" name="desc" class="layui-textarea"></textarea>
+        </div>
+    </div>
+</body>
+</html>

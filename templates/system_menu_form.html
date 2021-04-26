@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+	<title>Menu Manage</title>
+	
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<script>var d = "";</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+{% include 'base.html' %}
+
+	
+	
+	<meta name="decorator" content="ani"/>
+	<script type="text/javascript">
+	function save() {
+		var isValidate = jp.validateForm('#inputForm');//校验表单
+		if(!isValidate){
+			return false;
+		}else{
+			jp.loading();
+			jp.post("/system/menu/{{method}}/",$('#inputForm').serialize(),function(data){
+				//alert(data.success)
+				if(data.success){
+					jp.getParent().refreshNode(data);
+					jp.success(data.msg);
+					var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+					parent.layer.close(dialogIndex);
+				}else {
+					jp.error(data.msg);
+				}
+			})
+		}
+
+	}
+
+	</script>
+
+</head>
+<body id="" class="bg-white"  style="">
+	
+	<form id="inputForm" class="form-horizontal" action="/system/menu/{{method}}/" method="post">
+		<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+	<input id="id" name="id" type="hidden" value="{{menu.id or ''}}"/>
+		<table class="table table-bordered">
+		     <tbody>
+		      <tr>
+		         <td  class="width-15 active"><label class="pull-right"><font color="red">*</font> Parent Menu:</label></td>
+		         <td class="width-35" >
+	<input id="menuId" name="parentid" class="form-control required form-control" type="hidden" value="{{menu.parent_id or ''}}" />
+	<div class="input-group" style="width:100%">
+		<input id="menuName" name="parent_name" readonly="readonly"  type="text" value="{{menu.parent_name or ''}}" data-msg-required=""
+		class="form-control required" style=""/>
+       		 <span class="input-group-btn">
+	       		 <button type="button"  id="menuButton" class="btn   btn-primary  "><i class="fa fa-search"></i>
+	             </button> 
+	             
+	             	 <button type="button" id="menuDelButton" class="close" data-dismiss="alert" style="position: absolute; top: 5px; right: 53px; z-index: 999; display: block;">×</button>
+	             
+	             
+	             
+       		 </span>
+       		
+    </div>
+	<label id="menuName-error" class="error" for="menuName" style="display:none"></label>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#menuButton, #menuName").click(function(){
+		// 是否限制选择，如果限制，设置为disabled
+		if ($("#menuButton").hasClass("disabled")){
+			return true;
+		}
+		// 正常打开	
+		top.layer.open({
+		    type: 2, 
+		    area: ['300px', '420px'],
+		    title:"Select Menu",
+		    ajaxData:{selectIds: $("#menuId").val()},
+		    content: "/system/tree/select/?url="+encodeURIComponent("/system/menu/tree")+"&module=&checked=&extId=&isAll=&allowSearch=true" ,
+		    btn: ['OK', 'Cancel']
+    	       ,yes: function(index, layero){ //或者使用btn1
+						var tree = layero.find("iframe")[0].contentWindow.tree;//h.find("iframe").contents();
+						var ids = [], names = [], nodes = [];
+						if ("" == "true"){
+							nodes = tree.get_checked(true);
+						}else{
+							nodes = tree.get_selected(true);
+						}
+						for(var i=0; i<nodes.length; i++) {//
+							ids.push(nodes[i].id);
+							names.push(nodes[i].text);//
+							break; // 如果为非复选框选择，则返回第一个选择  
+						}
+						$("#menuId").val(ids.join(",").replace(/u_/ig,""));
+						$("#menuName").val(names.join(","));
+						$("#menuName").focus();
+						top.layer.close(index);
+				    	       },
+    	cancel: function(index){ //或者使用btn2
+    	           //按钮【按钮二】的回调
+    	       }
+		}); 
+	
+	});
+	
+	$("#menuDelButton").click(function(){
+		// 是否限制选择，如果限制，设置为disabled
+		if ($("#menuButton").hasClass("disabled")){
+			return true;
+		}
+		// 清除	
+		$("#menuId").val("");
+		$("#menuName").val("");
+		$("#menuName").focus();
+	
+	});
+})
+</script></td>
+		         <td  class="width-15 active"><label class="pull-right"><font color="red">*</font> Name:</label></td>
+		         <td  class="width-35" ><input id="name" name="name" class="required form-control " type="text" value="{{menu.name or ''}}" maxlength="50"/></td>
+		      </tr>
+		      <tr>
+		         <td  class="active"><label class="pull-right">Href:</label></td>
+		         <td><input id="href" name="href" class="form-control " type="text" value="{{menu.href or ''}}" maxlength="2000"/>
+					</td>
+		         <td  class="active"><label class="pull-right">Type:</label></td>
+		          {% if  menu.type == 2 %}
+				 <td><span><input id="type1" name="type" class="required i-checks " type="radio" value="1"   />
+				 <label for="type1">Menu</label></span>
+				 <span><input id="type2" name="type" class="required i-checks " type="radio" value="2" checked/>
+				 <label for="type2">Button</label></span>
+		         <span class="help-inline"></span></td>
+				 {% else %}
+				 <td><span><input id="type1" name="type" class="required i-checks " type="radio" value="1" checked  />
+				 <label for="type1">Menu</label></span>
+				 <span><input id="type2" name="type" class="required i-checks " type="radio" value="2" />
+				 <label for="type2">Button</label></span>
+				 <span class="help-inline"></span></td>
+				{% endif %}					
+		      </tr>
+		      
+		      <tr>
+				 {% if  menu.is_show == 0 %}
+				 <td  class="active"><label class="pull-right">Is Show:</label></td>
+				  <td>
+				 <span><input id="isShow1" name="isShow" class="required i-checks " type="radio" value="1" />
+				  <label for="isShow1">Show</label></span><span><input id="isShow2" name="isShow" class="required i-checks " checked="checked" type="radio" value="0"/>
+				  <label for="isShow2">Hidden</label></span>
+				 </td>
+				 
+		        {% else %}
+				
+				 <td  class="active"><label class="pull-right">Is Show:</label></td>
+				 <td>
+				<span><input id="isShow1" name="isShow" class="required i-checks " type="radio" value="1" checked="checked"/>
+				 <label for="isShow1">Show</label></span><span><input id="isShow2" name="isShow" class="required i-checks " type="radio" value="0"/>
+				 <label for="isShow2">Hidden</label></span>
+				</td>
+		        {% endif %}
+				
+				 <td  class="active"><label class="pull-right">Icon:</label></td>
+		         		         <td>
+		         
+		         <i id="iconIcon" class=" hide"></i>&nbsp;<span id="iconIconLabel">
+				 {{menu.icon or ''}}
+				 {% if menu.icon == '' %}None{% endif%}
+				 </span>&nbsp;
+		         <input id="icon" name="icon" type="hidden" value="{{menu.icon or ''}}"/>
+				 <a id="iconButton" href="javascript:" class="btn btn-primary">Select</a>&nbsp;&nbsp;
+		         <input id="iconclear" class="btn btn-default" type="button" value="Clear" onclick="clear()"/>
+		         <script type="text/javascript">
+		         $(document).ready(function(){
+		         	$("#iconButton").click(function(){
+		         	
+		         		top.layer.open({
+		         			type: 2, 
+		         			title:"Select Icon",
+		         			area: ['700px',  $(top.document).height()-180+"px"],
+		         		    content: '/system/menu/iconselect/?value="+$("#icon").val()',
+		         		    btn: ['OK', 'Cancel'],
+		         		    yes: function(index, layero){ //或者使用btn1
+		         		    	var icon = layero.find("iframe")[0].contentWindow.$("#icon").val();
+		                     	$("#iconIcon").attr("class", icon);
+		                         $("#iconIconLabel").text(icon);
+		                         $("#icon").val(icon);
+		                         top.layer.close(index);
+		         		    },cancel: function(index){ //或者使用btn2
+		         		    	
+		         		    }
+		         		});
+		         	});
+		         	$("#iconclear").click(function(){
+		         		 $("#iconIcon").attr("class", "icon- hide");
+		                  $("#iconIconLabel").text("None");
+		                  $("#icon").val("");
+		         
+		         	});
+		         })
+		         </script></td>
+				    </tr>
+		      <tr><td ><label class="pull-right">Remarks:</label></td>
+		         <td><textarea id="remarks" name="remarks" maxlength="200" class="form-control " rows="3">{{menu.remarks or ''}}</textarea></td>
+				 <td ><label class="pull-right">Base Href:</label></td>
+				    
+						<td><input id="base_href" name="base_href" class="form-control " type="text" value="{{menu.base_href or ''}}" maxlength="2000"/>
+											</td>
+				
+				 				 
+		   </tr>
+		    </tbody>
+		  </table>
+	</form>
+
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>DB Convert Status</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*"/>
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <!--引入CSS-->
+    <link rel="stylesheet" type="text/css" href="{{ static ('/css/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <!--引入JS-->
+    <script type="text/javascript" src="{{ static ('/js/jquery-3.4.1.js') }}"></script>
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+    <!-- Ladda style -->
+    <link href="{{ static ('bootstrap3/css/plugins/ladda/ladda-themeless.min.css') }}" rel="stylesheet">
+    <!-- Ladda -->
+    <script src="{{ static ('bootstrap3/js/plugins/ladda/spin.min.js') }}"></script>
+    <script src="{{ static ('bootstrap3/js/plugins/ladda/ladda.min.js') }}"></script>
+    <script src="{{ static ('bootstrap3/js/plugins/ladda/ladda.jquery.min.js') }}"></script>
+
+    {% include 'base.html' %}
+    <style>
+        .width-35 {
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+    </style>
+    <script type="text/javascript">
+        var element, form;
+        layui.use('element', function () {
+            element = layui.element;
+        });
+        layui.use('form', function () {
+            form = layui.form;
+        });
+        $(document).ready(function () {
+            get_current_status()
+            gen_tool_id()
+            $("input:radio[value='{{ device.operation_status }}']").attr('checked', 'true');
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/making/lot/convert/status/operate/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        jp.getParent().refresh();
+                        let dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+        }
+
+        function get_current_status() {
+            switch ({{ device.operation_status }}) {
+                case {{CONVERT_OPERATION_RELEASE}}:
+                    $("#curr_status").append("Release")
+                    break
+                case {{CONVERT_OPERATION_SKIP}}:
+                    $("#curr_status").append("Skip")
+                    break
+                case {{CONVERT_OPERATION_HOLD}}:
+                    $("#curr_status").append("Hold")
+                    break
+            }
+        }
+
+        function open_log_dialog() {
+            {#jp.close()#}
+            jp.openTab('/making/convert/status/log/list/?convert_status_id={{ device.id }}', "Fracture Convert Log", true);
+        }
+
+        function open_progress_history() {
+            jp.close()
+            jp.openTab('/making/call_back_log/progress_history/?id={{ device.id }}', "Progress History", true);
+        }
+
+        function re_deck() {
+
+            jp.loading('in process');
+            $.ajax({
+                method: "post",
+                //url: "/making/lot/convert/status/get_mask_name_list/",
+                url: "/making/fracture/re/deck/",
+                data: $('#inputForm').serialize(),
+                dataType: "json",
+                async: true,
+                success: function (data) {
+                    //alert(data)
+                    if (data.success) {
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg)
+                    }
+
+                }
+            });
+
+            return false;
+        }
+
+        function re_do() {
+            let index = jp.loading()
+            if (is_running()) {
+                jp.confirm('There is a work in progress, whether to work again', function () {
+                    $.ajax({
+                        method: 'post',
+                        url: '/making/fracture/re/do/',
+                        data: $('#inputForm').serialize() + $.param({'is_running': true}),
+                        dataType: 'json',
+                        success: function (data) {
+                            jp.close(index)
+                            if (data.success) {
+                                jp.success(data.message)
+                            } else {
+                                jp.error(data.message)
+                            }
+                        }
+                    })
+                })
+            } else {
+                $.ajax({
+                    method: 'post',
+                    url: '/making/fracture/re/do/',
+                    data: $('#inputForm').serialize() + $.param({'is_running': false}),
+                    dataType: 'json',
+                    success: function (data) {
+                        jp.close(index)
+                        if (data.success) {
+                            jp.success(data.message)
+                        } else {
+                            jp.error(data.message)
+                        }
+                    }
+                })
+            }
+
+        }
+
+        function re_deck_do() {
+            let index = jp.loading()
+            if (is_running() == 'true') {
+                jp.confirm('There is a work in progress, whether to work again', function () {
+                    $.ajax({
+                        method: 'post',
+                        url: '/making/fracture/xor/re/deck/do/',
+                        data: $('#inputForm').serialize() + $.param({'is_running': true}),
+                        dataType: 'json',
+                        success: function (data) {
+                            jp.close(index)
+                            if (data.success) {
+                                jp.success(data.msg)
+                            } else {
+                                jp.error(data.msg)
+                            }
+                        }
+                    })
+                })
+            } else {
+                $.ajax({
+                    method: 'post',
+                    url: '/making/fracture/re/deck/do/',
+                    data: $('#inputForm').serialize() + $.param({'is_running': false}),
+                    dataType: 'json',
+                    success: function (data) {
+                        jp.close(index)
+                        if (data.success) {
+                            jp.success(data.msg)
+                        } else {
+                            jp.error(data.msg)
+                        }
+                    }
+                })
+            }
+
+        }
+
+        function is_running() {
+            var flag = false
+            $.ajax({
+                method: 'post',
+                url: '/making/fracture/is_running/',
+                data: {
+                    csrfmiddlewaretoken: $("#token").val(),
+                    convert_status_id: $("#convert_status_id").val()
+                },
+                async: false,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.success) {
+                        $("#is_running").val("true");
+                        flag = true
+                    }
+                }
+            })
+
+            return flag
+        }
+
+        function mode5_re_deck() {
+
+            jp.loading('in process');
+            $.ajax({
+                method: "post",
+                //url: "/making/lot/convert/status/get_mask_name_list/",
+                url: "/making/mode5/re/deck/",
+                data: $('#inputForm').serialize(),
+                dataType: "json",
+                async: true,
+                success: function (data) {
+                    //alert(data)
+                    if (data.success) {
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg)
+                    }
+
+                }
+            });
+
+            return false;
+        }
+
+        function gen_tool_id() {
+            $.ajax({
+                method: 'post',
+                url: '/making/covert/gen_tool_id/',
+                async: false,
+                success: function (data) {
+                    if (data.success) {
+                        for (var i = 0; i < data.tool_id.length; i++) {
+                            console.log(data.tool_id[i])
+                            $("#tool_id").append("<option value='" + data.tool_id[i] + "'>" + data.tool_id[i] + "</option>");
+                        }
+                    }
+                }
+            })
+        }
+    </script>
+
+    <meta name="decorator" content="ani"/>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal layui-form" method="post"
+      autocomplete="off">
+    <input id="token" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input id="convert_status_id" type="hidden" name="convert_status_id" value="{{ device.id }}">
+    <input type="hidden" name="tip_no" value="{{ device.tip_no }}">
+    <input type="hidden" name="mask_name" value="{{ device.mask_name }}">
+    <input type="hidden" name="device_name" value="{{ device.device_name }}">
+    <input type="hidden" name="stage_name" value="{{ device.stage }}">
+    <input type="hidden" name="lot_id" value="{{ device.lot_id }}">
+    <input type="hidden" name="fracture_log_file" value="{{ fracture_log_file }}">
+    <input id="is_running" type="hidden" name="is_running" value="false">
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Flow : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                {{ stage.flow }}
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Tool ID : </label>
+            </td>
+            <td><select id="tool_id" name="tool_id" lay-filter="node" lay-verify="required"
+                        lay-reqText="Please Select Tool ID">
+                <option></option>
+            </select></td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Pre-stage : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                {{ stage.pre_stage }}
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Pre-stage file : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                {{ pre_stage_file }}
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Location : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                {{ device.location }}
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">File name : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                {{ device.file_name }}
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Operation : </label>
+            </td>
+            <td class="width-35" colspan="3" class="layui-form-item">
+                {% if "release" in operations %}
+                    <input type="radio" name="operation" value="0" title="release" checked="">
+                {% endif %}
+                {% if "hold" in operations %}
+                    <input type="radio" name="operation" value="2" title="hold">
+                {% endif %}
+                {% if "skip" in operations %}
+                    <input type="radio" name="operation" value="1" title="skip">
+                {% endif %}
+                {#                {% if "rework_mode1" in operations %}#}
+                {#                    <input type="radio" name="operation" value="3" title="mode1">#}
+                {#                {% endif %}#}
+                {#                {% if "rework_mode2" in operations %}#}
+                {#                    <input type="radio" name="operation" value="4" title="mode2">#}
+                {#                {% endif %}#}
+                {#                {% if "rework_mode3" in operations %}#}
+                {#                    <input type="radio" name="operation" value="5" title="mode3">#}
+                {#                {% endif %}#}
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Rework : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <button id="load_layer_btn" type="button" class="button_style ladda-button btn btn-primary "
+                        onclick="re_deck();"
+                        data-style="expand-right">&nbsp;&nbsp;Re Deck&nbsp;&nbsp;
+                </button>
+                <button id="load_layer_btn" type="button" class="button_style ladda-button btn btn-primary "
+                        onclick="re_do();"
+                        data-style="expand-right">&nbsp;&nbsp;Re Do&nbsp;
+                </button>
+                <button id="load_layer_btn" type="button" class="button_style ladda-button btn btn-primary "
+                        onclick="re_deck_do()"
+                        data-style="expand-right">&nbsp;&nbsp;Re Deck&Do&nbsp;&nbsp;
+                </button>
+
+
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Current status : </label>
+            </td>
+            <td id="curr_status" class="width-35" colspan="3">
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Process : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                {{ device.progress }}
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="#" onclick="open_progress_history()">Progress History</a>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Latest Operator : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                {#                {{ logs }}#}
+                <label class="pull-left">{{ operator or 'no operator'}}</label>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="#" onclick="open_log_dialog()">Operate Log</a>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Error: </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <textarea class="layui-textarea">{{ device.err_message }}</textarea>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </tr>
+</form>
+</body>

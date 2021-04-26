@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+	<head>
+		<title>File Info List</title>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+		<meta http-equiv="Expires" content="0">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Cache-Control" content="no-store">
+		<script>
+			var d = "";
+		</script>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		{% include 'base.html' %}
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('input.i-checks').iCheck({
+					checkboxClass: 'icheckbox_square-lynch',
+					radioClass: 'iradio_square-lynch',
+					increaseArea: '20%' // optional
+				});
+			});
+		</script>
+		<meta name="decorator" content="ani" />
+		<script type="text/javascript">
+			$(document).ready(function() {
+				var token = $('input[name=csrfmiddlewaretoken]').val();
+
+				//表格初始化
+				$('#table').bootstrapTable({
+					//请求方法
+					method: 'post',
+					//类型json
+					dataType: "json",
+					contentType: "application/x-www-form-urlencoded",
+					//是否显示行间隔色
+					striped: true,
+					//是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）     
+					cache: false,
+					//显示检索按钮
+					showSearch: true,
+					//显示刷新按钮
+					showRefresh: true,
+					//显示切换手机试图按钮
+					showToggle: true,
+					//显示 内容列下拉框
+					showColumns: true,
+					//显示切换分页按钮
+					showPaginationSwitch: true,
+					//是否显示分页（*）  
+					pagination: true,
+					//排序方式 
+					sortOrder: "asc",
+					//初始化加载第一页，默认第一页
+					pageNumber: 1,
+					//每页的记录行数（*）   
+					pageSize: 10,
+					//可供选择的每页的行数（*）    
+					pageList: [10, 25, 50, 100],
+					//这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据  
+					url: "/tooling/file_analysis_info/",
+					//默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+					//queryParamsType:'',   
+					////查询参数,每次调用是会带上这个参数，可自定义                         
+					queryParams: function(params) {
+						var searchParam = $("#searchForm").serializeJSON();
+						//alert(searchParam.pageNo)
+						searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+						searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+						searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+						csrfmiddlewaretoken = token;
+						return searchParam;
+					},
+					data: {
+						csrfmiddlewaretoken: token
+					},
+					onShowSearch: function() {
+						$("#search-collapse").slideToggle();
+					},
+					//分页方式：client客户端分页，server服务端分页（*）
+					sidePagination: "server",
+					contextMenuTrigger: "right", //pc端 按右键弹出菜单
+					contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+					contextMenu: '#context-menu',
+					onContextMenuItem: function(row, $el) {
+						if ($el.data("item") == "edit") {
+							edit(row.id);
+						} else if ($el.data("item") == "delete") {
+							deleteAll(row.id);
+						}
+					},
+					onClickRow: function(row, $el) {},
+					columns: [{
+							checkbox: true
+						},
+						{
+							field: 'id',
+							title: 'id',
+							sortable: true
+
+						}, {
+							field: 'tip_no',
+							title: 'Tip No',
+							sortable: true
+						}, {
+							field: 'file_name',
+							title: 'File Name',
+							sortable: true
+						}, {
+							field: 'upload_status',
+							title: 'Upload Status',
+							formatter:function(value, row, index){
+								return formatter_status(value, row , index)
+							}
+						}, {
+							field: 'file_size',
+							title: 'File_Size'
+						}, {
+							field: 'size_check_status',
+							title: 'Size Check Status',
+							formatter:function(value, row, index){
+								return formatter_status(value, row , index)
+							}
+						},{
+							field: 'file_md5',
+							title: 'File MD5'
+						}, {
+							field: 'md5_check_status',
+							title: 'MD5 Check Status',
+							formatter:function(value, row, index){
+								return formatter_status(value, row , index)
+							}
+						}, {
+							field: 'file_sha512',
+							title: 'File Sha512'
+						}, {
+							field: 'sha512_check_status',
+							title: 'Sha512 Check Status',
+							formatter:function(value, row, index){
+								return formatter_status(value, row , index)
+							}
+						}, {
+							field: 'analysis_status',
+							title: 'Analysis Status',
+							formatter:function(value, row, index){
+								if(value == 0){
+									return 'not yet'
+								}else if(value == 1){
+									return 'doing'
+								}else if(value == 2){
+									return 'fail'
+								}else if(value == 3){
+									return 'success'
+								}
+							}
+						}, {
+							field: 'result_file_name',
+							title: 'Result File Name'
+						}, {
+							field: 'result',
+							title: 'Result'
+						}, {
+							field: 'precision',
+							title: 'Precision'
+						}, {
+							field: 'precision_check_status',
+							title: 'Precision Check Status',
+							formatter:function(value, row, index){
+								return formatter_status(value, row , index)
+							}
+						}, {
+							field: 'topcell',
+							title: 'Topcell'
+						}, {
+							field: 'topcell_check_status',
+							title: 'Topcell Check Status',
+							formatter:function(value, row, index){
+								return formatter_status(value, row , index)
+							}
+						}, {
+							field: 'layers',
+							title: 'Layers'
+						}, {
+							field: 'layers_check_status',
+							title: 'Layers Check Status',
+							formatter:function(value, row, index){
+								return formatter_status(value, row , index)
+							}
+						}, {
+							field: 'bbox',
+							title: 'bbox'
+						}, {
+							field: 'Bbox_check_status',
+							title: 'Bbox Check Status',
+							formatter:function(value, row, index){
+								return formatter_status(value, row , index)
+							}
+						}, {
+							field: 'analysis_check_status',
+							title: 'Analysis Check Status',
+							formatter:function(value, row, index){
+								return formatter_status(value, row , index)
+							}
+						}
+					]
+
+				});
+
+
+				if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) { //如果是移动端
+					$('#table').bootstrapTable("toggleView");
+				}
+
+				$('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+					'check-all.bs.table uncheck-all.bs.table',
+					function() {
+						$('#remove').prop('disabled', !$('#table').bootstrapTable('getSelections').length);
+						$('#edit').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);
+					});
+				$("#search").click("click", function() { // 绑定查询按扭
+					$('#table').bootstrapTable('refresh');
+				});
+				$("#reset").click("click", function() { // 绑定查询按扭
+					$("#tipno").val("");
+					$("#errorcode").val("");
+					$("#isadmin").val("");
+					//$("#searchForm  select").val("");
+					$('#table').bootstrapTable('refresh');
+				});
+			});
+
+			function getIdSelections() {
+				return $.map($("#table").bootstrapTable('getSelections'), function(row) {
+					return row.id
+				});
+			}
+
+			function refresh() {
+				$('#table').bootstrapTable('refresh');
+			}
+			
+			function formatter_status(value, row , index){
+				if(value==0){
+					return 'not yet'
+				}else if(value == 1){
+					return 'success'
+				}else if(value == 2){
+					return 'fail'
+				}
+			}
+		</script>
+
+	</head>
+	<body id="" class="" style="">
+		<form id="inputForm"><input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}"></form>
+		<div class="wrapper wrapper-content">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">File Info List</h3>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-12 col-md-12 animated fadeInRight">
+							<!-- 搜索框-->
+							<div id="search-collapse" class="collapse">
+								<div class="accordion-inner">
+									<form id="searchForm" class="form form-horizontal well clearfix" action="/wrong_form/" method="post">
+										<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<label class="label-item single-overflow pull-left" title="Tipno：">Tip_No：</label>
+											<input id="tip_no" name="tip_no" class=" form-control input-sm" type="text" value="" maxlength="50" />
+										</div>
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<div style="margin-top:26px">
+												<a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-search"></i> Query</a>
+												<a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-refresh"></i> Reset</a>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div><!-- 搜索框结束 -->
+							<!-- 表格 -->
+							<table id="table" data-toolbar="#toolbar">
+							</table>
+							<!-- context menu -->
+							<ul id="context-menu" class="dropdown-menu">
+								<li data-item="edit"><a>编辑</a></li>
+								<li data-item="delete"><a>删除</a></li>
+								<li data-item="cancel"><a>取消</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	</body>
+</html>

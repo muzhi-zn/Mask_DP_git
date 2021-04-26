@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:17 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/objectIdentifier.xsd"/>
+  <xsd:include schemaLocation="../schema/pptLotEquipmentListSequence.xsd"/>
+  <xsd:include schemaLocation="../schema/objectIdentifierSequence.xsd"/>
+  <xsd:include schemaLocation="../schema/pptLotQtimeInfoSequence.xsd"/>
+  <xsd:include schemaLocation="../schema/pptLotNoteFlagInfo.xsd"/>
+  <xsd:include schemaLocation="../schema/pptEntityInhibitAttributesSequence.xsd"/>
+  <xsd:complexType name="pptVirtualOperationLot_struct">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="lotID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="lotStatus" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="cassetteID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="lotType" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="multiLotType" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="transferStatus" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="transferReserveUserID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="stockerID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="equipmentID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="strLotEquipmentList" type="tns:pptLotEquipmentListSequence"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="flowBatchID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="controlJob" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="processReserveEquipmentID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="processReserveUserID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="productID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="recipeAvailableFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="logicalRecipeID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="machineRecipeID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="processMonitorProductID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="reticleGroupIDs" type="tns:objectIdentifierSequence"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="reticleExistFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="lastClaimedTimeStamp" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="stateChangeTimeStamp" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="inventoryChangeTimeStamp" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="dueTimeStamp" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="planStartTimeStamp" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="planEndTimeStamp" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="plannedEquipmentID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="queuedTimeStamp" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="priorityClass" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="internalPriority" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="externalPriority" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="qtimeFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="strLotQtimeInfo" type="tns:pptLotQtimeInfoSequence"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="preOperationCompTimeStamp" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="routeID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="operationID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="operationNumber" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="testTypeID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="inspectionType" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="stageID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="mandatoryOperationFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="processHoldFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="totalWaferCount" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="totalGoodDieCount" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="next2EquipmentID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="next2LogicalRecipeID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="strLotNoteFlagInfo" type="tns:pptLotNoteFlagInfo"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="entityInhibitions" type="tns:pptEntityInhibitAttributesSequence"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="physicalRecipeID" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="operableFlagForCurrentMachineState" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="operableFlagForMultiRecipeCapability" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="requiredCassetteCategory" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="cassetteCategory" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="next2requiredCassetteCategory" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="sorterJobExistFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="inPostProcessFlagOfCassette" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="inPostProcessFlagOfLot" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="bondingFlowSectionName" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="bondingCategory" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="topProductID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="bondingGroupID" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="autoDispatchDisableFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="monitorOperationFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="eqpMonitorJobID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="startSeqNo" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="siInfo" type="corba:CORBA.Any"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>

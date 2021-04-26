@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+	<title>Tooling Form  Download</title>
+	
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<script>var d = "";</script>
+<style>
+	
+	/* Spinner Wave */
+	.sp-wave {
+	  border-radius: 50%;
+	  position: relative;
+	  opacity: 1;
+	}
+	
+	.sp-wave:before, .sp-wave:after {
+	  content: '';
+	  border: 1px #000 solid;
+	  border-radius: 50%;
+	  width: 100%;
+	  height: 100%;
+	  position: absolute;
+	  left: 0px;
+	}
+	
+	.sp-wave:before {
+	  transform: scale(1, 1);
+	  opacity: 1;
+	  -webkit-animation: spWaveBe 0.6s infinite linear;
+	  animation: spWaveBe 0.6s infinite linear;
+	}
+	
+	.sp-wave:after {
+	  transform: scale(0, 0);
+	  opacity: 0;
+	  -webkit-animation: spWaveAf 0.6s infinite linear;
+	  animation: spWaveAf 0.6s infinite linear;
+	}
+	
+	
+	
+	@-webkit-keyframes spWaveBe {
+	  from {
+	    -webkit-transform: scale(1, 1);
+	    opacity: 1;
+	  }
+	  to {
+	    -webkit-transform: scale(1.5, 1.5);
+	    opacity: 0;
+	  }
+	}
+	
+	
+	
+</style>
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<script src="{{ static ('/ani/static/common/js/vendor.js' ) }}"></script>
+<!-- 引入依赖的第三方插件 -->
+<link href="{{ static ('/ani/static/plugin/awesome/4.4/css/font-awesome.min.css' ) }}" rel="stylesheet" />
+	<link href= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.css') }}" rel="stylesheet" type="text/css"/>
+	<script src= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.js') }}" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        function showTipNoOptions(){
+        	$.ajax({
+        		url:'/tooling/tip_no/options/',
+        		method:'post',
+        		dataType:'json',
+        		success:function(data){
+        			for(var i = 0 ; i < data.length; i++){
+        				var tip_no = data[i].tip_no
+        				$("#tipNo").append("<option value='" + tip_no + "'>"+ tip_no +"</option>")
+        			}
+        			
+        		}
+        	})
+        }
+		showTipNoOptions();
+    });
+
+
+ function showLotList(){
+	var tip_no = $("#tipNo").val()
+	if(tip_no!=""){
+	$("#tip_no").val(tip_no)	
+	jp.loading('load...');
+	jp.post("/making/lot/list/",$('#searchForm').serialize(),function(data){
+		jp.success('complete');
+		$('#jstree').treeview({
+			data: data,
+			levels: 5,
+			onNodeSelected: function(event, treeNode) {
+				var id = treeNode.id 
+				$("#lot_id").val(id)
+				if(id != ''){//level=0 代表公司
+					//jp.loading();
+					showTimeline(id)
+				}
+			},
+		 });
+		
+	});	
+   }
+}
+
+
+function showTimeline(lot_id) {
+	var tip_no = $("#tipNo").val()
+	//alert(lot_id)
+	jp.loading('load...');
+	$.ajax({
+		url:'/making/lot/timeline/view/',
+		method:'post',
+		data:{
+			'tip_no': tip_no,
+			'lot':lot_id,
+			'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+		},
+		dataType:'json',
+		success: function(data){
+			jp.success('complete');
+			
+			$("#vertical-timeline").empty()
+			for(var i=0; i < data.lot_trail_list.length; i++){
+				if(data.lot_trail_list[i].is_error=={{LOT_STAGE_IS_ERROR_YES}}){
+						var div = '<div class="vertical-timeline-block">';
+						if(i==0){
+						div = div+'<div class="vertical-timeline-icon red-bg sp sp-wave">';
+						}else{
+						div = div+'<div class="vertical-timeline-icon red-bg">';
+						}
+						div = div+'<i class="fa fa-times"></i>'+
+						'</div>'+
+						'<div class="vertical-timeline-content">'+
+						'<span class="vertical-date">'+
+						'<small>'+data.lot_trail_list[i].create_date+ '&nbsp;'+data.lot_trail_list[i].operator_name+'</small>'+
+						'</span>'+
+						'<h2>'+data.lot_trail_list[i].stage+ 
+						'<div style="width: 20px;float: right;" onclick="delete_lot_trail('+data.lot_trail_list[i].id+')" class="red-bg">'+
+						'<i class="fa fa-times"></i>'+
+						'</div>'+
+						'</h2>'+
+						'<p>'+ data.lot_trail_list[i].stage_desc + 
+						'</p>'+
+						'<p>' + data.lot_trail_list[i].remark+ 
+						'</p>';
+						if(i==0){
+							//alert(data.lot_info.convert_status);
+							//alert({{LOT_STAGE_FRACTURE_SUCCESS}});
+							//cannot regenerate file after fracture complete
+							if(data.lot_info.convert_status<{{LOT_STAGE_FRACTURE_SUCCESS}}){
+								div = div+'<button onclick="generateFile();" class="btn btn-sm btn-primary">Generate File</button>';
+								
+							}
+						}
+						div = div+'</div></div>';
+						$("#vertical-timeline").append(div)
+					}else{
+						var div = '<div class="vertical-timeline-block">';
+						if(i==0){
+						div = div+'<div class="vertical-timeline-icon navy-bg sp sp-wave">';
+						}else{
+						div = div+'<div class="vertical-timeline-icon navy-bg">';
+						}
+						div = div+'<i class="fa fa-briefcase"></i>'+
+						'</div>'+
+						'<div class="vertical-timeline-content">'+
+						'<span class="vertical-date">'+
+						'<small>'+data.lot_trail_list[i].create_date+ '&nbsp;'+data.lot_trail_list[i].operator_name+'</small>'+
+						'</span>'+
+						'<h2>'+data.lot_trail_list[i].stage+ '</h2>'+
+						'<p>'+ data.lot_trail_list[i].stage_desc + 
+						'</p>'+
+						'<p>' + data.lot_trail_list[i].remark+ 
+						'</p>';
+						if(i==0){
+							//alert(data.lot_info.Convert_Status);
+							//alert({{LOT_STAGE_FRACTURE_SUCCESS}});
+							//cannot regenerate file after fracture complete
+							if(data.lot_info.Convert_Status<{{LOT_STAGE_FRACTURE_SUCCESS}}){
+								div = div+'<button onclick="generateFile();" class="btn btn-sm btn-primary">Generate File</button>';
+								
+							}
+						}
+						div = div+'</div></div>';
+						
+					$("#vertical-timeline").append(div)
+				}
+
+			}
+		}
+	})
+}
+//generate script file
+function generateFile() {
+	
+		jp.loading();
+		jp.post("/making/lot/generate/file/",$('#searchForm').serialize(),function(data){
+			//alert(data.success)
+			if(data.success){
+				//$("#lot_id").val(id)
+				showTimeline($("#lot_id").val())
+				
+				//jp.getParent().refreshNode(data);
+				//jp.success(data.msg);
+				//var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+				//parent.layer.close(dialogIndex);
+			}else {
+				//jp.error(data.msg);
+				showTimeline($("#lot_id").val())
+			}
+		})
+}
+//delete lot trail
+function delete_lot_trail(lot_trail_id){
+	//alert(lot_id);
+	$("#lot_trail_id").val(lot_trail_id)
+	jp.confirm('Are you sure delete?',  function(){
+		jp.loading();
+		jp.post("/making/lot/timeline/lot/trail/del/",$('#trailForm').serialize(),function(data){
+			//alert(data.success)
+			if(data.success){
+				//$("#lot_id").val(id)
+				showTimeline($("#lot_id").val())
+				
+				//jp.getParent().refreshNode(data);
+				//jp.success(data.msg);
+				//var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+				//parent.layer.close(dialogIndex);
+			}else {
+				//jp.error(data.msg);
+				showTimeline($("#lot_id").val())
+			}
+		})
+	  	
+	})
+}
+
+</script>
+
+<link rel="stylesheet" id="theme" href="{{ static ('/ani/static/common/css/app-lynch.css' ) }}" />
+<script src="{{ static ('/ani/static/common/js/jeeplus.js' ) }}"></script>
+<link href="{{ static ('bootstrap3/css/style.css') }}" rel="stylesheet">
+	
+
+</head>
+<body id="" class=""  >
+	<form id="searchForm" class="navbar-form navbar-left" role="search">
+		<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+		<input type="hidden" id="tip_no" name="tip_no" />
+		<input type="hidden" id="lot_id" name="lot_id" />
+	</form>
+	<form id="trailForm" class="navbar-form navbar-left" role="search">
+		<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+		<input type="hidden" id="lot_trail_id" name="lot_trail_id" />
+	</form>
+	<div class=" ">
+	<div class="panel panel-primary">
+	<div class="panel-heading" style="background-color: #005F8D">
+		<h3 class="panel-title" >Tooling Form Download</h3>
+	</div>
+	<div class="panel-body">
+	<div class="row" style="text-align: center;">
+		<div class="col-sm-3 col-md-2" >
+			<form id="inputForm" class="navbar-form navbar-left" role="search">
+				<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+				
+					<input type="text" class="form-control" placeholder="">
+				
+			</form>
+			
+			<select id="tipNo" lay-filter="tipNo" name="tipNo" class="form-control" onchange="showLotList();" >
+			  <option value="">Please choose Tip_No</option>
+			</select> 
+			<div id="jstree"></div>
+			
+			
+		</div>
+		<div  class="col-sm-9 col-md-10 animated ">
+			<div id="vertical-timeline" class="vertical-container dark-timeline ">
+			    <div class="vertical-timeline-block">
+					<div class=" vertical-timeline-icon navy-bg sp sp-wave" >
+			            <i class="fa fa-briefcase"></i>
+			        </div>
+			
+			        <div class="vertical-timeline-content">
+						<span class="vertical-date">
+						    Today 
+						    <small>Dec 24</small>
+						</span>
+			            <h2>Meeting</h2>
+			            <p>Conference on the sales results for the previous year. Monica please examine sales trends in marketing and products. Below please find the current status of the sale.
+			            </p>
+			            <a href="#" class="btn btn-sm btn-primary"> More info</a>
+			            
+			        </div>
+			    </div>
+			
+			    <div class="vertical-timeline-block">
+			        <div class="vertical-timeline-icon blue-bg">
+			            <i class="fa fa-file-text"></i>
+			        </div>
+			
+			        <div class="vertical-timeline-content">
+						<span class="vertical-date">
+						    Today 
+						    <small>Dec 24</small>
+						</span>
+			            <h2>Send documents to Mike
+						<div style="width: 20px;float: right;" onclick="delete_lot_trail(lot_id)" class="red-bg">
+						<i class="fa fa-times"></i>
+						</div>
+						</h2>
+						
+			            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since.</p>
+			            <a href="#" class="btn btn-sm btn-success"> Download document </a>
+			            
+			        </div>
+			    </div>
+			
+			    <div class="vertical-timeline-block">
+			        <div class="vertical-timeline-icon lazur-bg">
+			            <i class="fa fa-coffee"></i>
+			        </div>
+			
+			        <div class="vertical-timeline-content">
+			            <h2>Coffee Break</h2>
+			            <p>Go to shop and find some products. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's. </p>
+			            <a href="#" class="btn btn-sm btn-info">Read more</a>
+			            <span class="vertical-date"> Yesterday <br/><small>Dec 23</small></span>
+			        </div>
+			    </div>
+			
+			    <div class="vertical-timeline-block">
+			        <div class="vertical-timeline-icon yellow-bg">
+			            <i class="fa fa-phone"></i>
+			        </div>
+			
+			        <div class="vertical-timeline-content">
+			            <h2>Phone with Jeronimo</h2>
+			            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto, optio, dolorum provident rerum aut hic quasi placeat iure tempora laudantium ipsa ad debitis unde? Iste voluptatibus minus veritatis qui ut.</p>
+			            <span class="vertical-date">Yesterday <br/><small>Dec 23</small></span>
+			        </div>
+			    </div>
+			
+			    <div class="vertical-timeline-block">
+			        <div class="vertical-timeline-icon lazur-bg">
+			            <i class="fa fa-user-md"></i>
+			        </div>
+			
+			        <div class="vertical-timeline-content">
+			            <h2>Go to the doctor dr Smith</h2>
+			            <p>Find some issue and go to doctor. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. </p>
+			            <span class="vertical-date">Yesterday <br/><small>Dec 23</small></span>
+			        </div>
+			    </div>
+			
+			    <div class="vertical-timeline-block">
+			        <div class="vertical-timeline-icon navy-bg">
+			            <i class="fa fa-comments"></i>
+			        </div>
+			
+			        <div class="vertical-timeline-content">
+			            <h2>Chat with Monica and Sandra</h2>
+			            <p>Web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like). </p>
+			            <span class="vertical-date">Yesterday <br/><small>Dec 23</small></span>
+			        </div>
+			    </div>
+			</div>
+			
+		</div>
+		
+	
+	</div>
+	</div>
+	</div>
+	</div>
+
+</body>
+</html>

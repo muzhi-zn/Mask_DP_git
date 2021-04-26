@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:18 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/pptEqpPmInfo_struct.xsd"/>
+  <xsd:complexType name="pptEqpPmInfo">
+    <xsd:complexContent>
+      <xsd:restriction base="tns:pptEqpPmInfo_struct">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="1" name="runWafer" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="maximumRunWafer" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="runTime" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="maximumRunTime" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="operationStartCount" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="maximumOperationStartCount" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="pmIntervalTime" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="lastMaintenanceTimeStamp" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="siInfo" type="corba:CORBA.Any"/>
+        </xsd:sequence>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>CD map</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-zh-CN.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-contextmenu.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/tableExport.js') }}"></script>
+    <script src="{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-export.js') }}"></script>
+    <script>
+
+        {# left #}
+        $(document).ready(function () {
+            $('#table').bootstrapTable({
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                showSearch: true,
+                //显示刷新按钮
+                showRefresh: true,
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/infotree/release_check/list/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                    return searchParam;
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right",//pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press",//手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        del(row.id);
+                    }
+                },
+                columns: [{
+                    field: 'id',
+                    title: 'ID',
+                    align: 'center',
+                    events: {
+                        'click .id': function (e, value, row, index) {
+                            $("#s_tool").val(row.tool);
+                            $("#s_node").val(row.node);
+                            $("#s_tone").val(row.tone);
+                            $("#s_blank").val(row.blank);
+                            $("#s_grade").val(row.grade);
+                            $("#s_pattern_density").val(row.pattern_density);
+                            $("#s_layer").val(row.layer);
+                            refresh();
+                        },
+                    },
+                    formatter: function operateFormatter(value, row, index) {
+                        return '<a href="#" class="id" title="ID">' + row.id + '</a>'
+                    }
+                }, {
+                    field: 'group',
+                    title: 'Group',
+                }, {
+                    field: 'customer',
+                    title: 'Customer',
+                }, {
+                    field: 'tool',
+                    title: 'Tool',
+                }, {
+                    field: 'node',
+                    title: 'Node',
+                }, {
+                    field: 'tone',
+                    title: 'Tone',
+                }, {
+                    field: 'blank',
+                    title: 'Blank',
+                }, {
+                    field: 'grade',
+                    title: 'Grade',
+                }, {
+                    field: 'pattern_density',
+                    title: 'Pattern_density',
+                }, {
+                    field: 'layer',
+                    title: 'Layer',
+                }, {
+                    field: 'version',
+                    title: 'Version',
+                    align: 'center',
+                    formatter: function operateFormatter(value, row, index) {
+                        if (row.version === 0) {
+                            return '-'
+                        } else {
+                            return row.version
+                        }
+                    }
+                }, {
+                    field: 'check_user_name',
+                    title: 'Check User',
+                    align: 'center',
+                }, {
+                    field: 'check_time',
+                    title: 'Check Time',
+                    align: 'center',
+                }, {
+                    field: 'check_status',
+                    title: 'Status',
+                    align: 'center',
+                    events: {
+                        'click .release': function (e, value, row, index) {
+                            jp.openViewDialog('Check ', '/infotree/release_check/check/list/?id=' + row.id + '&type=1', '600px', '700px');
+                        },
+                    },
+                    formatter: function operateFormatter(value, row, index) {
+                        const user_name = '{{ user_name }}';
+                        const create_user = row.create_user;
+                        if ((value === 0) && (user_name !== create_user)) {
+                            return [
+                                '<button href="#" class="release" title="Release">Check</button>',
+                            ].join('');
+                        } else if (value === 1) {
+                            return '<a style="color:green">Released</a>'
+                        } else if (value === 2) {
+                            return '<a style="color:red">Reject</a>'
+                        }
+                    }
+                }, {
+                    field: 'create_user',
+                    title: 'Create User',
+                    align: 'center',
+                }, {
+                    field: 'create_date',
+                    title: 'Create Date',
+                    align: 'center',
+                }, {
+                    field: 'operate',
+                    title: 'Operation',
+                    align: 'center',
+                    events: {
+                        'click .view': function (e, value, row, index) {
+                            jp.openViewDialog('View ', '/infotree/release_check/check/list/?id=' + row.id + '&type=0', '900px', '700px');
+                        },
+                    },
+                    formatter: function operateFormatter(value, row, index) {
+                        const check_status = row.check_status;
+                        if (check_status !== 2) {
+                            return [
+                                {% if '/infotree/release_check/check/list/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                    '<a href="#" class="view" title="View" ><i class="fa fa-eye"></i></a>',
+                                {% endif %}
+                            ].join('');
+                        }
+                    }
+                }]
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) {//如果是移动端，默认关闭tab
+                $('#table').bootstrapTable("toggleView");
+            }
+
+            $('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table', function () {
+                $('#remove').prop('disabled', !$('#table').bootstrapTable('getSelections').length);
+                $('#edit, #auth').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);
+            });
+
+            $("#search").click("click", function () {// 绑定查询按扭
+                $('#table').bootstrapTable('refresh');
+            });
+
+            $("#reset").click("click", function () {// 绑定查询按扭
+                $("#s_customer").val("");
+                $("#s_tool").val("");
+                $("#s_node").val("");
+                $("#s_tone").val("");
+                $("#s_blank").val("");
+                $("#s_grade").val("");
+                $("#s_pattern_density").val("");
+                $("#s_layer").val("");
+                $("#s_status").val("");
+                $("#s_status_00").selected();
+                $('#table').bootstrapTable('refresh');
+            });
+        });
+
+        function getIdSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        function getSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row
+            });
+        }
+
+        function refresh() {
+            $('#table').bootstrapTable('refresh');
+        }
+
+        function status_change(value) {
+            $("#s_status").val(value);
+        }
+    </script>
+</head>
+<body id="" class="" style="">
+
+<div class="wrapper wrapper-content">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Release Check</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div id="left" class="col-sm-12">
+                    <!-- 搜索 -->
+                    <div id="search-collapse" class="collapse">
+                        <div class="accordion-inner">
+                            <form id="searchForm" class="form form-horizontal well clearfix" method="post">
+                                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="Customer :">
+                                        Customer :</label>
+                                    <input id="s_customer" name="s_customer" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="Tool :">
+                                        Tool :</label>
+                                    <input id="s_tool" name="s_tool" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="Node :">
+                                        Node :</label>
+                                    <input id="s_node" name="s_node" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="Tone :">
+                                        Tone :</label>
+                                    <input id="s_tone" name="s_tone" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="Blank :">
+                                        Blank :</label>
+                                    <input id="s_blank" name="s_blank" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="Grade :">
+                                        Grade :</label>
+                                    <input id="s_grade" name="s_grade" class=" form-control input-sm"
+                                           type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="Pattern Density :">
+                                        Pattern Density :</label>
+                                    <input id="s_pattern_density" name="s_pattern_density"
+                                           class=" form-control input-sm" type="text" value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="Layer :">
+                                        Layer :</label>
+                                    <input id="s_layer" name="s_layer" class=" form-control input-sm" type="text"
+                                           value="" maxlength="64"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <label class="label-item single-overflow pull-left" title="Status :">
+                                        Status :</label>
+                                    <input id="s_status" name="s_status" type="text" value="" hidden/>
+                                    <select class=" form-control input-sm" maxlength="64"
+                                            onchange="status_change(value)">
+                                        <option id="s_status_00" value=""></option>
+                                        <option id="s_status_0" value="0">checking</option>
+                                        <option id="s_status_1" value="1">release</option>
+                                        <option id="s_status_2" value="2">reject</option>
+                                    </select>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-4">
+                                    <div style="margin-top:26px">
+                                        <a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-search"></i> Query</a>
+                                        <a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-refresh"></i> Reset</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 工具栏 -->
+                    <div id="toolbar">
+
+                    </div>
+                    <!-- 工具栏结束 -->
+
+                    <!-- 表格 -->
+                    <table id="table"
+                           data-toolbar="#toolbar"
+                           data-id-field="id">
+                    </table>
+
+                    <!-- context menu -->
+                    <ul id="context-menu" class="dropdown-menu">
+                        <li data-item="edit"><a>编辑</a></li>
+                        <li data-item="delete"><a>删除</a></li>
+                        <li data-item="action1"><a>取消</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

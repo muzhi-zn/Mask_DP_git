@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload JDV Data</title>
+    {% include 'base.html' %}
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src="{{ static ('/js/jquery-3.4.1.js') }}"></script>
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+    <script>
+        var form, tree, util;
+        $(function (){
+            layui.use(['form', 'tree', 'util'], function () {
+                form = layui.form;
+                tree = layui.tree;
+                util = layui.util;
+
+                let chips_data = $("#chips_data").val();
+                let layers_data = $("#layers_data").val();
+                //渲染
+                tree.render({
+                    elem: '#chips'  //绑定元素
+                    , showCheckbox: true
+                    , id: 'chips_tree'
+                    , data: [{
+                        id: 1,
+                        spread: true,
+                        title: 'All Chips',
+                        children: JSON.parse(chips_data)
+                    }]
+                });
+
+
+                tree.render({
+                    elem: '#layers'  //绑定元素
+                    , showCheckbox: true
+                    , id: 'layers_tree'
+                    , data: [{
+                        id: 1,
+                        spread: true,
+                        title: 'All Layers',
+                        children: JSON.parse(layers_data)
+                    }]
+                });
+            });
+        });
+
+        function save(){
+            let chips = [];
+            let layers = [];
+            let chipsData = tree.getChecked("chips_tree")
+            let layersData = tree.getChecked("layers_tree")
+            if (chipsData.length > 0) {
+                let chips_children = chipsData[0].children;
+                for (let i = 0; i < chips_children.length; i++) {
+                    chips.push(chips_children[i].title)
+                }
+            }
+            if (layersData.length > 0) {
+                let layers_children = layersData[0].children
+                for (let i = 0; i < layers_children.length; i++) {
+                    layers.push(layers_children[i].title)
+                }
+            }
+            // 执行生成sgd user、上传jdv文件到sgd server、发送email给客户
+            $.ajax({
+                url: '/query_system/jdv_data/upload_form/',
+                method: 'post',
+                data: {
+                    jdv_data_id: $("#jdv_data_id").val(),
+                    layers: layers,
+                    chips: chips,
+                    csrfmiddlewaretoken: $("#token").val()
+                },
+                traditional: true,
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data)
+                    alert(data.msg)
+                }
+            });
+            var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+            parent.layer.close(dialogIndex);
+        }
+    </script>
+</head>
+<body>
+<input id="chips_data" type="hidden" value="{{ chips }}"/>
+<input id="layers_data" type="hidden" value="{{ layers }}"/>
+<input id="jdv_data_id" type="hidden" value="{{ jdv_data.id }}">
+<input id="token" type="hidden" value="{{ csrf_token }}"/>
+<table class="layui-table">
+    <tr>
+        <td>EJDV Account Name:</td>
+        <td><input id="account_name" disabled type="text" class="layui-input" value="{{ jdv_data.sgd_user_name }}"/></td>
+    </tr>
+    <tr>
+        <td>EJDV JDV Job deck:</td>
+        <td><input id="deck" type="text" disabled class="layui-input" value="{{ jdv_data.job_deck_name }}"/></td>
+    </tr>
+    <tr>
+        <td height="300px">
+            <div class="layui-card" style="width: 95%; height: 200px">
+                <div class="layui-card-header">Chips</div>
+                <div class="layui-card-body" id="chips">
+
+                </div>
+            </div>
+        </td>
+        <td height="300px">
+            <div class="layui-card" style="width: 95%; height: 200px">
+                <div class="layui-card-header">Layers</div>
+                <div class="layui-card-body" id="layers">
+
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:18 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/pptLotBasicInfo__140_struct.xsd"/>
+  <xsd:complexType name="pptLotBasicInfo__140">
+    <xsd:complexContent>
+      <xsd:restriction base="tns:pptLotBasicInfo__140_struct">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="1" name="lotID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="lotType" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="subLotType" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="lotContent" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="lotStatus" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotStatusList" type="tns:pptLotStatusListSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="dueTimeStamp" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="priorityClass" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="internalPriority" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="externalPriority" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="totalWaferCount" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="productWaferCount" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="controlWaferCount" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="totalGoodDieCount" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="totalBadDieCount" type="xsd:int"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="bankID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="qtimeFlag" type="xsd:boolean"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="processLagTime" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="parentLotID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="vendorLotID" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="familyLotID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="lastClaimedTimeStamp" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="lastClaimedUserID" type="tns:objectIdentifier"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="stateChangeTimeStamp" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="inventoryChangeTimeStamp" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="requiredCassetteCategory" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="sorterJobExistFlag" type="xsd:boolean"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="inPostProcessFlagOfCassette" type="xsd:boolean"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="inPostProcessFlagOfLot" type="xsd:boolean"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="interFabXferState" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="bondingGroupID" nillable="true" type="xsd:string"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="autoDispatchControlFlag" type="xsd:boolean"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strEqpMonitorID" type="tns:pptEqpMonitorID"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="siInfo" type="corba:CORBA.Any"/>
+        </xsd:sequence>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

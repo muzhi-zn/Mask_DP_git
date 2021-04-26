@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Production List</title>
+</head>
+{% include 'base.html' %}
+<script>
+    $(document).ready(function () {
+        $('#production_table').bootstrapTable({
+            //请求方法
+            method: 'post',
+            //类型json
+            dataType: "json",
+            contentType: "application/x-www-form-urlencoded",
+            //是否显示行间隔色
+            striped: true,
+            //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            cache: false,
+            showSearch: false,
+            //显示刷新按钮
+            showRefresh: true,
+            //显示切换手机试图按钮
+            showToggle: false,
+            //显示 内容列下拉框
+            showColumns: false,
+            //显示切换分页按钮
+            //是否显示分页（*）
+            pagination: true,
+            //排序方式
+            sortOrder: "asc",
+            //初始化加载第一页，默认第一页
+            pageNumber: 1,
+            //每页的记录行数（*）
+            pageSize: 10,
+            //可供选择的每页的行数（*）
+            pageList: [10, 25, 50, 100],
+            //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+            url: "/query_system/production/list/",
+            //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+            //queryParamsType:'',
+            ////查询参数,每次调用是会带上这个参数，可自定义
+            queryParams: function (params) {
+                var searchParam = $("#searchForm").serializeJSON();
+                searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                searchParam.csrfmiddlewaretoken = $("#token").val()
+                return searchParam;
+            },
+            onShowSearch: function () {
+                $("#search-collapse").slideToggle();
+            },
+            //分页方式：client客户端分页，server服务端分页（*）
+            sidePagination: "server",
+            contextMenuTrigger: "right",//pc端 按右键弹出菜单
+            contextMenuTriggerMobile: "press",//手机端 弹出菜单，click：单击， press：长按。
+            contextMenu: '#context-menu',
+            columns: [{
+                checkbox: true
+            }, {
+                field: 'tip_no',
+                title: 'Tip No',
+                align: 'center',
+            }, {
+                field: 'product_name',
+                title: 'Product Name',
+                align: 'center',
+            }, {
+                field: 'total_layers',
+                title: 'Total Layers',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    return "<a href='#' onclick='show_device_list(\""+row.tip_no+"\",\"\")'><b style='color: black'>" + value + "</b></a>"
+                }
+            }, {
+                field: 'running_layers',
+                title: 'Running Layers',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    return "<a href='#' style='color: black' onclick='show_device_list(\""+row.tip_no+"\",\"running\")'>" + value + "</a>"
+                }
+            }, {
+                field: 'waiting_release_layers',
+                title: 'Wait Release Layers',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    return "<a href='#' style='color: black' onclick='show_device_list(\""+row.tip_no+"\",\"wait_release\")'>" + value + "</a>"
+                }
+            }, {
+                field: 'release_layers',
+                title: 'Released Layers',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    return "<a href='#' onclick='show_device_list(\""+row.tip_no+"\",\"released\")'><b>" + value + "</b></a>"
+                }
+            }, {
+                field: 'hold_layers',
+                title: 'Hold Layers',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    return "<a href='#'><b style='color: red' onclick='show_device_list(\""+row.tip_no+"\",\"hold\")'>" + value + "</b></a>"
+                }
+            }, {
+                field: 'operation',
+                title: 'Operation',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    return "<button class='btn btn-primary' onclick='to_jdv_dialog(\""+row.tip_no+"\")'>JDV</button>"
+                }
+            }]
+        });
+
+        if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) {//如果是移动端，默认关闭tab
+            $('#production_table').bootstrapTable("toggleView");
+        }
+
+        $('#production_table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+            'check-all.bs.table uncheck-all.bs.table', function () {
+            $('#remove').prop('disabled', !$('#production_table').bootstrapTable('getSelections').length);
+            $('#edit, #auth').prop('disabled', $('#production_table').bootstrapTable('getSelections').length != 1);
+        });
+
+        $("#search").click("click", function () {// 绑定查询按扭
+            $('#production_table').bootstrapTable('refresh');
+        });
+
+        $("#reset").click("click", function () {// 绑定查询按扭
+            $("#s_design_rule").val("");
+            $("#s_layer_name").val("");
+            $('#production_table').bootstrapTable('refresh');
+        });
+    });
+
+    function refresh() {
+        $('#production_table').bootstrapTable('refresh');
+    }
+
+    {#-------------------mask_name stage status---------------------#}
+    function show_device_list(tip_no, type) {
+        $('#device_list_div').show();
+        $('#mask_list_table').bootstrapTable("destroy");
+        $('#mask_list_table').bootstrapTable({
+            //请求方法
+            method: 'post',
+            //类型json
+            dataType: "json",
+            contentType: "application/x-www-form-urlencoded",
+            //是否显示行间隔色
+            striped: true,
+            //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            cache: false,
+            showSearch: false,
+            //显示刷新按钮
+            showRefresh: false,
+            //显示切换手机试图按钮
+            showToggle: false,
+            //显示 内容列下拉框
+            showColumns: false,
+            //显示切换分页按钮
+            //是否显示分页（*）
+            pagination: false,
+            //排序方式
+            sortOrder: "asc",
+            //初始化加载第一页，默认第一页
+            pageNumber: 1,
+            //每页的记录行数（*）
+            pageSize: 20,
+            //可供选择的每页的行数（*）
+            pageList: [10, 25, 50, 100],
+            //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+            url: "/query_system/production/device_list/",
+            {#url: "/query_system/device_group/get_list/",#}
+            //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+            //queryParamsType:'',
+            ////查询参数,每次调用是会带上这个参数，可自定义
+            queryParams: function (params) {
+                var searchParam = $("#searchForm").serializeJSON();
+                searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                searchParam.csrfmiddlewaretoken = $("#token").val();
+                searchParam.tip_no = tip_no;
+                searchParam.type = type;
+                return searchParam;
+            },
+            onShowSearch: function () {
+                $("#search-collapse").slideToggle();
+            },
+            //分页方式：client客户端分页，server服务端分页（*）
+            sidePagination: "server",
+            contextMenuTrigger: "right",//pc端 按右键弹出菜单
+            contextMenuTriggerMobile: "press",//手机端 弹出菜单，click：单击， press：长按。
+            contextMenu: '#context-menu',
+            columns: [{
+                checkbox: true
+            }, {
+                field: 'tip_no',
+                title: 'Tip No',
+                align: 'center'
+            }, {
+                field: 'product_name',
+                title: 'Product Name',
+                align: 'center'
+            }, {
+                field: 'mask_name',
+                title: 'Mask Name',
+                align: 'center',
+                formatter: function (value, row, index){
+                    console.log(row)
+                    if(row.status == "released"){
+                        return "<a style='background: green' ondblclick='show_jdv_info(1, \""+row.tip_no+"\", \""+row.mask_name+"\")'><label style='color:white'>"+value+"</label></a>"
+                    }else if(row.status == "running"){
+                        return "<a style='background: #0a6aa1' ondblclick='show_jdv_info(2, \""+row.tip_no+"\", \""+row.mask_name+"\")'><label style='color:white'>"+value+"</label></a>"
+                    }else{
+                        return "<a ondblclick='show_jdv_info(3, \""+row.tip_no+"\", \""+row.mask_name+"\")' style='color: black'>"+value+"</a>"
+                    }
+                }
+            }, {
+                field: 'layer',
+                title: 'Layer',
+                align: 'center'
+            {# }, {#}
+            {#    field: 'device_name',#}
+            {#    title: 'Device Name',#}
+            {#    align: 'center',#}
+            {#    formatter: function (value, row, index) {#}
+            {#        return "<a href='#' onclick='show_stage_status(\"" + row.tip_no + "\", \"" + row.layer + "\", \"" + value + "\")'>" + value + "</a>"#}
+            {#    }#}
+            }, {
+                field: 'lot_id',
+                title: 'lot_id',
+                align: 'center'
+            }, {
+                title: 'operation',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    return "<button onclick='show_group_stage_status(\""+row.tip_no+"\", \""+row.mask_name+"\")' class='btn btn-primary'>Convert Status</button>" +
+                        "<button class='btn btn-warning' onclick='show_stage_status(\"" + row.tip_no + "\", \"" + row.mask_name + "\")'>All Device Status</button>"
+                }
+            }]
+        });
+
+    }
+
+    function show_stage_status(tip_no, mask_name) {
+        jp.openViewDialog("Stage Status", "/query_system/production/to_stage_status/?tip_no="+tip_no+"&mask_name="+mask_name, "1000px", "400px")
+    }
+
+    function show_group_stage_status(tip_no, mask_name) {
+        jp.openViewDialog("Maks Name Stage Status", "/query_system/device_group/to_status_page/?tip_no="+tip_no+"&mask_name="+mask_name, "1000px", "300px")
+    }
+
+    {#-------------------------JDV Account List--------------------------------------#}
+    function to_jdv_dialog(tip_no) {
+        jp.openSaveDialog("JDV Account List", "/query_system/jdv/account_add/?tip_no="+tip_no, "1000px", "800px")
+    }
+    {#---------------------------JDV--------------------------------#}
+    function show_jdv_info(type, tip_no, mask_name) {
+        if(type == 1){ // jdv完成
+            jp.openTab("/query_system/jdv_data/to_released_page/?tip_no="+tip_no+"&mask_name="+mask_name, "Released JDV Data List", false)
+        }else if(type == 2){ // 正在jdv
+            jp.openTab("/query_system/jdv_data/list/?tip_no="+tip_no+"&mask_name="+mask_name, "JDV Data List", false)
+        }else if(type == 3){ // 未jdv
+            jp.openTab("/query_system/jdv/data_upload_list/?tip_no="+tip_no+"&mask_name="+mask_name, "JDV Data Upload List", false)
+        }
+    }
+
+    function getTipNoSelections() {
+        return $.map($("#production_table").bootstrapTable('getSelections'), function (row) {
+            console.log(row)
+            return row.tip_no
+        });
+    }
+
+    // 测试文件生成的方法
+    function test_jb(){
+        $.ajax({
+            url: '/query_system/jdv/test_create_jb_file/',
+            method: 'post',
+            data: {
+                'tip_no': getTipNoSelections()[0]
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.log(data)
+                alert(data.success)
+            }
+        });
+    }
+</script>
+<body>
+<input id="token" type="hidden" value="{{ csrf_token }}"/>
+<div class="wrapper wrapper-content">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Production List</h3>
+        </div>
+        <div class="panel-body">
+            <div id="toolbar">
+                <button id="edit" class="btn btn-success" disabled onclick="test_jb()">
+                    <i class="glyphicon glyphicon-edit"></i>测试JB文件生成
+                </button>
+            </div>
+            <!-- 表格 -->
+            <table id="production_table"
+                   data-toolbar="#toolbar"
+                   data-id-field="id">
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="device_list_div" class="wrapper wrapper-content" hidden>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Device List</h3>
+        </div>
+        <div class="panel-body">
+            <!-- 表格 -->
+            <table id="mask_list_table"></table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+	<title>字典管理</title>
+	
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="author" />
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<script>var d = "";</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<!-- 设置浏览器图标 -->
+<link rel="shortcut icon" href= "{{ static ('/ani/static/favicon.ico') }}">
+<!-- 引入jeeplus ajax版本库文件，该文件压缩了jQuery，datatime等常用js文件以提高加载速度 -->
+<link rel="stylesheet" href= "{{ static ('/ani/static/common/css/vendor.css') }}" />
+<script src= "{{ static ('/ani/static/common/js/vendor.js') }}"></script>
+<!-- 引入依赖的第三方插件 -->
+<link href= "{{ static ('/ani/static/plugin/awesome/4.4/css/font-awesome.min.css') }}" rel="stylesheet" />
+<script src= "{{ static ('/ani/static/plugin/jquery-validation/1.14.0/jquery.validate.js') }}" type="text/javascript"></script>
+<script src= "{{ static ('/ani/static/plugin/jquery-validation/1.14.0/localization/messages_zh.min.js') }}" type="text/javascript"></script>
+<script src= "{{ static ('/ani/static/plugin/jquery-validation/1.14.0/validation-methods.js') }}" type="text/javascript"></script>
+<link href= "{{ static ('/ani/static/plugin/icheck-1.x/skins/square/_all.css') }}" rel="stylesheet" />
+<script src= "{{ static ('/ani/static/plugin/icheck-1.x/icheck.js') }}"></script>
+<script type="text/javascript">
+
+    
+
+
+</script>
+<!--省市区三级联动插件-->
+<link href= "{{ static ('/ani/static/plugin/city-picker/css/city-picker.css') }}" rel="stylesheet" type="text/css"/>
+<script src= "{{ static ('/ani/static/plugin/city-picker/js/city-picker.data.js') }}" type="text/javascript"></script>
+<script src= "{{ static ('/ani/static/plugin/city-picker/js/city-picker.js') }}" type="text/javascript"></script>
+
+<!-- 引入layer插件,当做独立组件使用，不使用layui模块，该版本修复了chrome下花屏的bug -->
+<script src= "{{ static ('/ani/static/plugin/layui/layer/layer.js') }}"></script>
+<script src= "{{ static ('/ani/static/plugin/layui/laytpl/laytpl.js') }}"></script>
+
+
+<!--引入webuploader-->
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/webuploader-0.1.5/webuploader.css') }}">
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/webuploader-0.1.5/demo.css') }}">
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/webuploader-0.1.5/webuploader.js') }}"></script>
+
+<!-- 引入toastr -->
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/toastr/toastr.css') }}">
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/toastr/toastr.min.js') }}"></script>
+
+<!--引入select2-->
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/select2/css/select2.min.css') }}">
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/select2/css/select2-bootstrap.css') }}">
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/select2/js/select2.min.js') }}"></script>
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/select2/js/i18n/zh-CN.js') }}"></script>
+
+<!-- 引入自定义文件 -->
+<script type="text/javascript">var ctx = '/ani/a', ctxStatic='/ani/static';</script>
+<link rel="stylesheet" id="theme" href= "{{ static ('/ani/static/common/css/app-blue.css') }}" />
+<script src= "{{ static ('/ani/static/common/js/jeeplus.js') }}"></script>
+
+	
+	
+	<meta name="decorator" content="ani"/>
+	<script type="text/javascript">
+		var token = $('input[name=csrfmiddlewaretoken]').val();
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if(!isValidate){
+                return false;
+            }else{
+                jp.loading();
+                jp.post("/system/dict/value/form/",$('#inputForm').serialize(),function(data){
+                    if(data.success){
+                        jp.getParent().refreshDictValue();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+
+                    }else{
+                        jp.error(data.msg);
+                    }
+                })
+            }
+
+        }
+
+	</script>
+
+</head>
+<body id="" class="bg-white"  style="">
+	
+	<form id="inputForm" class="form-horizontal" action="/system/dict/value/form/" method="post">
+		<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+		<input type="hidden" name="dictValueId" value="{{dictValueId or ''}}"/>
+		<input id="dictTypeId" name="dictTypeId" type="hidden" value="{{dictTypeId or ''}}"/>
+		<table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+		   <tbody>
+		       <tr>
+		         <td  class="width-15 active">	<label class="pull-right"><font color="red">*</font>标签:</label></td>
+		         <td class="width-35" ><input id="label" name="label" class="form-control required" type="text" value="{{label or ''}}" maxlength="100"/></td>
+		      </tr>
+		       <tr>
+		          <td  class="width-15 active">	<label class="pull-right"><font color="red">*</font>键值:</label></td>
+		          <td  class="width-35" ><input id="value" name="value" class="form-control required" type="text" value="{{value or ''}}" maxlength="100"/></td>
+		      </tr>
+		      <tr>
+		          <td  class="width-15 active">	<label class="pull-right"><font color="red">*</font>排序:</label></td>
+		          <td  class="width-35" ><input id="sort" name="sort" class="form-control required" type="text" value="{{sort or ''}}" maxlength="50"/></td>
+		      </tr>
+		   </tbody>
+		  </table>   
+	</form>
+
+</body>
+</html>

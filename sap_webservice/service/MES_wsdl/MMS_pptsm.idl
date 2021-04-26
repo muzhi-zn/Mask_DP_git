@@ -1,0 +1,31 @@
+#ifndef MMS_PPTServiceManager_idl
+#define MMS_PPTServiceManager_idl
+
+#include "MMS_pptstr.idl"
+// Bob Ke 2020/11/26 Add #25, #26
+
+interface PPTServiceManager
+{
+};
+
+
+interface CS_PPTServiceManager : PPTServiceManager
+{
+
+  void CS_PPTServiceManager_init();
+  void CS_PPTServiceManager_uninit();
+
+// Excel # : 25 TxShipReq 
+//## Operation: TxShipReq
+//## Documentation:
+//      Transaction Id : TXBKC004
+pptShipReqResult TxShipReq(in pptUser requestUserID, in objectIdentifierSequence lotIDs, in objectIdentifier bankID, in string claimMemo);
+
+// Excel # : 26 TxShipCancelReq 
+//## Operation: TxShipCancelReq
+//## Documentation:
+//      Transaction Id : TXBKC005
+pptShipCancelReqResult TxShipCancelReq(in pptUser requestUserID, in objectIdentifierSequence lotIDs, in objectIdentifier bankID, in string claimMemo);
+
+};
+#endif

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Writer Mapping</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            gen_machine_options()
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+            if ("{{ method }}" == "edit") { //修改操作
+                $("#mask_type option[value='{{ w_m.mask_type}}']").attr("selected", "selected");
+                $("#tone option[value='{{ w_m.tone}}']").attr("selected", "selected");
+                $("#machine_id option[value='{{ w_m.machine_id}}']").attr("selected", "selected");
+            }
+        });
+
+        function gen_machine_options() {
+            $.ajax({
+                url: '/machine/options/',
+                method: 'post',
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    for (let i = 0; i < data.options.length; i++) {
+                        $("#machine_id").append('<option value="' + data.options[i].id + '">' + data.options[i].exptool + '</option>')
+                    }
+                }
+            })
+        }
+
+        function select_machine() {
+            let option = $("#machine_id option:selected");
+            $("#exp_tool").val(option.text());
+            gen_info_tree_tool_id()
+        }
+
+        function gen_info_tree_tool_id() {
+            $("#info_tree_tool_id").empty()
+            console.log($("#exp_tool").val())
+            $.ajax({
+                url: '/machine/info_tree/gen_selects/',
+                method: 'post',
+                async: false,
+                data: {
+                    'writer_name': $("#exp_tool").val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $("#info_tree_tool_id").append('<option>-----</option>')
+                        console.log('success')
+                        for (let i = 0; i < data.info_tree.length; i++) {
+                            $("#info_tree_tool_id").append('<option value="' + data.info_tree[i] + '">' + data.info_tree[i] + '</option>')
+                        }
+                    }
+                }
+            })
+        }
+
+        function gen_catalog_tool_id() {
+            $.ajax({
+                url: '/machine/catalog/gen_tool_id/',
+                method: 'post',
+                async: false,
+                data: {
+                    'info_tree_tool_id': $("#info_tree_tool_id").val()
+                },
+                success: function(data){
+                    if (data.success){
+                        $("#catalog_tool_id").val(data.tool_id)
+                    }else{
+                        jp.msg('Please check tool name route in catalog, there is no tool id matched')
+                    }
+                }
+            })
+        }
+
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/machine/writer_mapping/{{method}}/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        jp.getParent().refresh();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" action="/machine/writer_mapping/{{ method }}/" method="post"
+      autocomplete="off">
+    <input id="token" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input id="id" name="id" type="hidden" value="{{ w_m.id or ''}}"/>
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">SEQ: </label>
+            </td>
+            <td class="width-35">
+                <input id="seq" name="seq" class="form-control required" type="text"
+                       value="{{ w_m.seq or ''}}"
+                       maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Customer : </label>
+            </td>
+            <td class="width-35">
+                <input id="customer" name="customer" class="form-control required" type="text"
+                       value="{{ w_m.customer or ''}}"
+                       maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active" class="active">
+                <label class="pull-right">Design Rule : </label>
+            </td>
+            <td class="width-35">
+                <input id="design_rule" name="design_rule" class="form-control required" type="text"
+                       value="{{ w_m.design_rule or ''}}"
+                       maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Product : </label>
+            </td>
+            <td class="width-35">
+                <input id="product" name="product" class="form-control required" type="text"
+                       value="{{ w_m.product or ''}}"
+                       maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Layer Name : </label>
+            </td>
+            <td class="width-35">
+                <input id="layer_name" name="layer_name" class="form-control required" type="text"
+                       value="{{ w_m.layer_name or ''}}"
+                       maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Product Type : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="product_type" name="product_type" maxlength="200" class="form-control"
+                       value="{{ w_m.product_type or ''}}"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Grade From : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="grade_from" name="grade_from" maxlength="200" class="form-control"
+                       value="{{ w_m.grade_from or ''}}"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Grade To : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="grade_to" name="grade_to" maxlength="200" class="form-control"
+                       value="{{ w_m.grade_to or ''}}"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Mask Type : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                {#                <input id="mask_type" name="mask_type" maxlength="200" class="form-control"#}
+                {#                          value="{{ w_m.mask_type or ''}}"/>#}
+                <select id="mask_type" name="mask_type" class="form-control">
+                    <option value="*">*(B,P,M)</option>
+                    <option value="BIN">Binary_Cr_Qz</option>
+                    <option value="PSM">PSM</option>
+                    <option value="OMOG">OMOG</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Tone : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                {#                <input id="tone" name="tone" maxlength="200" class="form-control"#}
+                {#                          value="{{ w_m.tone or ''}}"/>#}
+                <select id="tone" name="tone" maxlength="200" class="form-control">
+                    <option value="*">*(C,D)</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">EXPTOOL : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="exp_tool" name="exp_tool" type="hidden" maxlength="200" class="form-control"
+                       value="{{ w_m.exp_tool or ''}}" onchange="gen_info_tree_tool_id()"/>
+                <select id="machine_id" name="machine_id" class="form-control" onchange="select_machine()">
+                    <option>-----</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Info Tree Tool ID : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="info_tree_tool" name="info_tree_tool" type="hidden" maxlength="200"
+                       class="form-control"
+                       value="{{ w_m.info_tree_tool_id or ''}}"/>
+                <select id="info_tree_tool_id" name="info_tree_tool_id" class="form-control"
+                        onchange="gen_catalog_tool_id()">
+                    <option>-----</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Catalog Tool ID : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <input id="catalog_tool_id" name="catalog_tool_id" maxlength="200" class="form-control"
+                       value="{{ w_m.catalog_tool_id or ''}}" readonly/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Comment : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <textarea id="comment" name="comment" maxlength="200" class="form-control"
+                          rows="4">{{ w_m.comment or ''}}</textarea>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </tr>
+</form>
+</body>

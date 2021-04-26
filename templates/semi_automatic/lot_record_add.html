@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Query MES Lot</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/semi_automatic/lot_record/add/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        console.log(jp.getParent())
+                        jp.getParent().refresh();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.message)
+                    } else {
+                        jp.error(data.message);
+                    }
+                })
+            }
+
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" action="lot_record/add/" method="post"
+      autocomplete="off">
+    <input id="token" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Tip No: </label>
+            </td>
+            <td class="width-35">
+                <input id="tip_no" name="tip_no" class="form-control required" type="text" value="" maxlength="50"/>
+            </td>
+            <td class="width-15 active">
+                <label class="pull-right">Mask Name : </label>
+            </td>
+            <td class="width-35">
+                <input id="mask_name" name="mask_name" class="form-control required" type="text"
+                       value="" maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Layer</label>
+            </td>
+            <td class="width-35">
+                <input id="layer" name="layer" class="form-control required" type="text" value="" maxlength="50">
+            </td>
+            <td class="width-15 active">
+                <label class="pull-right">Tone</label>
+            </td>
+            <td class="width-35">
+                <input id="tone" name="tone" class="form-control" type="text" value="" maxlength="50">
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Grade</label>
+            </td>
+            <td class="width-35">
+                <input id="grade" name="grade" class="form-control" type="text" value="" maxlength="50">
+            </td>
+            <td class="width-15 active">
+                <label class="pull-right">Tip Tech</label>
+            </td>
+            <td class="width-35">
+                <input id="tip_tech" name="tip_tech" class="form-control" type="text" value="" maxlength="50">
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Product Type</label>
+            </td>
+            <td class="width-35">
+                <input id="product_type" name="product_type" class="form-control" type="text" value=""
+                       maxlength="50">
+            </td>
+            <td class="width-15 active">
+                <label class="pull-right">Customer Code</label>
+            </td>
+            <td class="width-35">
+                <input id="customer_code" name="customer_code" class="form-control" type="text" value=""
+                       maxlength="50">
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Purpose</label>
+            </td>
+            <td class="width-35">
+                <input id="purpose" name="purpose" class="form-control" type="text" value="" maxlength="50">
+            </td>
+            <td class="width-15 active">
+                <label class="pull-right">Order Type</label>
+            </td>
+            <td class="width-35">
+                <input id="order_type" name="order_type" class="form-control" type="text" value=""
+                       maxlength="50">
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Exptool</label>
+            </td>
+            <td class="width-35">
+                <input id="exp_tool" name="exp_tool" class="form-control" type="text" value="" maxlength="50">
+            </td>
+            <td class="width-15 active">
+                <label class="pull-right">Blank Code</label>
+            </td>
+            <td class="width-35">
+                <input id="blank_code" name="blank_code" class="form-control" type="text" value=""
+                       maxlength="50">
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Pellicle Code</label>
+            </td>
+            <td class="width-35">
+                <input id="pellicle_code" name="pellicle_code" class="form-control" type="text" value=""
+                       maxlength="50">
+            </td>
+            <td class="width-15 active">
+                <label class="pull-right">Design Rule</label>
+            </td>
+            <td class="width-35">
+                <input id="design_rule" name="design_rule" class="form-control" type="text" value=""
+                       maxlength="50">
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Delivery Fab</label>
+            </td>
+            <td class="width-35">
+                <input id="delivery_fab" name="delivery_fab" class="form-control" type="text" value=""
+                       maxlength="50">
+            </td>
+            <td class="width-15 active">
+                <label class="pull-right">Wavelength</label>
+            </td>
+            <td class="width-35">
+                <input id="wavelength" name="wavelength" class="form-control" type="text" value=""
+                       maxlength="50">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </tr>
+</form>
+</body>

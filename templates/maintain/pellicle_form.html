@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Pellicle Form</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/maintain/pellicle/{{method}}/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        console.log(jp.getParent())
+                        jp.getParent().refresh();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.message)
+                    } else {
+                        jp.error(data.message);
+                    }
+                })
+            }
+
+        }
+
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" action="tooling_settings/{{ method }}/" method="post"
+      autocomplete="off">
+    <input id="token" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input id="id" name="id" type="hidden" value="{{ pellicle.id or ''}}"/>
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">MT Form Pellicle: </label>
+            </td>
+            <td class="width-35">
+                <input id="mt_form_pellicle" name="mt_form_pellicle" class="form-control required" type="text"
+                       value="{{ pellicle.mt_form_pellicle or ''}}"
+                       maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active" class="active">
+                <label class="pull-right">MES Pellicle : </label>
+            </td>
+            <td class="width-35">
+                <input id="mes_pellicle" name="mes_pellicle" class="form-control required" type="text"
+                       value="{{ pellicle.mes_pellicle_code or ''}}"
+                       maxlength="50"/>
+            </td>
+        </tr>
+
+
+        </tbody>
+    </table>
+    </tr>
+</form>
+</body>

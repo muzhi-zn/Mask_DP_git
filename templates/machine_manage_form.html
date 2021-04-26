@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Machine Manage</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/machine/machine_manage/{{method}}/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        jp.getParent().refresh();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+
+        }
+
+        $(document).ready(function () {
+            $("#name").focus();
+            $("#inputForm").validate({
+                rules: {
+                    name: {
+                        remote: "/machine/machine_manage/check/name/?oldName=" +
+                            encodeURIComponent("{{ machine.machine_name or '' }}")
+                    }//设置了远程验证，在初始化时必须预先调用一次。
+                },
+                messages: {
+                    name: {remote: "Machine name exists!"}
+                }
+            });
+        });
+
+        window.onload = function () {
+             {#console.log("window loaded")#}
+        };
+
+        $(function() {
+          {#console.log("docuemnt ready");#}
+        });
+
+        function read_only() {
+            {#alert('123')#}
+            {#var mm = {{ method }}.toString()#}
+            {#alert(mm)#}
+
+            {#if (mm != "add") {#}
+            {#var obj_name = document.getElementById("name");#}
+            {#var obj_oldname = document.getElementById("oldname");#}
+            {#var obj_template_type = document.getElementById("obj_template_type");#}
+            {#var obj_remark = document.getElementBy_Id("remark")#}
+            {#alert("obj_name = " + obj_name);#}
+            {#obj_name.setAttribute("readOnly",'true');#}
+            {#obj_oldname.setAttribute("readOnly",'true');#}
+            {#obj_template_type.setAttribute("readOnly",'true');#}
+            {#obj_remark.setAttribute("readOnly",'true');#}
+            {#$("#name").attr("readOnly","true");#}
+            {##}
+            {#    alert('view')#}
+            //}
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" action="/machine/machine_manage/{{ method }}/" method="post"
+      autocomplete="off">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input id="id" name="id" type="hidden" value="{{ machine.id or ''}}"/>
+    <h4>Machine</h4>
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            {#            Machine Name#}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Name : </label>
+            </td>
+            <td class="width-35">
+                {#                <input id="oldname" name="oldname" type="hidden" value="{{ machine. machine_name or ''}}" >#}
+                <input id="machine_name" name="machine_name" class="form-control required" type="text"
+                       value="{{ machine.machine_name or ''}}"
+                       maxlength="50"/>
+            </td>
+            {#            Machine IP#}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>IP : </label>
+            </td>
+            <td class="width-35">
+                {#                <input id="oldname" name="oldname" type="hidden" value="{{ machine.machine_ip or ''}}">#}
+                <input id="machine_ip" name="machine_ip" class="form-control required" type="text"
+                       value="{{ machine.machine_ip or ''}}"
+                       maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            {#            Machine Type#}
+            <td class="width-15 active" class="active">
+                <label class="pull-right">Type : </label>
+            </td>
+            {#            <td class="width-35">#}
+            {#                <select id="template_type" name="template_type" class="form-control ">#}
+            {#                    {% for temp in template %}#}
+            {#                    <option value="{{temp.template_type}}" {% if machine.machine_type == temp.template_type %}#}
+            {#                            selected {% endif %} >{{temp.template_type}}</option>#}
+            {#                    {% endfor %}#}
+            {#                </select>#}
+            {#            </td>#}
+            <td class="width-35">
+                {#                <input id="oldname" name="oldname" type="hidden" value="{{ machine.machine_type or ''}}">#}
+                <input id="machine_type" name="machine_type" class="form-control required" type="text"
+                       value="{{ machine.machine_type or ''}}"
+                       maxlength="50"/>
+            </td>
+            {#            Machine Account#}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Account : </label>
+            </td>
+            <td class="width-35">
+                {#                <input id="oldname" name="oldname" type="hidden" value="{{ machine.machine_account or ''}}">#}
+                <input id="machine_account" name="machine_account" class="form-control required" type="text"
+                       value="{{ machine.machine_account or ''}}"
+                       maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            {#            Machine Password#}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Password : </label>
+            </td>
+            <td class="width-35">
+                {#                <input id="oldname" name="oldname" type="hidden" value="{{ machine.machine_password or ''}}">#}
+                <input id="machine_password" name="machine_password" class="form-control required" type="text"
+                       value="{{ machine.machine_password or ''}}"
+                       maxlength="50"/>
+            </td>
+            <td class="width-15 active">
+                <label class="pull-right"></label>
+            </td>
+            <td class="width-35"></td>
+        </tr>
+        <tr>
+            {#            Machine Remark#}
+            <td class="width-15 active">
+                <label class="pull-right">Remark : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <textarea id="machine_remark" name="machine_remark" maxlength="200" class="form-control"
+                          rows="4">{{ machine.machine_remark or ''}}</textarea>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </tr>
+
+    <h4>FTP</h4>
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            {#             FTP IP#}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>IP : </label>
+            </td>
+            <td class="width-35">
+                {#                <input id="oldname" name="oldname" type="hidden" value="{{ machine.ftp_ip or ''}}">#}
+                <input id="ftp_ip" name="ftp_ip" class="form-control required" type="text"
+                       value="{{ machine.ftp_ip or ''}}"
+                       maxlength="50"/>
+            </td>
+            {#            FTP Path#}
+            <td class="width-15 active" class="active">
+                <label class="pull-right">Path : </label>
+            </td>
+            <td class="width-35">
+                {#                <input id="oldname" name="oldname" type="hidden" value="{{ machine.ftp_path or ''}}">#}
+                <input id="ftp_path" name="ftp_path" class="form-control required" type="text"
+                       value="{{ machine.ftp_path or ''}}"
+                       maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            {#            FTP Account#}
+            <td class="width-15 active">
+                <label class="pull-right">Account : </label>
+            </td>
+            <td class="width-35">
+                {#                <input id="oldname" name="oldname" type="hidden" value="{{ machine.ftp_account or ''}}">#}
+                <input id="ftp_account" name="ftp_account" class="form-control required" type="text"
+                       value="{{ machine.ftp_account or ''}}"
+                       maxlength="50"/>
+            </td>
+            {#            FTP Passeord#}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Password : </label>
+            </td>
+            <td class="width-35">
+                {#                <input id="oldname" name="oldname" type="hidden" value="{{ machine.ftp_password or ''}}">#}
+                <input id="ftp_password" name="ftp_password" class="form-control required" type="text"
+                       value="{{ machine.ftp_password or ''}}"
+                       maxlength="50"/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <input id="menuIds" name="menuIds" type="hidden" value=""/>
+</form>
+</body>

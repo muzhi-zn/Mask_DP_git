@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <title>CEC upload</title>
+    {% include 'base.html' %}
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+</head>
+<body>
+<form style="padding: 15px">
+    <input id="cec_id" name="cec_id" type="hidden" value="{{ cec_id }}"/>
+    <div class="layui-upload">
+        <button type="button" class="layui-btn layui-btn-primary" id="testList">Browse</button>
+        <button type="button" class="layui-btn layui-btn-primary" id="testListAction">Upload</button>
+        <div class="layui-upload-list">
+            <table class="layui-table" id="table_1">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Size</th>
+                    <th>Status</th>
+                    <th>Operation</th>
+                </tr>
+                </thead>
+                <tbody id="demoList"></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            console.log('cec_id = ' + '{{ cec_id }}');
+        });
+
+        layui.use('upload', function () {
+            var $ = layui.jquery
+                , upload = layui.upload;
+            //多文件列表示例
+            let file_index_list = [];
+
+            var demoListView = $('#demoList'),
+                uploadListIns = upload.render({
+                    elem: '#testList',
+                    url: '/infotree/cec/upload/', //改成您自己的上传接口
+                    accept: 'file',
+                    method: 'post',
+                    multiple: true,
+                    auto: false,
+                    exts: 'txt',
+                    number: 1,
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'cec_id': $('#cec_id').val(),
+                    },
+                    bindAction: '#testListAction',
+                    choose: function (obj) {
+                        var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                        //读取本地文件
+                        let i = [];
+                        let file_name_list = [];
+                        let file_ext_list = [];
+                        for (const index in files) {
+                            const ff = files[index];
+                            file_index_list.push(index);
+                            i.push(ff);
+                            file_name_list.push(ff.name);
+                            file_ext_list.push(ff.name.substring(ff.name.indexOf(".") + 1))
+                        }
+                        if (i.length === 1 && file_ext_list.includes('txt')) {
+                            const check_res = check_file_exists(file_name_list);
+                            if (check_res.success) {
+                                obj.preview(function (index, file, result) {
+                                    var tr = $(['<tr id="upload-' + index + '">'
+                                        , '<td>' + file.name + '</td>'
+                                        , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'
+                                        , '<td>Waiting</td>'
+                                        , '<td>'
+                                        {#, '<button class="layui-btn layui-btn-xs demo-reload layui-hide">re-upload</button>'#}
+                                        {#, '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">remove</button>'#}
+                                        , '</td>'
+                                        , '</tr>'].join(''));
+
+                                    //单个重传
+                                    tr.find('.demo-reload').on('click', function () {
+                                        obj.upload(index, file);
+                                    });
+
+                                    //删除
+                                    tr.find('.demo-delete').on('click', function () {
+                                        delete files[index]; //删除对应的文件
+                                        tr.remove();
+                                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                                    });
+
+                                    demoListView.append(tr);
+                                });
+                            } else {
+                                for (const index in files) {
+                                    $('#' + "upload-" + index).remove();
+                                    delete this.files[index];
+                                }
+                                file_index_list = [];
+                                layer.open({
+                                    title: 'warning'
+                                    , content: 'file name already exists'
+                                });
+                            }
+                        } else {
+                            for (const index in files) {
+                                $('#' + "upload-" + index).remove();
+                                delete this.files[index];
+                            }
+                            file_index_list = new Array();
+                            layer.open({
+                                title: 'warning'
+                                , content: 'Only one txt in cec upload.'
+                            });
+                        }
+                    },
+                    done: function (res, index, upload) {
+                        console.log('done');
+                        if (res.success) { //上传成功
+                            {#if (res.files.file) { //上传成功#}
+                            var tr = demoListView.find('tr#upload-' + index)
+                                , tds = tr.children();
+                            tds.eq(2).html('<span style="color: #5FB878;">Success</span>');
+                            tds.eq(3).html(''); //清空操作
+
+                            if (file_index_list.indexOf(index) > -1) {
+                                file_index_list.splice(file_index_list.indexOf(index), 1);
+                            }
+
+                            delete this.files[index]; //删除文件队列已经上传成功的文件
+
+                            if (file_index_list.length == 0) {
+                                jp.getParent().refresh();
+                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(index); //再执行关闭
+                            }
+                            return
+                        }
+                        this.error(index, upload);
+                    },
+                    error: function (index, upload) {
+                        console.log('error');
+                        var tr = demoListView.find('tr#upload-' + index)
+                            , tds = tr.children();
+                        tds.eq(2).html('<span style="color: #FF5722;">Failed</span>');
+                        tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+                    }
+                });
+
+            function check_file_exists(file_name) {
+                let res = '';
+                $.ajax({
+                    url: '/infotree/cec/check_file_exists/',
+                    method: 'post',
+                    data: {
+                        file_name: file_name.toString(),
+                    },
+                    async: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                        res = data;
+                    },
+                });
+                return res;
+            }
+        });
+    </script>
+</form>
+</body>
+</html>

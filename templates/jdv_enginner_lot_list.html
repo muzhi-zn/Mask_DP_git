@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>JDV Service</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <link rel="stylesheet" type="text/css" href= "{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src= "{{ static ('/layui/layui.js') }}"></script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-lynch',
+                radioClass: 'iradio_square-lynch',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+    <meta name="decorator" content="ani"/>
+    <script type="text/javascript">
+        var form;
+        layui.use('form', function () {
+            form = layui.form;
+        });
+
+        $(document).ready(function () {
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+
+            //表格初始化
+            $('#table').bootstrapTable({
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                showSearch: true,
+                //显示刷新按钮
+                showRefresh: true,
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                showPaginationSwitch: true,
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/making/jdv_enginner_lot_list/list/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    //alert(searchParam.pageNo)
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                    csrfmiddlewaretoken = token;
+                    return searchParam;
+                },
+                data: {
+                    csrfmiddlewaretoken: token
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right", //pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onContextMenuItem: function (row, $el) {
+                    if ($el.data("item") == "edit") {
+                        edit(row.id);
+                    } else if ($el.data("item") == "delete") {
+                        deleteAll(row.id);
+                    }
+                },
+                onClickRow: function (row, $el) {
+                },
+                columns: [
+                    {
+                        checkbox: true
+                    },
+                    {
+                        align: 'center',
+                        field: 'lot_id',
+                        title: 'LotID',
+                        formatter: function (value, row, index) {
+                            if(value == ""){
+                                return '<label style="color: skyblue">Waiting</label>'
+                            }else{
+                                return  value
+                            }
+                        }
+                    },
+                    {
+                        align: 'center',
+                        field: 'product_name',
+                        title: 'Product Name'
+                    },
+                    {
+                        align: 'center',
+                        field: 'tip_no',
+                        title: 'TipNo'
+                    },
+                    {
+                        align: 'center',
+                        field: 'mask_name',
+                        title: 'Mask Name'
+                    },
+                    {
+                        align: 'center',
+                        field: 'customer',
+                        title: 'Customer'
+                    },
+                    {
+                        align: 'center',
+                        field: 'rule',
+                        title: 'Rule'
+                    },
+                    {
+                        align: 'center',
+                        field: 'grade',
+                        title: 'Grade'
+                    },
+                    {
+                        align: 'center',
+                        field: 'type',
+                        title: 'Type'
+                    },
+                    {
+                        align: 'center',
+                        field: 'tone',
+                        title: 'Tone'
+                    },
+                    {
+                        align: 'center',
+                        field: 'clip',
+                        title: 'CLIP'
+                    },
+                    {
+                        align: 'center',
+                        field: 'mes_operation_id',
+                        title: 'MES Step'
+                    },
+                    {
+                        align: 'center',
+                        field: 'mes_lot_status',
+                        title: 'Status'
+                    },
+                    {
+                        align: 'center',
+                        field: 'exp_tool',
+                        title: 'EXPTOOL'
+                    },
+                    {
+                        align: 'center',
+                        field: 'dispatch_flag',
+                        title: 'DIS_Flag',
+                        formatter: function (value, row, index) {
+                            if(value == 0){
+                                return '<label style="color: red">N</label>'
+                            }else if(value == 1){
+                                return  '<label style="color: green">Y</label>'
+                            }
+                        }
+                    },
+                    {
+                        field: 'release_status',
+                        title: 'Release Mask',
+                        align: 'center',
+                        formatter: function(value, row, index){
+                            if(value == 0){
+                                return '<label style="color: red">No Release</label>'
+                            }else if(value == 1){
+                                return '<label style="color: green">Released</label>'
+                            }
+                        }
+                    },
+                    {
+                        align: 'center',
+                        field: 'payment_status',
+                        title: 'Payment Status',
+                        formatter: function(value, row, index){
+                            if(value == 0){
+                                return '<label style="color: red;">No Pay</label>'
+                            }else if(value == 1){
+                                return '<label style="color: green;">Paid</label>'
+                            }
+                        }
+                    },{
+                        align: 'center',
+                        field: 'ready_date',
+                        title: 'ready date',
+                        formatter: function(value, row, index){
+                            return value.replace('T', ' ').replace('Z', '')
+                        }
+                    }, {
+                        align: 'center',
+                        field: 'expire_date',
+                        title: 'expire date',
+                        formatter: function(value, row, index){
+                            return value.replace('T', ' ').replace('Z', '')
+                        }
+                    },
+                    {
+                    field: 'operate',
+                    title: 'Operation',
+                    align: 'center',
+                    events: {
+        		        'click .view': function (e, value, row, index) {
+							jp.openViewDialog('Generate FIle', '/making/lot/generate/file/?lot_id=' + row.lot_id,'800px', '500px');
+        		        }
+        		    },
+                    formatter:  function operateFormatter(value, row, index) {
+        		        return [
+        		        	'<a href="#" class="view" title="Generate File" ><i class="fa fa-sitemap"></i> </a>'
+    						
+        		        ].join('');
+        		    }
+                }
+                ]
+
+            });
+
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) { //如果是移动端
+                $('#table').bootstrapTable("toggleView");
+            }
+
+            $('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table',
+                function () {
+                    $('#changeb_p').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);
+                    $('#edit').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);
+                });
+            $("#search").click("click", function () { // 绑定查询按扭
+                $('#table').bootstrapTable('refresh');
+            });
+            $("#reset").click("click", function () { // 绑定查询按扭
+                $("#tip_no").val("");
+                $("#lot_id").val("");
+                $("#mes_step").val("");
+                $("#product_name").val("");
+                $("#query_date").val("");
+                //$("#searchForm  select").val("");
+                $('#table').bootstrapTable('refresh');
+            });
+        });
+
+        function getIdSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        function refresh() {
+            $('#table').bootstrapTable('refresh');
+        }
+
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+
+            laydate.render({
+                elem: '#query_date',
+                type: 'datetime',
+                range: true
+            });
+        });
+
+        function exptool_change(){
+            let id = getIdSelections()
+            jp.openSaveDialog('EXPTOOL Change', '/making/lot/exptool_change/?id=' + id,'450px', '320px');
+        }
+
+        function change_blank_pellicle(){
+            let id = getIdSelections()
+            jp.openSaveDialog('Blank&Pellicle Change', '/making/lot/blank_pellicle_change/?id=' + id,'550px', '350px');
+        }
+
+        function insert_blank_pellicle(){
+            jp.openSaveDialog('Blank&Pellicle Change', '/making/lot/blank_pellicle_insert/','550px', '400px');
+        }
+
+        function pass_station(){
+            jp.loading()
+            let id = getIdSelections();
+            $.ajax({
+                method: 'post',
+                url: '/making/lot/op_test/',
+                data: {
+                    'id': id[0],
+                    'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']").val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    jp.close()
+                    if(data.success){
+                        $('#table').bootstrapTable('refresh');
+                        jp.success(data.msg)
+                    }else{
+                        jp.error(data.msg)
+                    }
+                }
+            })
+        }
+
+        function pass_rfl(){
+            jp.loading()
+            let id = getIdSelections();
+            $.ajax({
+                method: 'post',
+                url: '/making/lot/pass_rfl/',
+                data: {
+                    'id': id[0],
+                    'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']").val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    jp.close()
+                    if(data.success){
+                        $('#table').bootstrapTable('refresh');
+                        jp.success(data.msg)
+                    }else{
+                        jp.error(data.msg)
+                    }
+                }
+            })
+        }
+
+    </script>
+
+</head>
+<body id="" class="" style="">
+<form id="inputForm"><input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}"></form>
+<div class="wrapper wrapper-content">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">JDV Lot List</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 animated fadeInRight">
+                    <!-- 搜索框-->
+                    <div id="search-collapse" class="collapse">
+                        <div class="accordion-inner">
+                            <form id="searchForm" class="form form-horizontal well clearfix" action="/wrong_form/"
+                                  method="post">
+                                <input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+                                <div class="col-xs-12 col-sm-3 col-md-3">
+                                    <label class="label-item single-overflow pull-left"
+                                           title="Tipno：">Product_Name：</label>
+                                    <input id="product_name" name="product_name" class=" form-control input-sm"
+                                           type="text" value="" maxlength="50"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-3 col-md-3">
+                                    <label class="label-item single-overflow pull-left" title="Tipno：">Tip_No：</label>
+                                    <input id="tip_no" name="tip_no" class=" form-control input-sm" type="text" value=""
+                                           maxlength="50"/>
+                                </div>
+								<div class="col-xs-12 col-sm-3 col-md-3">
+								    <label class="label-item single-overflow pull-left" title="Tipno：">Lot ID：</label>
+								    <input id="lot_id" name="lot_id" class=" form-control input-sm" type="text" value=""
+								           maxlength="50"/>
+								</div>
+								<div class="col-xs-12 col-sm-3 col-md-3">
+								    <label class="label-item single-overflow pull-left" title="MESStep：">MES Step：</label>
+								    <input id="mes_step" name="mes_step" class=" form-control input-sm" type="text" value=""
+								           maxlength="50"/>
+								</div>
+                                <div class="col-xs-12 col-sm-3 col-md-3">
+                                    <label class="label-item single-overflow pull-left" title="Tipno：">Date：</label>
+                                    <input id="query_date" name="query_date" class=" form-control input-sm" type="text"
+                                           value="" maxlength="50"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-3 col-md-3">
+                                    <div style="margin-top:26px">
+                                        <a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-search"></i> Query</a>
+                                        <a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i
+                                                class="fa fa-refresh"></i> Reset</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!-- 搜索框结束 -->
+                    <!-- 工具栏 -->
+                    <div id="toolbar">
+                        <button id="edit" class="btn btn-success" disabled onclick="exptool_change()">
+                            <i class="glyphicon glyphicon-edit"></i> EXPTOOL Change
+                        </button>
+{#                        <button id="edit" class="btn btn-primary" disabled onclick="pass_rfl()">#}
+{#                            <i class="glyphicon glyphicon-edit"></i> RFL#}
+{#                        </button>#}
+{##}
+{#                        <button class="btn btn-warning" onclick="pass_station()">#}
+{#                            <i class="glyphicon glyphicon-edit"></i> OP Test#}
+{#                        </button>#}
+                        <button id="changeb_p" class="btn btn-primary" disabled onclick="change_blank_pellicle()">
+                            <i class="glyphicon glyphicon-edit"></i> Blank&Pellicle Change
+                        </button>
+                        <button id="insert" class="btn btn-warning" onclick="insert_blank_pellicle()">
+                            <i class="glyphicon glyphicon-edit"></i>Insert Blank&Pellicle
+                        </button>
+                    </div>
+                    <table id="table" data-toolbar="#toolbar">
+                    </table>
+                    <!-- context menu -->
+                    <!-- <ul id="context-menu" class="dropdown-menu">
+                        <li data-item="edit"><a>编辑</a></li>
+                        <li data-item="delete"><a>删除</a></li>
+                        <li data-item="cancel"><a>取消</a></li>
+                    </ul> -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptsm.idl
+    On Monday, October 26, 2020 2:10:28 PM CST
+    by IBM CORBA 2.3 WSDL emitter 2.30
+--><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="CS_PPTServiceManager" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.omg.org/IDL-Mapped/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:import location="../../corba/corba.wsdl" namespace="http://www.omg.org/IDL-WSDL/1.0/"/>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.omg.org/IDL-WSDL/1.0/">
+      <xsd:include schemaLocation="../../corba/corba.xsd"/>
+    </xsd:schema>
+    <xsd:schema targetNamespace="http://www.omg.org/IDL-Mapped/">
+      <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+      <xsd:include schemaLocation="../schema/pptForceOpeCompReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/pptUser.xsd"/>
+      <xsd:include schemaLocation="../schema/objectIdentifier.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="CS_PPTServiceManager.TxForceOpeCompReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="equipmentID" type="tns:objectIdentifier"/>
+    <wsdl:part name="controlJobID" type="tns:objectIdentifier"/>
+    <wsdl:part name="spcResultRequiredFlag" type="xsd:boolean"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxForceOpeCompReqResponse">
+    <wsdl:part name="_return" type="tns:pptForceOpeCompReqResult"/>
+  </wsdl:message>
+  <wsdl:portType name="CS_PPTServiceManager.TxForceOpeCompReq">
+    <wsdl:operation name="TxForceOpeCompReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxForceOpeCompReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxForceOpeCompReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CS_PPTServiceManager.TxForceOpeCompReqBinding" type="tns:CS_PPTServiceManager.TxForceOpeCompReq">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="TxForceOpeCompReq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxForceOpeCompReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CS_PPTServiceManager.TxForceOpeCompReq">
+    <wsdl:port binding="tns:CS_PPTServiceManager.TxForceOpeCompReqBinding" name="CS_PPTServiceManager.TxForceOpeCompReqBinding">
+      <soap:address location="http://myhost.mydomain:80/CS_PPTServiceManager/mymarker"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>MDT Manage</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%', // optional
+            });
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/infotree/unreleased/mdt/{{method}}/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        {#jp.getParent().refresh();#}
+                        console.log(parent)
+                        try {
+                            parent.refresh()
+                        }catch (e) {
+                            refresh()
+                        }
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+        }
+    </script>
+    <script>
+        function data_format(obj) {
+            value = obj.value;
+            {#const pattern = /^[1-9][0-9]*$/;#}
+            const pattern = /^[0-9]*$/;
+            if (!(value === '' || value === undefined || value == null)) {
+                var value = value.split(",");
+                for (let i = 0; i < value.length; i++) {
+                    if (pattern.test(value[i]) === false) {
+                        jp.error('"' + obj.name + '" format error');
+                        $('#' + obj.name).val('');
+                    }
+                }
+            }
+        }
+
+        function refresh() {
+            parent[2].refresh()
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" method="post" autocomplete="off">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input id="id" name="id" type="hidden" value="{{ mdt.id or ''}}"/>
+    <input id="unreleased_id" name="unreleased_id" type="hidden" value="{{ unreleased_id }}"/>
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            {# Cad Layer #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Cad Layer : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_cad_layer" name="old_cad_layer" type="hidden" value="{{ mdt.cad_layer or ''}}">
+                <input id="cad_layer" name="cad_layer" class="form-control required" type="text"
+                       value="{{ mdt.cad_layer or '' }}" maxlength="50" onblur="data_format(this)"/>
+            </td>
+        </tr>
+        <tr>
+            {# Data Type #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Data Type : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_data_type" name="old_data_type" type="hidden" value="{{ mdt.data_type or ''}}">
+                <input id="data_type" name="data_type" class="form-control required" type="text"
+                       value="{{ mdt.data_type or '' }}" maxlength="50" onblur="data_format(this)"/>
+            </td>
+        </tr>
+        <tr>
+            {# Writer MDT #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right">Writer : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_writer_mdt" name="old_writer_mdt" type="hidden" value="{{ mdt.writer_mdt or ''}}">
+                <input id="writer_mdt" name="writer_mdt" class="form-control required" type="text"
+                       value="{{ mdt.writer_mdt or '' }}" maxlength="50" onblur="data_format(this)"/>
+            </td>
+        </tr>
+        <tr>
+            {# Writer Dose #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Dose : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_writer_dose" name="old_writer_dose" type="hidden" value="{{ mdt.writer_dose or ''}}">
+                <input id="writer_dose" name="writer_dose" class="form-control required" type="text"
+                       value="{{ mdt.writer_dose or '' }}" maxlength="50" onblur="data_format(this)"/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+</body>

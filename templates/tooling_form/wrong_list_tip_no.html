@@ -1,0 +1,409 @@
+
+
+
+<!-- 显示没有Tip_No的Wrong_list
+所有前置错误
+ -->
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+	<head>
+		<title>Wrong List tip no</title>
+
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+		<meta http-equiv="Expires" content="0">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Cache-Control" content="no-store">
+		<script>
+			var d = "";
+		</script>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		{% include 'base.html' %}
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('input.i-checks').iCheck({
+					checkboxClass: 'icheckbox_square-lynch',
+					radioClass: 'iradio_square-lynch',
+					increaseArea: '20%' // optional
+				});
+			});
+		</script>
+
+
+		<meta name="decorator" content="ani" />
+
+
+		<link href= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.css') }}" rel="stylesheet" type="text/css" />
+		<script src= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.js') }}" type="text/javascript"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+				//zTree初始化
+				$('#jstree').treeview({
+					data: '[{"level":1,"children":[{"name":"Administrator","id":"1","text":"Administrator"},{"name":"CustomerService","id":"2","text":"CustomerService"},{"name":"Customer","id":"0","text":"Customer"}],"name":"UserType","id":"1","text":"Wrong_list_tip_no"}]',
+					levels: 5,
+					onNodeSelected: function(event, treeNode) {
+						var id = treeNode.id;
+						if (treeNode.level == 1) { //level=0 代表公司
+							$("#isadmin").val('');
+
+						} else {
+							$("#isadmin").val(id);
+							//alert(id)
+						}
+
+						$('#table').bootstrapTable('refresh');
+					},
+				});
+
+
+				var token = $('input[name=csrfmiddlewaretoken]').val();
+
+				//表格初始化
+				$('#table').bootstrapTable({
+
+					//请求方法
+					method: 'post',
+					//类型json
+					dataType: "json",
+					contentType: "application/x-www-form-urlencoded",
+					//是否显示行间隔色
+					striped: true,
+					//是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）     
+					cache: false,
+					//显示检索按钮
+					showSearch: true,
+					//显示刷新按钮
+					showRefresh: true,
+					//显示切换手机试图按钮
+					showToggle: true,
+					//显示 内容列下拉框
+					showColumns: true,
+					//显示切换分页按钮
+					showPaginationSwitch: true,
+					//是否显示分页（*）  
+					pagination: true,
+					//排序方式 
+					sortOrder: "asc",
+					//初始化加载第一页，默认第一页
+					pageNumber: 1,
+					//每页的记录行数（*）   
+					pageSize: 10,
+					//可供选择的每页的行数（*）    
+					pageList: [10, 25, 50, 100],
+					//这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据  
+					url: "/tooling_form/wrong_list_tipno/",
+					//默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+					//queryParamsType:'',   
+					////查询参数,每次调用是会带上这个参数，可自定义                         
+					queryParams: function(params) {
+						var searchParam = $("#searchForm").serializeJSON();
+						//alert(searchParam.pageNo)
+						searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+						searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+						searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+						csrfmiddlewaretoken = token;
+						return searchParam;
+					},
+					data: {
+						csrfmiddlewaretoken: token
+					},
+					onShowSearch: function() {
+						$("#search-collapse").slideToggle();
+					},
+					//分页方式：client客户端分页，server服务端分页（*）
+					sidePagination: "server",
+					contextMenuTrigger: "right", //pc端 按右键弹出菜单
+					contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+					contextMenu: '#context-menu',
+					onContextMenuItem: function(row, $el) {
+						if ($el.data("item") == "edit") {
+							edit(row.id);
+						} else if ($el.data("item") == "delete") {
+							deleteAll(row.id);
+						}
+					},
+
+					onClickRow: function(row, $el) {},
+					columns: [{
+							checkbox: true
+
+						},
+						/* {
+										        field: 'icon',
+										        title: 'Icon',
+										        formatter:function(value, row , index){
+										        	if(value ==''){
+										        		return '<img height="40px" src="/ani/static/common/images/flat-avatar.png">';
+										        	}else{
+										        		return '<img   onclick="jp.showPic(\''+value+'\')"'+' height="40px" src="'+value+'">';
+										        	}
+										        	
+										        }
+										       
+										    }, */
+						{
+							<!--错误信息表格	-->
+							field: 'import_data_id',
+							title: 'Import_data_id',
+							sortable: true
+
+						}, {
+							field: 'tip_no',
+							title: 'Tip_no',
+							sortable: true
+						}, {
+							field: 'import_data',
+							title: 'Import_data',
+							sortable: true
+						}, {
+							field: 'error_code',
+							title: 'Error_code',
+							sortable: true
+						}, {
+							field: 'error_description',
+							title: 'Error_description',
+							sortable: true,
+						}, {
+							field: 'error_type',
+							title: 'Error_type',
+							sortable: true,
+
+						},
+						/* {
+				        field: 'isadmin',
+				        title: 'UserType',
+                        sortable: true,
+						formatter:function(value, row , index){
+							if(value == '0'){
+								return 'Customer';
+							}else if(value=='1'){
+								return 'Administrator';
+						    }else{
+								return 'CustomerService';
+							}
+						}
+						
+						
+						 
+				    }, */
+/*						{ <!--操作栏只提供更新数据-->
+							field: 'operate',
+							title: 'Operation',
+							align: 'center',
+							events: {
+
+								'click .edit': function(e, value, row, index) {
+									jp.openSaveDialog('Edit Dictionary', '/tooling_form/wrong_list/?id=' + row.id, '800px', '500px');
+									alert(row.id);
+								},
+								/*        		        'click .setDictValue': function (e, value, row, index) {
+								        		        	
+								        					$("#left").attr("class", "col-sm-6");
+								        					setTimeout(function(){
+								        						$("#right").fadeIn(500);
+								        					},500)
+								        					$("#dictTypeLabel").html(row.type);
+								        					$("#dictTypeId").val(row.id);
+								        					$('#dictValueTable').bootstrapTable("refresh",{query:{dictTypeId:row.id}})
+								        		        } */
+//							},
+							formatter: function operateFormatter(value, row, index) {
+								return [
+
+                                    '<a href="#" class="edit" title="Edit"><i class="fa fa-edit"></i> </a>',
+
+
+								].join('');
+							}
+						},
+					]
+
+				});
+
+
+				if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) { //如果是移动端
+					$('#table').bootstrapTable("toggleView");
+				}
+
+				$('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+					'check-all.bs.table uncheck-all.bs.table',
+					function() {
+						$('#remove').prop('disabled', !$('#table').bootstrapTable('getSelections').length);
+						$('#edit').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);
+					});
+
+				$("#btnImport").click(function() {
+					jp.open({
+						type: 2,
+						area: [500, 200],
+						auto: true,
+						title: "导入数据",
+						content: "/ani/a/tag/importExcel",
+						btn: ['下载模板', '确定', '关闭'],
+
+						btn1: function(index, layero) {
+							jp.downloadFile('/ani/a/sys/user/import/template');
+						},
+						btn2: function(index, layero) {
+							var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+							iframeWin.contentWindow.importExcel('/ani/a/sys/user/import', function(data) {
+								if (data.success) {
+									jp.success(data.msg);
+									refresh();
+								} else {
+									jp.error(data.msg);
+								}
+								jp.close(index);
+							}); //调用保存事件
+							return false;
+						},
+
+						btn3: function(index) {
+							//  jp.close(index);
+						}
+
+					});
+				});
+
+				$("#search").click("click", function() { // 绑定查询按扭
+					$('#table').bootstrapTable('refresh');
+				});
+				/* $("#reset").click("click", function() {// 绑定查询按扭
+				  $("#tipno").val("");
+				  $("#errorcode").val("");
+				  $("#isadmin").val("");
+				  //$("#searchForm  select").val("");
+				  $('#table').bootstrapTable('refresh');
+				}); */
+
+				$('#beginInDate').datetimepicker({
+					format: "YYYY-MM-DD HH:mm:ss"
+				});
+				$('#endInDate').datetimepicker({
+					format: "YYYY-MM-DD HH:mm:ss"
+				});
+
+			});
+
+			function getIdSelections() {
+				return $.map($("#table").bootstrapTable('getSelections'), function(row) {
+					return row.id
+				});
+			}
+
+			function edit(id) {
+				if (!id) {
+					id = getIdSelections();
+				}
+				jp.openSaveDialog('Edit User', "/system/user/form/?id=" + id, '800px', '680px');
+
+			}
+
+			function refresh() {
+				$('#table').bootstrapTable('refresh');
+			}
+		</script>
+
+	</head>
+	<body id="" class="" style="">
+		<form id="inputForm"><input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}"></form>
+		<div class="wrapper wrapper-content">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Wrong_list</h3>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<!-- 		<div class="col-sm-3 col-md-2" >
+			<div id="jstree"></div> 
+		</div> -->
+						<div class="col-sm-9 col-md-10 animated fadeInRight">
+							<!-- 搜索框-->
+							<div id="search-collapse" class="collapse">
+								<div class="accordion-inner">
+									<form id="searchForm" class="form form-horizontal well clearfix" action="/wrong_form/" method="post">
+										<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<label class="label-item single-overflow pull-left" title="Tipno：">Tipno：</label>
+											<input id="tipno" name="tipno" class=" form-control input-sm" type="text" value="" maxlength="50" />
+										</div>
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<label class="label-item single-overflow pull-left" title="Errorcode：">Errorcode：</label>
+											<input id="errorcode" name="errorcode" class=" form-control input-sm" type="text" value="" maxlength="50" />
+										</div>
+										<input id="isadmin" name="isadmin" type="hidden" value="" maxlength="50" />
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<div style="margin-top:26px">
+												<a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-search"></i> Query</a>
+												<a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-refresh"></i> Reset</a>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div><!-- 搜索框结束 -->
+
+							<!-- 工具栏 -->
+							<div id="toolbar">
+
+								<a id="FTP" class="btn btn-primary" onclick="jp.openSaveDialog('FTP', '/tooling_form/form_upload/', '800px', '680px')"><i
+									 class="glyphicon glyphicon-plus"></i>FTP</a>
+								<!-- <a id="add" class="btn btn-primary"  onclick="jp.openSaveDialog('Add User', '/system/user/form/','800px', '680px')"><i class="glyphicon glyphicon-plus"></i> Add</a>
+			 -->
+
+								<!-- 				<button id="edit" class="btn btn-success" disabled onclick="edit()">
+		            <i class="glyphicon glyphicon-edit"></i> FTP
+		        </button>
+			
+			
+				<button id="remove" class="btn btn-danger" disabled onclick="deleteAll()">
+		            <i class="glyphicon glyphicon-remove"></i> Delete
+		        </button>
+			 -->
+								<!-- 修改为FTP按钮 -->
+								<!-- 				<button id="btnImport" class="btn btn-info"><i class="fa fa-folder-open-o"></i> FTP</button>
+				<div id="importBox" class="hide">
+					<form id="importForm" action="/ani/a/sys/user/import" method="post" enctype="multipart/form-data"
+						 style="padding-left:20px;text-align:center;" ><br/>
+						<input id="uploadFile" name="file" type="file" style="width:330px"/>导入文件不能超过5M，仅允许导入“xls”或“xlsx”格式文件！<br/>　　
+					</form>
+				</div> -->
+<!-- 
+
+								<a id="export" class="btn btn-warning" href="/ani/a/sys/user/export"><i class="fa fa-file-excel-o"></i> Export</a> -->
+
+							</div>
+							<!-- 工具栏结束 -->
+
+
+							<!-- 表格 -->
+							<table id="table" data-toolbar="#toolbar">
+							</table>
+
+							<!-- context menu -->
+							<ul id="context-menu" class="dropdown-menu">
+								<li data-item="edit"><a>编辑</a></li>
+								<li data-item="delete"><a>删除</a></li>
+								<li data-item="cancel"><a>取消</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	</body>
+</html>

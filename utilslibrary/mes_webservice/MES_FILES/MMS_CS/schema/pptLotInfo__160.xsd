@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:18 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/pptLotInfo__160_struct.xsd"/>
+  <xsd:complexType name="pptLotInfo__160">
+    <xsd:complexContent>
+      <xsd:restriction base="tns:pptLotInfo__160_struct">
+        <xsd:sequence>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotBasicInfo" type="tns:pptLotBasicInfo__140"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotControlUseInfo" type="tns:pptLotControlUseInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotFlowBatchInfo" type="tns:pptLotFlowBatchInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotNoteFlagInfo" type="tns:pptLotNoteFlagInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotOperationInfo" type="tns:pptLotOperationInfo__160"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotOrderInfo" type="tns:pptLotOrderInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotControlJobInfo" type="tns:pptLotControlJobInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotProductInfo" type="tns:pptLotProductInfo__101"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotRecipeInfo" type="tns:pptLotRecipeInfo__150"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotLocationInfo" type="tns:pptLotLocationInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotWipOperationInfo" type="tns:pptLotWipOperationInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotWaferAttributes" type="tns:pptLotWaferAttributesSequence__150"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="entityInhibitions" type="tns:pptEntityInhibitAttributesSequence"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="strLotBackupInfo" type="tns:pptLotBackupInfo"/>
+          <xsd:element maxOccurs="1" minOccurs="1" name="siInfo" type="corba:CORBA.Any"/>
+        </xsd:sequence>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+</xsd:schema>

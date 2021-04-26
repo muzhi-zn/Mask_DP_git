@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Maks Name Stage Status</title>
+{#    {% include 'base.html' %}#}
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src="{{ static ('/js/jquery-3.4.1.js') }}"></script>
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+    <script type="text/javascript" src="{{ static ('/ani/static/common/js/jeeplus.js') }}"></script>
+    <style>
+        .PD_col {
+            background: yellow;
+        }
+
+        .QC_col {
+            background: #0F9E5E;
+        }
+
+        .MM_col {
+            background: #0d8ddb;
+        }
+        .wait{
+            background: white;
+        }
+
+        .done{
+            background: #0d8ddb;
+        }
+
+        .o_g{
+            background: #398439;
+        }
+
+        .non_clean{
+            background: #b71c1c;
+        }
+
+        .job_fail{
+            background: #9973C2;
+        }
+    </style>
+    <script>
+        $(function(){
+            show_table();
+        });
+        function show_table() {
+            $.ajax({
+                url: '/query_system/device_group/get_stage_data/',
+                method: 'post',
+                data: {
+                    tip_no: $("#tip_no").val(),
+                    mask_name: $("#mask_name").val(),
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data)
+                    var cols = "<thead>";
+                    var body = "<tbody><tr>"
+                    let col_list = data.col_list;
+                    let status_list = data.data;
+                    console.log(status_list)
+                    for(let i = 0; i < col_list.length; i++){
+                        cols += "<th class='"+col_list[i]+"_col'>"+col_list[i]+"</th>";
+                        body += "<td class='"+get_status_class(status_list[i][col_list[i]])+"'>"+get_status_title(status_list[i][col_list[i]])+"</td>"
+                    }
+                    $("#stage_status_table").append(cols + "</thead>");
+                    $("#stage_status_table").append(body + "</tr></tbody>");
+                }
+            });
+        }
+
+        function get_status_class(status){
+            switch (status) {
+                case 0:
+                    return "wait";
+                case 1:
+                    return "o_g";
+                case 2:
+                    return "job_fail";
+                case 3:
+                    return "done";
+                case 4:
+                    return "non_clean";
+                default:
+                    return "wait";
+            }
+        }
+
+        function get_status_title(status){
+            switch (status) {
+                case 0:
+                    return "Wait";
+                case 1:
+                    return "<label style='color: white'>O/G</label>";
+                case 2:
+                    return "<label style='color: white'>Job Fail</label>";
+                case 3:
+                    return "<label style='color: white'>Done</label>";
+                case 4:
+                    return "<label style='color: white'>Non Clean</label>";
+                default:
+                    return "Wait";
+            }
+        }
+
+        function show_stage_all_device_status(stage_id){
+            var tip_no = $("#tip_no").val();
+            var mask_name = $("#mask_name").val();
+            jp.openViewDialog("Stage All Device Status", "/query_system/all_device/to_status_page/?tip_no="+tip_no+"&mask_name="+mask_name+"&stage_id="+stage_id, "500px", "600px")
+        }
+    </script>
+</head>
+<body>
+<input id="tip_no" type="hidden" value="{{ tip_no }}"/>
+<input id="mask_name" type="hidden" value="{{ mask_name }}"/>
+<table id="stage_status_table" border="2px" class="layui-table" lay-size="lg"></table>
+</body>
+</html>

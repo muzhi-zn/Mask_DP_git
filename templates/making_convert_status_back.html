@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+	<title>Tooling Form  Download</title>
+	
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<script>var d = "";</script>
+  <link href="{{ static ('bootstrap3/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ static ('bootstrap3/font-awesome/css/font-awesome.css') }}" rel="stylesheet">
+
+    <link href="{{ static ('bootstrap3/css/animate.css') }}" rel="stylesheet">
+    <link href="{{ static ('bootstrap3/css/style.css') }}" rel="stylesheet">
+	
+	<!-- Ladda style -->
+	<link href="{{ static ('bootstrap3/css/plugins/ladda/ladda-themeless.min.css') }}" rel="stylesheet">
+	
+	
+ <!-- Mainly scripts -->
+    <script src="{{ static ('bootstrap3/js/jquery-3.1.1.min.js') }}"></script>
+    <script src="{{ static ('bootstrap3/js/popper.min.js') }}"></script>
+    <script src="{{ static ('bootstrap3/js/bootstrap.js') }}"></script>
+    <script src="{{ static ('bootstrap3/js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
+    <script src="{{ static ('bootstrap3/js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="{{ static ('bootstrap3/js/inspinia.js') }}"></script>
+    <script src="{{ static ('bootstrap3/js/plugins/pace/pace.min.js') }}"></script>
+	
+	
+	<!-- Mainly scripts -->
+	<script src="{{ static ('bootstrap3/js/jquery-3.1.1.min.js') }}"></script>
+	<script src="{{ static ('bootstrap3/js/popper.min.js') }}"></script>
+	<script src="{{ static ('bootstrap3/js/bootstrap.js') }}"></script>
+	<script src="{{ static ('bootstrap3/js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
+	<script src="{{ static ('bootstrap3/js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+	
+	<!-- Custom and plugin javascript -->
+	<script src="{{ static ('bootstrap3/js/inspinia.js') }}"></script>
+	<script src="{{ static ('bootstrap3/js/plugins/pace/pace.min.js') }}"></script>
+	
+	<!-- Ladda -->
+	<script src="{{ static ('bootstrap3/js/plugins/ladda/spin.min.js') }}"></script>
+	<script src="{{ static ('bootstrap3/js/plugins/ladda/ladda.min.js') }}"></script>
+	<script src="{{ static ('bootstrap3/js/plugins/ladda/ladda.jquery.min.js') }}"></script>
+	
+	<script>
+	
+	    $(document).ready(function (){
+	
+	        // Bind normal buttons
+	        Ladda.bind( '.ladda-button',{ timeout: 3000 });
+	
+	   
+	
+	
+	        var l = $( '.ladda-button-demo' ).ladda();
+	
+	        l.click(function(){
+	            // Start loading
+	            l.ladda( 'start' );
+	
+	            // Timeout example
+	            // Do something in backend and then stop ladda
+	            setTimeout(function(){
+	                l.ladda('stop');
+	            },3000)
+	
+	
+	        });
+	
+	    });
+	
+	//generate script file
+	function generateFile() {
+		
+			jp.loading();
+			jp.post("/making/lot/generate/file/",$('#searchForm').serialize(),function(data){
+				//alert(data.success)
+				if(data.success){
+					//$("#lot_id").val(id)
+					showTimeline($("#lot_id").val())
+					
+					//jp.getParent().refreshNode(data);
+					//jp.success(data.msg);
+					//var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+					//parent.layer.close(dialogIndex);
+				}else {
+					//jp.error(data.msg);
+					showTimeline($("#lot_id").val())
+				}
+			})
+	}
+	
+	</script>
+<style>
+	img{
+		width: 30px;
+		height: 30px;
+		margin-top: 15px;
+		
+	}
+	.button_style{
+		height: 60px;
+		float: left;
+	}
+	.div_style{
+		display: table-cell;
+		vertical-align: middle;
+		
+	}
+</style>
+</head>
+<body id="" class=""  >
+	
+	<div class=" wrapper-content">
+	<div class="panel panel-primary">
+	<div class="panel-heading" style="background-color: #005F8D">
+		<h3 class="panel-title" >Tooling Form Download</h3>
+	</div>
+	<div class="panel-body">
+	<div class="row" style="text-align: center;">
+		<div class="col-sm-3 col-md-2" >
+			<form id="searchForm" class="navbar-form navbar-left" role="search">
+				<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+				
+					<input type="text" class="form-control" placeholder="">
+				<input type="hidden" id="tip_no" name="tip_no" />
+			</form>
+			
+			<select id="tipNo" lay-filter="tipNo" name="tipNo" class="form-control" onchange="showLotList();" >
+			  <option value="">Please choose Tip_No</option>
+			</select> 
+			<div id="jstree"></div>
+			
+			
+		</div>
+		<div  class="col-sm-2 col-md-9 animated ">
+
+                        
+
+
+
+<div class="row">
+                               
+				<div class="col-md-2" >
+					<button class="button_style ladda-button btn btn-primary "  
+					data-style="expand-right">&nbsp;&nbsp;GDS in&nbsp;&nbsp;</button>
+				<img src="{{ static ('../static/images/jiantou01.jpg') }}" style="" />
+				</div>
+				<div class="col-md-3" >
+                	<button class="ladda-button btn btn-primary button_style" 
+					data-style="expand-right">MergeFrame</button>
+                <img src="{{ static ('../static/images/jiantou01.jpg') }}"  />
+                </div>
+				
+                <div class="col-sm-2">
+                	<button class="ladda-button btn btn-success button_style"  
+					data-style="expand-right">&nbsp;&nbsp;fracture&nbsp;&nbsp;</button>
+                <img src="{{ static ('../static/images/jiantou01.jpg') }}"  />
+                </div>
+				
+				
+				<div class="col-sm-2">
+					<button class="ladda-button btn btn-danger button_style"
+					data-style="expand-right">&nbsp;&nbsp;&nbsp;JDV&nbsp;&nbsp;&nbsp;</button>
+				<img src="{{ static ('../static/images/jiantou01.jpg') }}"  />
+				</div>
+				
+				<div class="col-sm-1">
+					<button class="ladda-button btn btn-default button_style"
+					data-style="expand-right">&nbsp;&nbsp;Writer&nbsp;&nbsp;</button>
+				</div>
+				
+                               
+    </div>
+                            
+                            
+                          
+
+
+
+
+
+
+		</div>
+		
+	
+	<div class="col-sm-3 col-md-1" >
+		<p></p>
+		<button type="button" class="btn  btn-default" style="height: 60px;width: 60px;">wait</button><p></p>
+		<button type="button" class="btn  btn-primary" style="height: 60px;width: 60px;">done</button><p></p>
+		<button type="button" class="btn  btn-success" style="height: 60px;width: 60px;">O/G</button><p></p>
+		<button type="button" class="btn  btn-danger" style="height: 60px;width: 60px;">Non </br>clean</button><p></p>
+		<button type="button" class="btn  btn-warning" style="height: 60px;width: 60px;">Job fail</button><p></p>
+		
+		
+		
+	</div>
+	</div>
+	</div>
+	</div>
+	</div>
+
+</body>
+</html>

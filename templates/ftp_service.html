@@ -1,0 +1,549 @@
+
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Ftp Service</title>
+		<!--引入CSS-->
+		<link rel="stylesheet" type="text/css" href= "{{ static ('/css/bootstrap.css') }}">
+		<link rel="stylesheet" type="text/css" href= "{{ static ('/layui/css/layui.css') }}">
+		<link rel="stylesheet" type="text/css" href= "{{ static ('/webuploader/webuploader.css') }}">
+		<link href= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.css') }}" rel="stylesheet" type="text/css" />
+		<!--引入JS-->
+		<script type="text/javascript" src= "{{ static ('/js/jquery-3.4.1.js') }}"></script>
+		<script type="text/javascript" src= "{{ static ('/layui/layui.js') }}"></script>
+		<script type="text/javascript" src= "{{ static ('/webuploader/webuploader.js') }}"></script>
+        <script src="{{ static ('/ani/static/common/js/jeeplus.js') }}"></script>
+		<script src= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.js') }}" type="text/javascript"></script>
+{#        {% include 'base.html' %}#}
+	</head>
+	<body class="layui-bg-gray">
+		<div class="layui-row layui-col-space5 layui-form" style="margin-top: 20px;margin-left: 10px;margin-right: 10px;">
+			<div class="layui-col-md4 layui-form-item">
+				<!-- <input id = "tipNo" type="text" name="tipNo" autocomplete="off" placeholder="请输入TipNo" class="layui-input"> -->
+				<!-- <label>Tip_No</label> -->
+				<select id="tipNo" name="tipNo" class="layui-select" style="width: 100%;" lay-filter="tipNo" lay-search>
+				    <option value="">Please choose Tip_No</option>
+				</select>
+			</div>
+			<div class="layui-col-md1">
+				<button type="button" class="layui-btn layui-btn-normal" onclick="showFlieList()">Show File List</button>
+			</div>
+		</div>
+		<div class="layui-row layui-col-space5" style="margin-left: 10px;margin-right: 10px;">
+			<div class="layui-col-md5">
+				<div class="layui-card">
+				  <div class="layui-card-header">File List</div>
+				  <div class="layui-card-body" style="min-height: 550px">
+				    <ul id='file_list'></ul>
+				  </div>
+				</div>
+			</div>
+			<div class="layui-col-md3">
+				<div class="layui-card">
+				  <div class="layui-card-header">Upload List</div>
+				  <div class="layui-card-body" style="min-height: 550px">
+				    <div id="thelist" class="uploader-list" style="word-wrap: break-word"></div>
+				  </div>
+				</div>
+			</div>
+			<div class="layui-col-md1">
+				<!-- <div class="layui-card">
+				  <div class="layui-card-header">Button List</div>
+				  <div class="layui-card-body" style="height: 600px;overflow:auto"> -->
+				    <!-- <div id="uploader" class="wu-example">
+				    	<div class="btns">
+				    		<div id="picker" >Upload</div>
+				    	</div>
+				    </div> -->
+					<div id="uploader-demo" style="width: 100%;margin-bottom: 15px;">
+						<div id="picker">Upload</div>
+					</div>
+					<div class="layui-btn-container">
+						<div style="margin-bottom: 8px;"><button style="width: 100%;" type="button" class="layui-btn layui-btn-danger" onclick="checkFile()">Check</button></div>
+						<div style="margin-bottom: 8px;"><button style="width: 100%;" type="button" class="layui-btn layui-btn-primary" onclick="reTooling()">Re-tooling</button></div>
+						<div style="margin-bottom: 8px;"><button style="width: 100%;" type="button" class="layui-btn" onclick="done()">Done</button></div>
+
+{#                        <div style="margin-bottom: 8px;"><button style="width: 100%;" type="button" class="layui-btn" onclick="create_lot_id()">Gen LotID</button></div>#}
+{#                        <div style="margin-bottom: 8px;"><button style="width: 100%;" type="button" class="layui-btn" onclick="test_layout()">Layout Test</button></div>#}
+
+					</div>
+				  <!-- </div>
+				</div> -->
+			</div>
+			<!-- <div class="layui-col-md2 layui-col-lg-offset1">
+				<div class="layui-card">
+				  <div class="layui-card-header">Layer List</div>
+				  <div class="layui-card-body" style="min-height:180px;">
+				    <ul id="lot_list"></ul>
+				  </div>
+				</div>
+			</div> -->
+			<!-- <div class="layui-col-md2">
+				<div class="layui-card" style="height: 600px;">
+				  <div class="layui-card-header">Message List</div>
+				  <div class="layui-card-body">
+				    <ul id="message_list"></ul>
+				  </div>
+				</div>
+			</div> -->
+		</div>
+		
+		<script type="text/javascript">
+			var layer,form;
+			layui.use('layer', function(){
+			  layer = layui.layer;
+			}); 
+			layui.use('form', function(){
+			  form = layui.form;
+			  form.on('select(tipNo)', function (data) {
+                  showFlieList()
+              })
+			});
+            let uploader;
+			$(document).ready(function() {
+                showTipNoOptions();
+				var fileMd5;
+				var u_file;
+				//监听分块上传过程中的三个时间点
+				WebUploader.Uploader.register({
+					"before-send-file":"beforeSendFile",
+					"before-send":"beforeSend",
+					"after-send-file":"afterSendFile"
+				},{
+					//时间点1：所有分块进行上传之前调用此函数
+					beforeSendFile:function(file){
+					    u_file = file
+						var deferred = WebUploader.Deferred();
+						//1、计算文件的唯一标记，用于断点续传
+						(new WebUploader.Uploader()).md5File(file,0,20*1024*1024)
+							.then(function(val){
+								fileMd5=val;
+								//获取文件信息后进入下一步
+								deferred.resolve();
+							});
+						return deferred.promise();
+					},
+					//时间点2：如果有分块上传，则每个分块上传之前调用此函数
+					beforeSend:function(block){
+						var deferred = WebUploader.Deferred();
+						$.ajax({
+							type:"POST",
+							url:"/tooling/file/check/",
+							data:{
+								tip_no:$("#tipNo").val(),
+								//文件唯一标记
+								task_id:fileMd5,
+								//当前分块下标
+								chunk:block.chunk,
+								//当前分块大小
+								chunkSize:block.end-block.start,
+                                file_name: u_file.source['name']
+							},
+							dataType:"json",
+							success:function(response){
+								if(response.isExist){
+									//分块存在，跳过
+									deferred.reject();
+								}else{
+									//分块不存在或不完整，重新发送该分块内容
+									deferred.resolve();
+								}
+							}
+						});
+						this.owner.options.formData.tip_no = $("#tipNo").val();
+						this.owner.options.formData.task_id = fileMd5;
+						return deferred.promise();
+					},
+					//时间点3：所有分块上传成功后调用此函数
+					afterSendFile:function(file){
+						//如果分块上传成功，则通知后台合并分块
+						$.ajax({
+							type:"POST",
+							url:"/tooling/upload/complete/",
+							data:{
+								'tip_no':$("#tipNo").val(),
+								'task_id':fileMd5,
+								'filename': file.source['name']
+							},
+							success:function(response){
+								console.log("上传成功");
+								checkFile()
+							}
+						});
+					}
+				});
+				//--------------文件上传------------------
+				//var task_id = WebUploader.Base.guid(); //产生task_id
+				uploader = WebUploader.create({ //创建上传控件
+					swf:  "{{ static ('/webuploader/Uploader.swf') }}", //swf位置，这个可能与flash有关
+					server: '/tooling/files/upload/', //接收每一个分片的服务器地址
+					pick: '#picker', //填上传按钮的id选择器值
+					auto: true, //选择文件后，是否自动上传
+					chunked: true, //是否分片
+					chunkSize: 20 * 1024 * 1024, //每个分片的大小，这里为20M
+					chunkRetry: 3, //某分片若上传失败，重试次数
+					threads: 1, //线程数量，考虑到服务器，这里就选了1
+					duplicate: true, //分片是否自动去重
+					// formData: { //每次上传分片，一起携带的数据
+					// 	tipNo: tipNo,
+					// },
+				});
+				// 当有文件被添加进队列的时候
+				uploader.on( 'beforeFileQueued', function( file ) {
+					$.ajax({
+						url:'../files/upload_check/',
+						data:{
+							tip_no:$("#tipNo").val(),
+							file_name:file.name
+						},
+						method:'post',
+						dataType:'json',
+						async:false,
+						success:function(data){
+							if(data.isAllow){
+								$('#thelist').append('<div id="' + file.id + '" class="item">' +
+								    '<h4 style="font-weight:bold">' + file.name + '</h4>' +
+								    '<p style="color:blue">Waiting...</p>' +
+                                    '<label id="toolbar_"'+file.id+'><button type="button" class="layui-btn layui-btn-primary layui-btn-xs" onclick="pause_file(\''+file.id+'\')">pause</button>' +
+                                    '<button type="button" class="layui-btn layui-btn-xs" onclick="start_file(\''+file.id+'\')">start</button>' +
+                                    '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="remove_file(\''+file.id+'\')">cancel</button></label>' +
+								'</div>');
+								return true;
+							}else{
+							    if(data.isSuccess){
+                                    layer.alert("The verified file does not need to be uploaded again")
+                                }else{
+							        layer.alert("Please upload the corresponding file in the list")
+                                }
+								uploader.removeFile(file,true)
+								return false;
+							}
+						}
+					})
+				});
+				// 文件上传过程中创建进度条实时显示。
+				uploader.on( 'uploadProgress', function( file, percentage ) {
+				    var $li = $( '#'+file.id ),
+				        $percent = $li.find('.progress .progress-bar');
+				
+				    // 避免重复创建
+				    if ( !$percent.length ) {
+				        $percent = $('<div class="progress progress-striped active">' +
+				          '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+				          '</div>' +
+				        '</div>').appendTo( $li ).find('.progress-bar');
+				    }
+				
+				    $li.find('p').text('Uploading');
+				
+				    $percent.css( 'width', percentage * 100 + '%' );
+				});
+
+				uploader.on('startUpload', function(file) { //开始上传时，调用该方法
+					if($("#tipNo").val() == ''){
+						layer.msg('Please choose tipNo');
+						uploader.reset();
+					}
+				});
+				
+				uploader.on( 'uploadSuccess', function( file ) {
+				    $( '#'+file.id ).find('p').text('Uploaded');
+                    $( '#'+file.id ).find('label').remove()
+				});
+				
+				uploader.on( 'uploadError', function( file ) {
+				    $( '#'+file.id ).find('p').text('Upload error');
+				});
+				
+				uploader.on( 'uploadComplete', function( file ) {
+				    $( '#'+file.id ).find('.progress').fadeOut();
+				});
+			});
+
+			function pause_file(file_id) {
+			    $( '#'+file_id ).find('p').text('Upload Paused');
+                uploader.cancelFile(uploader.getFile(file_id));
+            }
+
+            function start_file(file_id) {
+			    $( '#'+file_id ).find('p').text('Uploading');
+                uploader.upload(uploader.getFile(file_id));
+            }
+
+            function remove_file(file_id) {
+			    $('#'+file_id).remove()
+               uploader.removeFile(file_id, true)
+            }
+
+			function showTipNoOptions(){
+				$.ajax({
+					url:'../tip_no/options/',
+					method:'post',
+					dataType:'json',
+					success:function(data){
+						for(var i = 0 ; i < data.length; i++){
+							var tip_no = data[i].tip_no
+							$("#tipNo").append("<option value='" + tip_no + "'>"+ tip_no +"</option>")
+						}
+                        var tn = '{{ tip_no }}';
+                        console.log(tn)
+                        if(tn != 'None'){
+                            $("#tipNo").val(tn);
+                            showFlieList();
+                        }
+						form.render('select');
+					}
+				})
+			}
+			
+			function showFlieList(){
+				if($("#tipNo").val() == ""){
+					$("#file_list").empty()
+					$('#thelist').empty()
+					$('#lot_list').empty()
+					layer.msg("Please choose tipNo")
+				}else{
+					$.ajax({
+						url:'../files/list/',
+						data:{
+							tip_no:$("#tipNo").val()
+						},
+						method:'post',
+						dataType:'json',
+						success:function(data){
+							json = jQuery.parseJSON(data);
+							$("#file_list").empty()
+							$('#thelist').empty()
+							$('#lot_list').empty()
+							/*for(var i = 0; i < json.file_list.length ; i++){
+								$("#file_list").append('<li style="font-weight:bold"><label>'+json.file_list[i].file_name+'</label></li>')
+							}*/
+							checkFile()
+							for(var i = 0; i < json.finished_file_list.length ; i++)
+							$('#thelist').append( '<div>' +
+							    '<h4 style="font-weight:bold">' + json.finished_file_list[i] + '</h4>' +
+							    '<p style="color:blue">Uploaded</p>' +
+							'</div>' );
+							for(var i = 0; i < json.lot_list.length ; i++){
+								$('#lot_list').append('<li>'+json.lot_list[i].mask_name+'</li>')
+							}
+						}
+					})
+				}
+			}
+			function checkFile(){
+				layer.load(2)
+				if($("#tipNo").val() == ""){
+					layer.closeAll('loading');
+					layer.msg("Please choose tipNo")
+				}else{
+					$.ajax({
+						url:'../files/check_list/',
+						data:{
+							tip_no:$("#tipNo").val(),
+							toolingFormName:$("#toolingFormName").val()
+						},
+						method:'post',
+						dataType:'json',
+						success:function(data){
+							json = jQuery.parseJSON(data);
+							$("#file_list").empty()
+							for(var i = 0 ; i < json.length; i++){
+								$("#file_list").append(json[i].li)
+							}
+							layer.closeAll('loading');
+						},
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+						    layer.closeAll('loading');
+						    jp.error("files check error")
+                    　　}
+					})
+				}
+			}
+			function reTooling(){
+				// var loading = layer.load(2);
+				// $("#file_list").empty()
+				// $('#thelist').empty()
+				// $('#lot_list').empty()
+				// layer.close(loading)
+				var lis = $("#file_list").find("li")
+				if(lis.length == 0 || $(lis[0]).attr('check_flag')==null){
+					layer.msg("Please check first")
+					return false
+				}else{
+					layer.confirm('Are you sure to Re-Tooling?',{
+						title:'info',
+						btn:['yes','cancel']
+					},function(){
+						window.location.href = "/tooling_form/form_upload/?tip_no="+$("#tipNo").val()
+					},function(index){
+						layer.close(index)
+					})
+				}
+			}
+			function done(){
+				var lis = $("#file_list").find("li")
+				if(lis.length == 0){
+					layer.msg("Please check first")
+					return false
+				}else{
+					for(var i = 0 ; i < lis.length ; i++){
+						var li = lis[i]
+						var check_flag = $(li).attr("check_flag")
+						if(check_flag == null){
+							layer.msg("Please check first")
+							return false
+						}else if(check_flag == 0){
+							layer.msg("There are files in the list that have not passed the check")
+							return false
+						}
+					}
+					$.ajax({
+                        url:'../ftp_service/done/',
+                        data:{
+                            tip_no:$("#tipNo").val(),
+                            toolingFormName:$("#toolingFormName").val()
+                        },
+                        method:'post',
+                        dataType:'json',
+                        success:function(data){
+                            if(data.success){
+                                layer.confirm(data.message, {
+                                  btn: ['Show Tooling Form','Show Lot List'] //按钮
+                                }, function(){
+                                  jp.openViewDialog($("#tipNo").val(), '/tooling/ShowTipNo/data_view/?tip_no=' + $("#tipNo").val(), '1366px', '768px');
+                                }, function(){
+                                  jp.openTab('/jdv/jdv_lot_list/list/', 'Lot List', true)
+                                });
+                            }else{
+                                layer.msg(data.message)
+                            }
+                        }
+                    })
+				}
+			}
+
+			{#function done() {#}
+            {#    $.ajax({#}
+            {#            url:'../ftp_service/done/',#}
+            {#            data:{#}
+            {#                tip_no:$("#tipNo").val(),#}
+            {#                toolingFormName:$("#toolingFormName").val()#}
+            {#            },#}
+            {#            method:'post',#}
+            {#            dataType:'json',#}
+            {#            success:function(data){#}
+            {#                if(data.success){#}
+            {#                    layer.confirm(data.message, {#}
+            {#                      btn: ['Show Tooling Form','Show Lot List'] //按钮#}
+            {#                    }, function(){#}
+            {#                      jp.openViewDialog($("#tipNo").val(), '/tooling/ShowTipNo/data_view/?tip_no=' + $("#tipNo").val(), '1366px', '768px');#}
+            {#                    }, function(){#}
+            {#                      jp.openTab('/jdv/jdv_lot_list/list/', 'Lot List', true)#}
+            {#                    });#}
+            {#                }else{#}
+            {#                    layer.msg(data.message)#}
+            {#                }#}
+            {#            }#}
+            {#        })#}
+            {#}#}
+
+			{#function create_lot_id(){#}
+			{#    if($("#tipNo").val() == ""){#}
+			{#		layer.msg("Please choose tipNo")#}
+			{#	}else {#}
+            {#        $.ajax({#}
+            {#            url: '../create_lot_id/',#}
+            {#            data: {#}
+            {#                tip_no: $("#tipNo").val(),#}
+            {#                toolingFormName: $("#toolingFormName").val()#}
+            {#            },#}
+            {#            method: 'post',#}
+            {#            dataType: 'json',#}
+            {#            success: function (data) {#}
+            {#                layer.msg(data.message)#}
+            {#            }#}
+            {#        })#}
+            {#    }#}
+			{#}#}
+
+			{#function jdv_test(){#}
+			{#    if($("#tipNo").val() == ""){#}
+			{#		layer.msg("Please choose tipNo")#}
+			{#	}else {#}
+            {#        $.ajax({#}
+            {#            url: '/jdv/jdv/test/',#}
+            {#            data: {#}
+            {#                tip_no: $("#tipNo").val()#}
+            {#            },#}
+            {#            method: 'post',#}
+            {#            dataType: 'json',#}
+            {#            success: function (data) {#}
+            {#                if(data.success){#}
+            {#                    layer.msg(data.message)#}
+            {#                }else {#}
+            {#                    layer.msg(data.message)#}
+            {#                }#}
+            {#            }#}
+            {#        })#}
+            {#    }#}
+			{#}#}
+			{#function test_layout() {#}
+            {#    if ($("#tipNo").val() == "") {#}
+            {#        layer.msg("Please choose tipNo")#}
+            {#    } else {#}
+            {#        $.ajax({#}
+            {#            url: '/tooling/test_layout/',#}
+            {#            data: {#}
+            {#                tip_no: $("#tipNo").val()#}
+            {#            },#}
+            {#            method: 'post',#}
+            {#            dataType: 'json',#}
+            {#            success: function (data) {#}
+            {#                layer.msg(data.success)#}
+            {#            }#}
+            {##}
+            {#        })#}
+            {#    }#}
+            {#}#}
+
+
+            let websocket
+            // 首先判断是否 支持 WebSocket  name身份标识  我当前用的 用户名，
+            let url = 'ws://{{ request.get_host() }}/system/websocket_connect/'
+            {#let url = 'ws://172.16.20.242:8088/system/websocket_connect/'#}
+
+            if(!websocket){
+                if ('WebSocket' in window) {
+                    websocket = new WebSocket(url);
+                } else if ('MozWebSocket' in window) {
+                    websocket = new MozWebSocket(url);
+                } else {
+                    websocket = new SockJS(url);
+                }
+            }
+            // 打开连接时    formatMsg是我自定义的消息提示
+            websocket.onopen = function (event) {
+                console.log("fff您已连接 ，消息提示系统！！")
+            };
+
+            websocket.onmessage = function (event) {
+                let data = JSON.parse(event.data);
+                console.log(data)
+                if(data.is_callback){
+                    checkFile()
+                }
+            };
+			websocket.onclose = function (event) {
+                console.log("已断开websocket服务器，无法接收消息提示（请重新刷新页面）")
+                websocket.close()
+            }
+
+			window.onbeforeunload = function(){
+			    websocket.close()
+            }
+		</script>
+	</body>
+</html>

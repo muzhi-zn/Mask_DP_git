@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Machine Manage</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+            jp.loading();
+            jp.post("/infotree/unreleased/{{method}}/", $('#inputForm').serialize(), function (data) {
+                if (data.success) {
+                    jp.getParent().refresh();
+                    var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                    parent.layer.close(dialogIndex);
+                    jp.success(data.msg)
+                } else {
+                    jp.error(data.msg);
+                }
+            })
+        }
+    </script>
+    <script>
+        $(function () {
+            var limit_type_val = '{{ tree_data.limit_type }}';
+            if (limit_type_val == 1) {
+                $('#input_value').hide();
+                gen_options();
+            } else {
+                $('#sel_value').hide();
+            }
+        });
+
+        function gen_options() {
+            $.ajax({
+                url: '/infotree/unreleased/edit_dict/',
+                method: "post",
+                async: false,
+                datatype: 'json',
+                success: function (arr) {
+                    console.log(arr);
+                    console.log('{{ tree_data.cs_command }}');
+                    if ('{{ tree_data.cs_command }}' == 'CS_IO_CH_WAIT') {
+                        for (var i = 0; i < arr.CS_IO_CH_WAIT.length; i++) {
+                            if (arr.CS_IO_CH_WAIT[i] == '{{ tree_data.value }}') {
+                                $("#sel_value").append("<option value='" + arr.CS_IO_CH_WAIT[i] + "' selected>" + arr.CS_IO_CH_WAIT[i] + "</option>");
+                            } else {
+                                $("#sel_value").append("<option value='" + arr.CS_IO_CH_WAIT[i] + "'>" + arr.CS_IO_CH_WAIT[i] + "</option>");
+                            }
+                        }
+                    }
+                    if ('{{ tree_data.cs_command }}' == 'CS_PROX') {
+                        for (var i = 0; i < arr.CS_PROX.length; i++) {
+                            if (arr.CS_PROX[i] == '{{ tree_data.value }}') {
+                                $("#sel_value").append("<option value='" + arr.CS_PROX[i] + "' selected>" + arr.CS_PROX[i] + "</option>");
+                            } else {
+                                $("#sel_value").append("<option value='" + arr.CS_PROX[i] + "'>" + arr.CS_PROX[i] + "</option>");
+                            }
+                        }
+                    }
+                    if ('{{ tree_data.cs_command }}' == 'CS_GCD_MESH_SIZE') {
+                        for (var i = 0; i < arr.CS_GCD_MESH_SIZE.length; i++) {
+                            if (arr.CS_GCD_MESH_SIZE[i] == '{{ tree_data.value }}') {
+                                $("#sel_value").append("<option value='" + arr.CS_GCD_MESH_SIZE[i] + "' selected>" + arr.CS_GCD_MESH_SIZE[i] + "</option>");
+                            } else {
+                                $("#sel_value").append("<option value='" + arr.CS_GCD_MESH_SIZE[i] + "'>" + arr.CS_GCD_MESH_SIZE[i] + "</option>");
+                            }
+                        }
+                    }
+                    if ('{{ tree_data.cs_command }}' == 'CS_KBR_SW') {
+                        for (var i = 0; i < arr.CS_KBR_SW.length; i++) {
+                            if (arr.CS_KBR_SW[i] == '{{ tree_data.value }}') {
+                                $("#sel_value").append("<option value='" + arr.CS_KBR_SW[i] + "' selected>" + arr.CS_KBR_SW[i] + "</option>");
+                            } else {
+                                $("#sel_value").append("<option value='" + arr.CS_KBR_SW[i] + "'>" + arr.CS_KBR_SW[i] + "</option>");
+                            }
+                        }
+                    }
+                    if ('{{ tree_data.cs_command }}' == 'CS_FEC_MODE') {
+                        for (var i = 0; i < arr.CS_FEC_MODE.length; i++) {
+                            if (arr.CS_FEC_MODE[i] == '{{ tree_data.value }}') {
+                                $("#sel_value").append("<option value='" + arr.CS_FEC_MODE[i] + "' selected>" + arr.CS_FEC_MODE[i] + "</option>");
+                            } else {
+                                $("#sel_value").append("<option value='" + arr.CS_FEC_MODE[i] + "'>" + arr.CS_FEC_MODE[i] + "</option>");
+                            }
+                        }
+                    }
+                    if ('{{ tree_data.cs_command }}' == 'CS_LEC_MODE') {
+                        for (var i = 0; i < arr.CS_LEC_MODE.length; i++) {
+                            if (arr.CS_LEC_MODE[i] == '{{ tree_data.value }}') {
+                                $("#sel_value").append("<option value='" + arr.CS_LEC_MODE[i] + "' selected>" + arr.CS_LEC_MODE[i] + "</option>");
+                            } else {
+                                $("#sel_value").append("<option value='" + arr.CS_LEC_MODE[i] + "'>" + arr.CS_LEC_MODE[i] + "</option>");
+                            }
+                        }
+                    }
+                    if ('{{ tree_data.cs_command }}' == 'CS_TEC_MODE') {
+                        for (var i = 0; i < arr.CS_TEC_MODE.length; i++) {
+                            if (arr.CS_TEC_MODE[i] == '{{ tree_data.value }}') {
+                                $("#sel_value").append("<option value='" + arr.CS_TEC_MODE[i] + "' selected>" + arr.CS_TEC_MODE[i] + "</option>");
+                            } else {
+                                $("#sel_value").append("<option value='" + arr.CS_TEC_MODE[i] + "'>" + arr.CS_TEC_MODE[i] + "</option>");
+                            }
+                        }
+                    }
+                    if ('{{ tree_data.cs_command }}' == 'MDT') {
+                        for (var i = 0; i < arr.MDT.length; i++) {
+                            if (arr.MDT[i] == '{{ tree_data.value }}') {
+                                $("#sel_value").append("<option value='" + arr.MDT[i] + "' selected>" + arr.MDT[i] + "</option>");
+                            } else {
+                                $("#sel_value").append("<option value='" + arr.MDT[i] + "'>" + arr.MDT[i] + "</option>");
+                            }
+                        }
+                    }
+                }
+            })
+        }
+
+        function check_value(value) {
+            const cs_command_val = $('#cs_command').val();
+            const id = $('#id').val();
+            console.log(cs_command_val);
+            $.ajax({
+                url: '/infotree/unreleased/check_value/',
+                method: 'post',
+                data: {
+                    cs_command: cs_command_val,
+                    value: value,
+                    id: id,
+                    type: 2,
+                },
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    console.log(data);
+                    if (data.success) {
+                        $('#file_id').val(data.file_id);
+                    } else {
+                        jp.alert(data.msg);
+                        $('#input_value').val('');
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" method="post" autocomplete="off">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input id="menuIds" name="menuIds" type="hidden" value=""/>
+    <input id="file_id" name="file_id" type="hidden" value=""/>
+    <input id="limit_type" name="limit_type" type="hidden" value="{{ tree_data.limit_type }}"/>
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            {# id #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right">ID : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_id" name="old_id" type="hidden" value="{{ tree_data.id or ''}}">
+                <input id="id" name="id" class="form-control" type="text"
+                       value="{{ tree_data.id or '' }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        <tr>
+            {# type #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right">Type : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_type" name="old_type" type="hidden" value="{{ tree_data.type or ''}}">
+                <input id="type" name="type" class="form-control" type="text"
+                       value="{{ tree_data.type or '' }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        <tr>
+            {# cs_command #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right">CS Command : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_cs_command" name="old_cs_command" type="hidden" value="{{ tree_data.cs_command or ''}}">
+                <input id="cs_command" name="cs_command" class="form-control" type="text"
+                       value="{{ tree_data.cs_command or '' }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        <tr>
+            {# value #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right"><font color="red">*</font>Value : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_value" name="old_value" type="hidden" value="{{ tree_data.value or ''}}">
+                <input id="input_value" name="input_value" class="form-control required" type="text"
+                       value="{{ tree_data.value or '' }}" maxlength="50" onblur="check_value(value)"/>
+                <select id="sel_value" name="sel_value" class="form-control">
+                </select>
+                {#            </td>#}
+                {#            <td class="width-35" id="input_value">#}
+                {#                <input id="old_value" name="old_value" type="hidden" value="{{ tree_data.value or ''}}">#}
+                {#            </td>#}
+        </tr>
+        <tr>
+            {# limit #}
+            <td class=" width-15 active" class="active">
+                <label class="pull-right">Limit : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_limit" name="old_limit" type="hidden" value="{{ tree_data.limit or ''}}">
+                <input id="limit" name="limit" class="form-control" type="text"
+                       value="{{ tree_data.limit or '' }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        <tr>
+            {# version #}
+            <td class="width-15 active" class="active">
+                <label class="pull-right">Version : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_version" name="old_version" type="hidden"
+                       value="{{ tree_data.version or ''}}">
+                <input id="version" name="version" class="form-control" type="text"
+                       value="{{ tree_data.version or '' }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+<script type='text/javascript'>
+</script>
+</body>

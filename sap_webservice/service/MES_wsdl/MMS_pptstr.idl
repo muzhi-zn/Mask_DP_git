@@ -1,0 +1,62 @@
+#ifndef MMS_PPTSTR_IDL
+#define MMS_PPTSTR_IDL
+// Bob Ke 2020/11/26 Add #25, #26
+
+// Bob Ke 2020/11/26 Start #25, #26
+
+typedef struct pptRetCode_struct {
+    string transactionID;  //<i>Transaction ID
+    string returnCode;     //<i>Return Code
+    string messageID;      //<i>Message ID
+    string messageText;    //<i>Message Text
+    string reasonText;     //<i>Reason Text
+    any siInfo;            //<i>Reserved for SI customization
+} pptRetCode;
+
+typedef struct objectIdentifier_struct {
+    string identifier;                 //<i>Identifire
+    string stringifiedObjectReference; //<i>Stringified Object Reference
+}  objectIdentifier;
+
+typedef sequence<objectIdentifier> objectIdentifierSequence;
+
+typedef struct pptUser_struct {
+    objectIdentifier    userID;       //<i>User ID
+    string              password;     //<i>Password
+    string              newPassword;  //<i>New Password
+    string              functionID;   //<i>Function ID. For example, the Function ID of TxEnhancedFutureHoldReq is "TXPC041".  //0.41
+    string              clientNode;   //<i>Client Node
+    any siInfo;                       //<i>Reserved for SI customization
+}pptUser;
+
+
+typedef struct pptShipLotResult_struct {
+    objectIdentifier lotID;    //<i>Lot ID
+    string returnCode;         //<i>Return Code
+    any siInfo;              //<i>Reserved for SI customization
+} pptShipLotResult;
+
+typedef sequence <pptShipLotResult> pptShipLotResultSequence;
+
+typedef struct pptShipCancelLotResult_struct {
+    objectIdentifier lotID;    //<i>Lot ID
+    string returnCode;         //<i>Return Code
+    any siInfo;              //<i>Reserved for SI customization
+} pptShipCancelLotResult;
+
+typedef sequence <pptShipCancelLotResult> pptShipCancelLotResultSequence;
+
+typedef struct pptShipReqResult_struct {
+    pptRetCode      strResult;                    //<i>Transaction Execution Result Information
+    pptShipLotResultSequence strShipLotResult;    //<i>Sequence of Ship Lot Result
+    any siInfo;                                 //<i>Reserved for SI customization
+}  pptShipReqResult;
+
+typedef struct pptShipCancelReqResult_struct {
+    pptRetCode  strResult;                                    //<i>Transaction Execution Result Information
+    pptShipCancelLotResultSequence strShipCancelLotResult;    //<i>Sequence of Ship Cancel Lot Result
+    any siInfo;                                             //<i>Reserved for SI customization
+} pptShipCancelReqResult;
+
+// Bob Ke 2020/11/26 End #25, #26
+#endif

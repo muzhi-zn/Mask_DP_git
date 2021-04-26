@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>User Manage</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var x = {{ user_o.ldap or ''}};
+            if (x === 1) {
+                $('input[name=loginName]').attr("readonly", "readonly")
+                $("input[name=realName]").removeClass("required");
+                $("input[name=newPassword]").removeClass("required");
+                $("input[name=confirmNewPassword]").removeClass("required");
+            }
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+
+
+    </script>
+    <meta name="decorator" content="ani"/>
+    <script type="text/javascript">
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/system/user/{{method}}/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        jp.getParent().refresh();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+        }
+
+        $(document).ready(function () {
+            $("#no").focus();
+            $("#inputForm").validate({
+                rules: {
+                    loginName: {remote: "/system/user_check_loginname/?oldLoginName=" + encodeURIComponent('{{user_o.loginname or ''}}')}
+                },
+                messages: {
+                    loginName: {remote: "用户登录名已存在"},
+                    confirmNewPassword: {equalTo: "输入与上面相同的密码"}
+                }
+            });
+        });
+
+        function ldap_lock() {
+            var ldap_value = $("#ldap").val();
+            if (ldap_value == 1) {
+                alert("No modification ! This is ldap user.");
+            }
+        }
+
+        $(function () {
+            gen_options();
+        });
+
+        //生成各种select选项
+        function gen_options() {
+            $.ajax({
+                url: '/system/user/get_customer_code/',
+                method: "post",
+                async: false,
+                datatype: 'json',
+                success: function (arr) {
+                    for (var i in arr) {
+                        if (arr[i]['id'] === parseInt('{{ user_o.customer_code_id }}')) {
+                            $('#customer_code').append("<option value='" + arr[i]['id'] + "' selected>" + arr[i]['code'] + "</option>");
+                        } else {
+                            $('#customer_code').append("<option value='" + arr[i]['id'] + "'>" + arr[i]['code'] + "</option>");
+                        }
+                    }
+                }
+            })
+        }
+    </script>
+
+</head>
+<body id="" class="bg-white" style="">
+
+<form id="inputForm" class="form-horizontal" action="/system/user/{{ method }}/" method="post">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input id="id" name="id" type="hidden" value="{{ user_o.id or ''}}"/>
+    <input id="ldap" name="ldap" type="hidden" value="{{ user_o.ldap or ''}}">
+    <input id="ldap_group" name="ldpa_group" type="hidden" value="{{ user_o.ldap_group or ''}}">
+    <table class="table table-bordered">
+        <tbody>
+        <tr>
+            <!-- realName -->
+            <td class="active"><label class="pull-right"><font color="red">*</font>Real Name:</label></td>
+            <td><input id="realName" name="realName" class="form-control required" type="text"
+                       value="{{ user_o.realname or ''}}" maxlength="50"/></td>
+            <!-- loginName -->
+            <td class="active"><label class="pull-right"><font color="red">*</font>Login Name:</label></td>
+            <td>
+                <input id="oldLoginName" name="oldLoginName" type="hidden" value="{{ user_o.loginname or ''}}">
+                <input id="loginName" name="loginName" class="form-control required " type="text"
+                       value="{{ user_o.loginname or ''}}" maxlength="50" onclick="ldap_lock()"/></td>
+        </tr>
+        <tr>
+            <!-- newPassword -->
+            <td class="active"><label class="pull-right"><font color="red">*</font>Pass Word:</label></td>
+            <td><input id="newPassword" name="newPassword" type="password" value="" maxlength="50" minlength="3"
+                       class="form-control required"/></td>
+            <!-- confirmNewPassword -->
+            <td class="active"><label class="pull-right"><font color="red">*</font>Validate PassWord:</label></td>
+            <td><input id="confirmNewPassword" name="confirmNewPassword" type="password" class="form-control required"
+                       value="" maxlength="50" minlength="3" equalTo="#newPassword"/></td>
+        </tr>
+        <tr>
+            <!-- email -->
+            <td class="active"><label class="pull-right">Email:</label></td>
+            <td><input id="email" name="email" class="form-control email" type="text" value="{{ user_o.email or ''}}"
+                       maxlength="100"/></td>
+            <!-- phone -->
+            <td class="active"><label class="pull-right">Phone:</label></td>
+            <td><input id="phone" name="phone" class="form-control" type="text" value="{{ user_o.phone or ''}}"
+                       maxlength="100"/></td>
+        </tr>
+        <tr>
+            <!-- mobile -->
+            <td class="active"><label class="pull-right">Mobile:</label></td>
+            <td><input id="mobile" name="mobile" class="form-control" type="text" value="{{ user_o.mobile or ''}}"
+                       maxlength="100"/></td>
+            <!-- addr -->
+            <td class="active"><label class="pull-right">Address:</label></td>
+            <td><input id="addr" name="addr" class="form-control" type="text" value="{{ user_o.addr or ''}}"
+                       maxlength="100"/></td>
+        </tr>
+        <tr>
+            <!-- loginFlag -->
+            <td class="active"><label class="pull-right">Login Enable:</label></td>
+            <td><select id="loginFlag" name="loginFlag" class="form-control">
+                <option value="1" {% if user.loginflag == 1 %} selected {% endif %}>Yes</option>
+                <option value="0" {% if user.loginflag == 0 %} selected {% endif %}>No</option>
+            </select></td>
+            <!-- officeName -->
+            <td class="active"><label class="pull-right">Office:</label>
+            </td>
+            <td class="width-35">
+                <input id="officeId" name="parent_id" class="form-control form-control" type="hidden"
+                       value="{{ user_o.office_id or ''}}"/>
+                <div class="input-group" style="width:100%">
+                    <input id="officeName" name="parent_name" readonly="readonly" type="text"
+                           value="{{ user_o.office_name or ''}}" data-msg-required=""
+                           class="form-control" style=""/>
+                    <span class="input-group-btn">
+                        <button type="button" id="officeButton" class="btn   btn-primary  "><i
+                                class="fa fa-search"></i></button>
+                        <button type="button" id="officeDelButton" class="close" data-dismiss="alert"
+                                style="position: absolute; top: 5px; right: 53px; z-index: 999; display: block;">×</button>
+                    </span>
+                </div>
+                <label id="officeName-error" class="error" for="officeName" style="display:none"></label>
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $("#officeButton, #officeName").click(function () {
+                            // 是否限制选择，如果限制，设置为disabled
+                            if ($("#officeButton").hasClass("disabled")) {
+                                return true;
+                            }
+                            // 正常打开
+                            top.layer.open({
+                                type: 2,
+                                area: ['300px', '420px'],
+                                title: "选择机构",
+                                ajaxData: {selectIds: $("#officeId").val()},
+                                content: "/system/tree/select/?url=" + encodeURIComponent("/system/office/tree/data/") + "&module=&checked=&extId=&isAll=&allowSearch=",
+                                btn: ['确定', '关闭']
+                                , yes: function (index, layero) { //或者使用btn1
+                                    var tree = layero.find("iframe")[0].contentWindow.tree;//h.find("iframe").contents();
+                                    var ids = [], names = [], nodes = [];
+                                    if ("" == "true") {
+                                        nodes = tree.get_checked(true);
+                                    } else {
+                                        nodes = tree.get_selected(true);
+                                    }
+                                    for (var i = 0; i < nodes.length; i++) {//
+                                        ids.push(nodes[i].id);
+                                        names.push(nodes[i].text);//
+                                        break; // 如果为非复选框选择，则返回第一个选择
+                                    }
+                                    $("#officeId").val(ids.join(",").replace(/u_/ig, ""));
+                                    $("#officeName").val(names.join(","));
+                                    $("#officeName").focus();
+                                    top.layer.close(index);
+                                },
+                                cancel: function (index) { //或者使用btn2
+                                    //按钮【按钮二】的回调
+                                }
+                            });
+
+                        });
+
+                        $("#officeDelButton").click(function () {
+                            // 是否限制选择，如果限制，设置为disabled
+                            if ($("#officeButton").hasClass("disabled")) {
+                                return true;
+                            }
+                            // 清除
+                            $("#officeId").val("");
+                            $("#officeName").val("");
+                            $("#officeName").focus();
+
+                        });
+                    })
+                </script>
+            </td>
+        </tr>
+        <tr>
+            <!-- customer_code -->
+            <td class="active"><label class="pull-right"><font color="red">*</font>Customer code:</label></td>
+            <td class="width-35">
+                <select id="customer_code" name="customer_code" class="form-control required">
+                    <option></option>
+                </select>
+            </td>
+            </td>
+            <!-- remarks -->
+            <td class="active"><label class="pull-right">Remarks:</label></td>
+            <td><textarea id="remarks" name="remarks" maxlength="200" class="form-control"
+                          rows="3">{{ user_o.remarks or ''}}
+		         </textarea></td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
+</body>
+</html>

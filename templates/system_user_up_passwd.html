@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+	<title>Modify Password</title>
+	
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<script>var d = "";</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+{% include 'base.html' %}
+
+	
+	
+	<meta name="decorator" content="ani"/>
+	<script type="text/javascript">
+		function save() {
+			var isValidate = jp.validateForm('#inputForm');//校验表单
+			if(!isValidate){
+				return false;
+			}else{
+				if($("#newPassword").val() != $("#confirmNewPassword").val()){
+													jp.alert("输入的2次新密码不一致，请重新输入！")
+													return;
+												}
+				jp.loading();
+				jp.post("/system/user/modify/password/",$('#inputForm').serialize(),function(data){
+					if(data.success){
+						//jp.getParent().refresh();
+						var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+						parent.layer.close(dialogIndex);
+						jp.success(data.msg)
+		
+					}else{
+						jp.error(data.msg);
+					}
+				})
+			}
+		
+		}
+		$(document).ready(function() {
+			$("#oldPassword").focus();
+		});
+	</script>
+
+</head>
+<body id="" class="bg-white"  style="">
+	
+	<form id="inputForm" class="form-horizontal form-group" action="/system/user/modify/password/" method="post">
+		<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+		
+<!-- 0:隐藏tip, 1隐藏box,不设置显示全部 -->
+
+
+
+		
+		<div class="control-group">
+			<label class="control-label"><font color="red">*</font>Old Password:</label>
+			<div class="controls">
+				<input id="oldPassword" name="oldPassword" type="password" value="" maxlength="50" minlength="3"  class="form-control  max-width-250 required"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class=" control-label"><font color="red">*</font>New Password:</label>
+			<div class="controls">
+				<input id="newPassword" name="newPassword" type="password" value="" maxlength="50" minlength="3" class="form-control  max-width-250 required"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label"><font color="red">*</font>Confirm Password:</label>
+			<div class="controls">
+				<input id="confirmNewPassword" name="confirmNewPassword" type="password" value="" maxlength="50" minlength="3" class="form-control  max-width-250 required"></input>
+			</div>
+		</div>
+		<div class="form-actions">
+			<input id="btnSubmit" class="btn btn-primary" type="submit" style="display:none" value="Save"/>
+		</div>
+	</form>
+
+</body>
+</html>

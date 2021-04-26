@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptsm.idl
+    On Monday, October 26, 2020 2:10:28 PM CST
+    by IBM CORBA 2.3 WSDL emitter 2.30
+--><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="CS_PPTServiceManager" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.omg.org/IDL-Mapped/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:import location="../../corba/corba.wsdl" namespace="http://www.omg.org/IDL-WSDL/1.0/"/>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.omg.org/IDL-WSDL/1.0/">
+      <xsd:include schemaLocation="../../corba/corba.xsd"/>
+    </xsd:schema>
+    <xsd:schema targetNamespace="http://www.omg.org/IDL-Mapped/">
+      <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+      <xsd:include schemaLocation="../schema/pptUser.xsd"/>
+      <xsd:include schemaLocation="../schema/pptOpeLocateReqResult.xsd"/>
+      <xsd:include schemaLocation="../schema/objectIdentifier.xsd"/>
+      <xsd:include schemaLocation="../schema/pptProcessRef.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="CS_PPTServiceManager.TxOpeLocateReq">
+    <wsdl:part name="requestUserID" type="tns:pptUser"/>
+    <wsdl:part name="locateDirection" type="xsd:boolean"/>
+    <wsdl:part name="lotID" type="tns:objectIdentifier"/>
+    <wsdl:part name="currentRouteID" type="tns:objectIdentifier"/>
+    <wsdl:part name="currentOperationNumber" type="xsd:string"/>
+    <wsdl:part name="routeID" type="tns:objectIdentifier"/>
+    <wsdl:part name="operationID" type="tns:objectIdentifier"/>
+    <wsdl:part name="operationNumber" type="xsd:string"/>
+    <wsdl:part name="processRef" type="tns:pptProcessRef"/>
+    <wsdl:part name="seqno" type="xsd:int"/>
+    <wsdl:part name="claimMemo" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:message name="CS_PPTServiceManager.TxOpeLocateReqResponse">
+    <wsdl:part name="_return" type="tns:pptOpeLocateReqResult"/>
+  </wsdl:message>
+  <wsdl:portType name="CS_PPTServiceManager.TxOpeLocateReq">
+    <wsdl:operation name="TxOpeLocateReq">
+      <wsdl:input message="tns:CS_PPTServiceManager.TxOpeLocateReq"/>
+      <wsdl:output message="tns:CS_PPTServiceManager.TxOpeLocateReqResponse"/>
+      <wsdl:fault message="corba:CORBA.SystemExceptionMessage" name="CORBA.SystemException"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CS_PPTServiceManager.TxOpeLocateReqBinding" type="tns:CS_PPTServiceManager.TxOpeLocateReq">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="TxOpeLocateReq">
+      <soap:operation soapAction="CS_PPTServiceManager#TxOpeLocateReq"/>
+      <wsdl:input>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body namespace="http://www.omg.org/IDL-WSDL/1.0/" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CORBA.SystemException">
+        <soap:fault name="CORBA.SystemException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CS_PPTServiceManager.TxOpeLocateReq">
+    <wsdl:port binding="tns:CS_PPTServiceManager.TxOpeLocateReqBinding" name="CS_PPTServiceManager.TxOpeLocateReqBinding">
+      <soap:address location="http://myhost.mydomain:80/CS_PPTServiceManager/mymarker"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

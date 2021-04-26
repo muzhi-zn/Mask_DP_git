@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <title>CD map upload</title>
+    {% include 'base.html' %}
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+</head>
+<body>
+<form style="padding: 15px">
+    <input id="cd_map_id" name="cd_map_id" type="hidden" value="{{ cd_map_id }}"/>
+    <div class="layui-upload">
+        <button type="button" class="layui-btn layui-btn-primary" id="testList">Browse</button>
+        <button type="button" class="layui-btn layui-btn-primary" id="testListAction">Upload</button>
+        <div class="layui-upload-list">
+            <table class="layui-table" id="table_1">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Size</th>
+                    <th>Status</th>
+                    <th>Operation</th>
+                </tr>
+                </thead>
+                <tbody id="demoList"></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+
+        layui.use('upload', function () {
+            var $ = layui.jquery
+                , upload = layui.upload;
+            //多文件列表示例
+            let file_index_list = [];
+
+            var demoListView = $('#demoList'),
+                uploadListIns = upload.render({
+                    elem: '#testList',
+                    url: '/infotree/cd_map/upload/', //改成您自己的上传接口
+                    accept: 'file',
+                    method: 'post',
+                    multiple: true,
+                    auto: false,
+                    exts: 'dat|prm',
+                    number: 2,
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'cd_map_id': $('#cd_map_id').val(),
+                    },
+                    bindAction: '#testListAction',
+                    choose: function (obj) {
+                        const files = this.files = obj.pushFile();
+                        let i = [];
+                        let file_name_list = [];
+                        let file_ext_list = [];
+                        let file_name_no_ext_list = [];
+                        for (const index in files) {
+                            const ff = files[index];
+                            file_index_list.push(index);
+                            i.push(ff);
+                            file_name_list.push(ff.name);
+                            file_name_no_ext_list.push(ff.name.split('.')[0]);
+                            file_ext_list.push(ff.name.substring(ff.name.indexOf(".") + 1))
+                        }
+
+                        {# 判斷文件是否只有兩個，副檔名必須為'dat'與'prm'各一個 #}
+                        if (i.length === 2 && file_ext_list.includes('dat') && file_ext_list.includes('prm')) {
+
+                            {# list convert to dict #}
+                            const coll_val = collection_counter(file_name_no_ext_list);
+
+                            {# 判斷文件名稱是否一樣 #}
+                            if (Object.keys(coll_val).length === 1) {
+                                const check_res = check_file_exists(file_name_list);
+                                if (check_res.success) {
+                                    obj.preview(function (index, file, result) {
+                                        var tr = $(['<tr id="upload-' + index + '">'
+                                            , '<td>' + file.name + '</td>'
+                                            , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'
+                                            , '<td>Waiting</td>'
+                                            , '<td>'
+                                            {#, '<button class="layui-btn layui-btn-xs demo-reload layui-hide">re-upload</button>'#}
+                                            {#, '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">remove</button>'#}
+                                            , '</td>'
+                                            , '</tr>'].join(''));
+
+                                        //单个重传
+                                        tr.find('.demo-reload').on('click', function () {
+                                            obj.upload(index, file);
+                                        });
+
+                                        //删除
+                                        tr.find('.demo-delete').on('click', function () {
+                                            delete files[index]; //删除对应的文件
+                                            tr.remove();
+                                            uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                                        });
+
+                                        demoListView.append(tr);
+                                    });
+                                } else {
+                                    for (const index in files) {
+                                        $('#' + "upload-" + index).remove();
+                                        delete this.files[index];
+                                    }
+
+                                    file_index_list = [];
+
+                                    layer.open({
+                                        title: 'warning'
+                                        , content: 'file name already exists'
+                                    });
+                                }
+                            } else {
+                                for (const index in files) {
+                                    $('#' + "upload-" + index).remove();
+                                    delete this.files[index];
+                                }
+
+                                file_index_list = [];
+
+                                layer.open({
+                                    title: 'warning'
+                                    , content: 'files name must be same'
+                                });
+                            }
+                        } else {
+                            for (const index in files) {
+                                $('#' + "upload-" + index).remove();
+                                delete this.files[index];
+                            }
+
+                            file_index_list = [];
+
+                            layer.open({
+                                title: 'warning'
+                                , content: '請選擇兩個文件,dat與prm各一個'
+                            });
+                        }
+                    },
+                    done: function (res, index, upload) {
+                        console.log('done');
+                        if (res.success) { //上传成功
+                            {#if (res.files.file) { //上传成功#}
+                            var tr = demoListView.find('tr#upload-' + index)
+                                , tds = tr.children();
+                            tds.eq(2).html('<span style="color: #5FB878;">Success</span>');
+                            tds.eq(3).html(''); //清空操作
+
+                            if (file_index_list.indexOf(index) > -1) {
+                                file_index_list.splice(file_index_list.indexOf(index), 1);
+                            }
+
+                            delete this.files[index]; //删除文件队列已经上传成功的文件
+                            if (file_index_list.length === 0) {
+                                jp.getParent().refresh();
+                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(index); //再执行关闭
+                            }
+                            return
+                        }
+                        this.error(index, upload);
+                    },
+                    error: function (index, upload) {
+                        console.log('error');
+                        var tr = demoListView.find('tr#upload-' + index)
+                            , tds = tr.children();
+                        tds.eq(2).html('<span style="color: #FF5722;">Failed</span>');
+                        tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+                    }
+                });
+        });
+
+        function collection_counter(obj) {
+            const data = {};
+            for (const i in obj) {
+                if (data[obj[i].toString()] === undefined) {
+                    data[obj[i].toString()] = 1;
+                } else {
+                    data[obj[i].toString()] = data[obj[i].toString()] + 1;
+                }
+            }
+            console.log(data);
+            return data
+        }
+
+        function check_file_exists(file_name) {
+            let res = '';
+            $.ajax({
+                url: '/infotree/cd_map/check_file_exists/',
+                method: 'post',
+                data: {
+                    file_name: file_name.toString(),
+                },
+                async: false,
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    res = data;
+                },
+            });
+            return res;
+        }
+    </script>
+</form>
+</body>
+</html>

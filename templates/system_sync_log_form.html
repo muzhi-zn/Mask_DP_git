@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Machine Manage</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <link href="{{ static ('/ani/static/plugin/layui/dist/css/layui.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/layui/layui.js') }}" type="text/javascript"></script>
+    <script type="text/javascript">
+        function save() {
+            jp.loading();
+            jp.post("/system/sync/{{method}}/", $('#inputForm').serialize(), function (data) {
+                if (data.success) {
+                    jp.getParent().refresh();
+                    var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                    parent.layer.close(dialogIndex);
+                    jp.success(data.msg)
+                } else {
+                    jp.error(data.msg);
+                }
+            })
+        }
+
+        // 获取值
+        function getVal() {
+            console.log($('#fruits').val());
+        }
+    </script>
+    <script>
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            //时间选择器
+            laydate.render({
+                elem: '#piker_input',
+                type: 'time',
+                done: function (value, date, endDate) {
+                    $('#mode_time').val(value);
+                }
+            });
+        });
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" method="post" autocomplete="off">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input id="id" name="id" type="hidden" value="{{ sync.id or '' }}"/>
+
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            {# sync_name #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Sync Name : </label>
+            </td>
+            <td class="width-35">
+                <input id="sync_name_old" name="sync_name_old" type="hidden" value="{{ sync.sync_name or ''}}">
+                <input id="sync_name" name="sync_name" class="form-control required" type="text"
+                       value="{{ sync.sync_name or ''}}" maxlength="50"/>
+            </td>
+            {# enable #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Enable : </label>
+            </td>
+            <td class="width-35">
+                <input id="enable_old" name="enable_old" type="hidden" value="{{ sync.enable or ''}}">
+                <select id="enable" name="enable" class="form-control required">
+                    <option value="False" {% if sync.enable == 0 %} selected {% endif %}>
+                        disable
+                    </option>
+                    <option value="True" {% if  sync.enable == 1 %} selected {% endif %}>
+                        enable
+                    </option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            {# mode #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Mode : </label>
+            </td>
+            <td class="width-35">
+                <select id="mode" name="mode" class="form-control required">
+                    <option value="interval" {% if sync.mode == 'interval' %} selected {% endif %}>
+                        interval
+                    </option>
+                    <option value="cron" {% if  sync.mode == 'cron' %} selected {% endif %}>
+                        cron
+                    </option>
+                </select>
+            </td>
+            {# mode_time & second #}
+            <td class="width-15 active">
+                <label id="mode_time_title" name="mode_time_title" class="pull-right">
+                    <font color="red">*</font>Time : </label>
+            </td>
+            <td class="width-35">
+                <input id="mode_time_old" name="mode_time_old" type="hidden"
+                       value="{{ sync.mode_time or ''}}">
+
+                <input id="mode_time" name="mode_time" class="form-control required" type="hidden"
+                       value="{{ sync.mode_time or ''}}" maxlength="50"/>
+
+                <div class="layui-inline" id="mode_time_piker" style="height: 34px; width: 100%">
+                    <div class="layui-input-inline" style="width: 100%">
+                        <input type="text" class="layui-input" id="piker_input" placeholder="HH:mm:ss"
+                               value="{{ sync.mode_time or '' }}" style="height: 34px; width: 100%">
+                    </div>
+                </div>
+
+            </td>
+        </tr>
+        <tr>
+            {# ldap_server_pool #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>IP : </label>
+            </td>
+            <td class="width-35">
+                <input id="ldap_server_pool_old" name="ldap_server_pool_old" type="hidden"
+                       value="{{ sync.ldap_server_pool or ''}}">
+                <input id="ldap_server_pool" name="ldap_server_pool" class="form-control required" type="text"
+                       value="{{ sync.ldap_server_pool or '' }}" maxlength="50"/>
+            </td>
+            {# ldap_server_port #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Port : </label>
+            </td>
+            <td class="width-35">
+                <input id="ldap_server_port_old" name="ldap_server_port_old" type="hidden"
+                       value="{{ sync.ldap_server_port or ''}}">
+                <input id="ldap_server_port" name="ldap_server_port" class="form-control required" type="text"
+                       value="{{ sync.ldap_server_port or '' }}" maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            {# admin_dn #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Admin dn : </label>
+            </td>
+            <td class="width-35">
+                <input id="admin_dn_old" name="admin_dn_old" type="hidden"
+                       value="{{ sync.admin_dn or ''}}">
+                <input id="admin_dn" name="admin_dn" class="form-control required" type="text"
+                       value="{{ sync.admin_dn or '' }}" maxlength="50"/>
+            </td>
+            {# admin_pwd #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Admin pwd : </label>
+            </td>
+            <td class="width-35">
+                <input id="admin_pwd" name="admin_pwd" class="form-control text-muted required" type="password"
+                       value="{{ sync.admin_pwd or '' }}" maxlength="50"/>
+                {#                       value="" maxlength="50"/>#}
+            </td>
+        </tr>
+        <tr>
+            {# search_base #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Base : </label>
+            </td>
+            <td class="width-35">
+                <input id="search_base_old" name="search_base_old" type="hidden"
+                       value="{{ sync.search_base or ''}}">
+                <input id="search_base" name="search_base" class="form-control required" type="text"
+                       value="{{ sync.search_base or '' }}" maxlength="50"/>
+            </td>
+            {# group #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Group : </label>
+            </td>
+            <td class="width-35">
+                <input id="group_old" name="group_old" type="hidden"
+                       value="{{ sync.group or ''}}">
+                <input id="group" name="group" class="form-control required" type="text"
+                       value="{{ sync.group or '' }}" maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            {# default #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Default : </label>
+            </td>
+            <td class="width-35">
+                <input id="default_old" name="default_old" type="hidden"
+                       value="{{ sync.default or ''}}">
+                <select id="default" name="default" class="form-control required">
+                    <option value="0" {% if sync.enable == 0 %} selected {% endif %}>
+                        Normal
+                    </option>
+                    <option value="1" {% if sync.enable == 1 %} selected {% endif %}>
+                        Cancellation
+                    </option>
+                </select>
+            </td>
+            <td class="width-15 active">
+                <label class="pull-right">
+                    <input type="button" value="test conn" onclick="conn_test()"></input>
+                </label>
+                <script>
+                    function conn_test(yourData) {
+                        console.log($('#ldap_server_pool').val())
+                        $.ajax({
+                            type: "post",
+                            dataType: "json",
+                            data: {
+                                "ldap_server_pool": $('#ldap_server_pool').val(),
+                                "ldap_server_port": $('#ldap_server_port').val(),
+                                "admin_dn": $('#admin_dn').val(),
+                                "admin_pwd": $('#admin_pwd').val(),
+                                "search_base": $('#search_base').val(),
+                                "group": $('#group').val()
+                            },
+                            url: "/api/ad_conn_test/", // 將你的請求參數以問號拼接到url中進行參數傳遞
+                            success(data) {
+                                // data為返回值
+                                // 成功後的回調方法
+                                alert(data);
+                            }
+                        })
+                    }
+                </script>
+            </td>
+            <td class="width-35">
+                <input id="test_result" name="test_result" class="form-control required" type="text"
+                       value="{{ test_result or '' }}" maxlength="50" disabled/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <input id="menuIds" name="menuIds" type="hidden" value=""/>
+</form>
+</body>

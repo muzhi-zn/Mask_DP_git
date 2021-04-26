@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html lang="en" class="lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>    <html lang="en" class="lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>    <html lang="en" class="lt-ie9"> <![endif]-->
+<!--[if IE 9]>    <html lang="en" class="ie9"> <![endif]-->
+<!--[if gt IE 9]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <title>Nestable</title>
+    <style type="text/css">
+
+.cf:after { visibility: hidden; display: block; font-size: 0; content: " "; clear: both; height: 0; }
+* html .cf { zoom: 1; }
+*:first-child+html .cf { zoom: 1; }
+
+html { margin: 0; padding: 0; }
+body { font-size: 100%; margin: 0; padding: 1.75em; font-family: 'Helvetica Neue', Arial, sans-serif; }
+
+h1 { font-size: 1.75em; margin: 0 0 0.6em 0; }
+
+a { color: #2996cc; }
+a:hover { text-decoration: none; }
+
+p { line-height: 1.5em; }
+.small { color: #666; font-size: 0.875em; }
+.large { font-size: 1.25em; }
+
+/**
+ * Nestable
+ */
+
+.dd { position: relative; display: block; margin: 0; padding: 0; max-width: 1000px; list-style: none; font-size: 13px; line-height: 20px; }
+
+.dd-list { display: block; position: relative; margin: 0; padding: 0; list-style: none; }
+.dd-list .dd-list { padding-left: 30px; }
+.dd-collapsed .dd-list { display: none; }
+
+.dd-item,
+.dd-empty,
+.dd-placeholder { display: block; position: relative; margin: 0; padding: 0; min-height: 20px; font-size: 13px; line-height: 20px; }
+
+.dd-handle { display: block; height: 30px; margin: 5px 0; padding: 5px 10px; color: #333; text-decoration: none; font-weight: bold; border: 1px solid #ccc;
+    background: #fafafa;
+    background: -webkit-linear-gradient(top, #fafafa 0%, #eee 100%);
+    background:    -moz-linear-gradient(top, #fafafa 0%, #eee 100%);
+    background:         linear-gradient(top, #fafafa 0%, #eee 100%);
+    -webkit-border-radius: 3px;
+            border-radius: 3px;
+    box-sizing: border-box; -moz-box-sizing: border-box;
+}
+.dd-handle:hover { color: #2ea8e5; background: #fff; }
+
+.dd-item > button { display: block; position: relative; cursor: pointer; float: left; width: 25px; height: 20px; margin: 5px 0; padding: 0; text-indent: 100%; white-space: nowrap; overflow: hidden; border: 0; background: transparent; font-size: 12px; line-height: 1; text-align: center; font-weight: bold; }
+.dd-item > button:before { content: '+'; display: block; position: absolute; width: 100%; text-align: center; text-indent: 0; }
+.dd-item > button[data-action="collapse"]:before { content: '-'; }
+
+.dd-placeholder,
+.dd-empty { margin: 5px 0; padding: 0; min-height: 30px; background: #f2fbff; border: 1px dashed #b6bcbf; box-sizing: border-box; -moz-box-sizing: border-box; }
+.dd-empty { border: 1px dashed #bbb; min-height: 100px; background-color: #e5e5e5;
+    background-image: -webkit-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff),
+                      -webkit-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+    background-image:    -moz-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff),
+                         -moz-linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+    background-image:         linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff),
+                              linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+    background-size: 60px 60px;
+    background-position: 0 0, 30px 30px;
+}
+
+.dd-dragel { position: absolute; pointer-events: none; z-index: 9999; }
+.dd-dragel > .dd-item .dd-handle { margin-top: 0; }
+.dd-dragel .dd-handle {
+    -webkit-box-shadow: 2px 4px 6px 0 rgba(0,0,0,.1);
+            box-shadow: 2px 4px 6px 0 rgba(0,0,0,.1);
+}
+
+/**
+ * Nestable Extras
+ */
+
+.nestable-lists { display: block; clear: both; padding: 30px 0; width: 100%; border: 0; border-top: 2px solid #ddd; border-bottom: 2px solid #ddd; }
+
+#nestable-menu { padding: 0; margin: 20px 0; }
+
+#nestable-output,
+#nestable2-output { width: 100%; height: 7em; font-size: 0.75em; line-height: 1.333333em; font-family: Consolas, monospace; padding: 5px; box-sizing: border-box; -moz-box-sizing: border-box; }
+
+#nestable2 .dd-handle {
+    color: #fff;
+    border: 1px solid #999;
+    background: #bbb;
+    background: -webkit-linear-gradient(top, #bbb 0%, #999 100%);
+    background:    -moz-linear-gradient(top, #bbb 0%, #999 100%);
+    background:         linear-gradient(top, #bbb 0%, #999 100%);
+}
+#nestable2 .dd-handle:hover { background: #bbb; }
+#nestable2 .dd-item > button:before { color: #fff; }
+
+@media only screen and (min-width: 1000px) {
+
+    .dd { float: left; width: 80%;  }
+    .dd + .dd { margin-left: 2%; }
+
+}
+
+.dd-hover > .dd-handle { background: #2ea8e5 !important; }
+
+/**
+ * Nestable Draggable Handles
+ */
+
+.dd3-content { display: block;  margin: 5px 0; padding: 5px 5px 5px 40px; color: #333; text-decoration: none; font-weight: bold; border: 1px solid #ccc;
+    background: #fafafa;
+    background: -webkit-linear-gradient(top, #fafafa 0%, #eee 100%);
+    background:    -moz-linear-gradient(top, #fafafa 0%, #eee 100%);
+    background:         linear-gradient(top, #fafafa 0%, #eee 100%);
+    -webkit-border-radius: 3px;
+            border-radius: 3px;
+    box-sizing: border-box; -moz-box-sizing: border-box;
+}
+.dd3-content:hover { color: #2ea8e5; background: #fff; }
+
+.dd-dragel > .dd3-item > .dd3-content { margin: 0; }
+
+.dd3-item > button { margin-left: 30px; }
+
+.dd3-handle { position: absolute; margin: 0; left: 0; top: 0; cursor: pointer; width: 30px; text-indent: 100%; white-space: nowrap; overflow: hidden;
+    border: 1px solid #aaa;
+    background: #ddd;
+    background: -webkit-linear-gradient(top, #ddd 0%, #bbb 100%);
+    background:    -moz-linear-gradient(top, #ddd 0%, #bbb 100%);
+    background:         linear-gradient(top, #ddd 0%, #bbb 100%);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.dd3-handle:before { content: '≡'; display: block; position: absolute; left: 0; top: 3px; width: 100%; text-align: center; text-indent: 0; color: #fff; font-size: 20px; font-weight: normal; }
+.dd3-handle:hover { background: #ddd; }
+
+/**
+ * Socialite
+ */
+
+.socialite { display: block; float: left; height: 35px; }
+
+.del-right {position: absolute; right: 5px; top: 3px;}
+.edit-right {position: absolute; right: 50px; top: 3px;}
+    </style>
+	<script>
+		
+		var lastTime = new Date().getTime();
+		        var currentTime = new Date().getTime();
+		        var timeOut = 30 * 60 * 1000; //设置超时时间： 10分
+		 	 
+		        $(function(){
+		            /* 鼠标移动事件 */
+		            $(document).mouseover(function(){
+		                lastTime = new Date().getTime(); //更新操作时间
+						console.log('lastTime='+lastTime);
+		 
+		            });
+		        });
+			 /* 定时器  间隔1秒检测是否长时间未操作页面  */
+			 var quitTime = window.setInterval(testTime, 1000);
+		 
+		        function testTime(){
+		            currentTime = new Date().getTime(); //更新当前时间
+					console.log('currentTime='+currentTime);
+						 
+		            if(currentTime - lastTime > timeOut){ //判断是否超时
+		                console.log("超时");
+						window.location.href='/system/logout/';
+						 // 清除掉定时器
+						window.clearInterval(quitTime)
+		            }
+		        }
+		 
+		        
+	</script>
+	
+</head>
+<body>
+
+  
+  
+
+
+    <menu id="nestable-menu">
+        <button type="button" data-action="expand-all">Expand All</button>
+        <button type="button" data-action="collapse-all">Collapse All</button>
+		<button type="button" data-action="add-row">Add Row</button>
+		
+    </menu>
+
+   
+    <div class="cf nestable-lists">
+
+   
+   
+        <div class="dd" id="nestable">
+            <ol id ="J_List" class="dd-list">
+                <li class="dd-item dd3-item" data-id="13">
+                    <div class="dd-handle dd3-handle"></div>
+					<div class="dd3-content" >
+						dsafdsf
+						<br>
+						dsafdsf
+							<a class="del-right" href="javascrip:;" onclick="delInfo(this);" title="delete">Del</a> &nbsp;
+							<a class="edit-right" href="javascrip:;" onclick="editInfo(this)" title="Edit">Edit</a>
+							
+						</div>
+						
+                </li>
+                <li class="dd-item dd3-item" data-id="14">
+                    <div class="dd-handle dd3-handle"></div><div class="dd3-content">Item 14</div>
+                </li>
+                
+            </ol>
+        </div>
+
+    </div>
+
+   <textarea id="nestable-output"></textarea>
+   <textarea id="input1"></textarea>
+   
+<script src= "{{ static ('/js/jquery_1.11.1.min.js') }}"></script>
+<script src= "{{ static ('/js/jquery.nestable.js') }}"></script>
+<script>
+function delInfo(obj) {
+	        var tmp = obj;
+	        var parent = $(obj).parent(".dd3-content").parent(".dd-item").remove();
+	        updateOutput($('#nestable').data('output', $('#nestable-output')));
+	        
+	    }
+
+function editInfo(obj) {
+        var temp = obj;
+        var item = $(obj).parent(".dd3-content").parent(".dd-item");
+        item.data('value',$('#input1').val());
+		var item2 = $(obj).parent(".dd3-content")
+		var html = '<a class="del-right" href="javascrip:;" onclick="delInfo(this);" title="删除">Del</a><a class="edit-right" href="javascrip:;" onclick="editInfo(this)" title="增加">Edit</a>';
+		var temp = $('#input1').val()
+		var reg = new RegExp("\\n","g");//g,表示全部替换。
+		temp=temp.replace(reg,"<br>");
+		item2.html(temp+html);
+		// 增加input
+        updateOutput($('#nestable').data('output', $('#nestable-output')));
+        
+    }
+
+function updateOutput  (e)
+    {
+        var list   = e.length ? e : $(e.target),
+            output = list.data('output');
+        
+		if (window.JSON) {
+            //output.val(window.JSON.stringify(list.nestable('serialize')));//, null, 2));
+			output.val(window.JSON.stringify(list.nestable('serialize')));//, null, 2));
+        } else {
+            output.val('JSON browser support required for this demo.');
+        }
+		
+		 
+    };
+		
+$(document).ready(function()
+{
+
+    var updateOutput = function(e)
+    {
+        var list   = e.length ? e : $(e.target),
+            output = list.data('output');
+        
+		if (window.JSON) {
+            //output.val(window.JSON.stringify(list.nestable('serialize')));//, null, 2));
+			output.val(window.JSON.stringify(list.nestable('serialize')));//, null, 2));
+        } else {
+            output.val('JSON browser support required for this demo.');
+        }
+		
+		 
+    };
+	
+		
+    // activate Nestable for list 1
+    $('#nestable').nestable({
+        group: 1
+    })
+    .on('change', updateOutput);
+
+    // activate Nestable for list 2
+    $('#nestable2').nestable({
+        group: 1
+    })
+    .on('change', updateOutput);
+
+    // output initial serialised data
+    updateOutput($('#nestable').data('output', $('#nestable-output')));
+    //updateOutput($('#nestable2').data('output', $('#nestable2-output')));
+
+    $('#nestable-menu').on('click', function(e)
+    {
+        var target = $(e.target),
+            action = target.data('action');
+        if (action === 'expand-all') {
+            $('.dd').nestable('expandAll');
+        }
+        if (action === 'collapse-all') {
+            $('.dd').nestable('collapseAll');
+        }
+		
+		if (action === 'add-row') {
+		    //document.getElementById("J_List").innerHTML+="<li class='newLi'><span>_userName</span><span>userEamil	</span><span>userPhone</span><span><input type='button' value='删除' onclick='this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)' /></span></li>";
+			//document.getElementById("J_List").innerHTML+='<li class="dd-item dd3-item" ><div class="dd-handle dd3-handle">Drag</div><div class="dd3-content">Item 18</div></li>';
+			var html = '<li class="dd-item dd3-item" data-id="1" data-value="1111" ><div class="dd-handle dd3-handle"></div><div class="dd3-content"><span class="input-value"></span>Item 18<a  class="del-right" href="javascrip:;" onclick="delInfo(this);" title="Delete">Del</a><a class="edit-right" href="javascrip:;" onclick="editInfo(this)" title="Edit">Edit</a></div></li>';
+			//var html = '<li class="dd-item" data-id="1"><div class="dd-handle-1"><span class="label label-warning dd-handle"><i class="fa fa-crosshairs"></i></span><span class="input-value"></span><a class="dfm btn btn-danger btn-xs pull-right del-content" href="javascrip:;" onclick="delInfo(this)" title="删除"><span class="fa fa-trash">Del</span></a><a class="dfm btn btn-success btn-xs pull-right add-content" href="javascrip:;" onclick="addInfo(this)" title="增加"><span class="fa fa-plus"></span></a><a class="dfm btn btn-info btn-xs pull-right edit-content" href="javascrip:;" onclick="editInfo(this)" title="编辑"><span class="fa fa-pencil"></span></a></div><ol class="dd-list"></ol></li>';
+			
+			$('#nestable #J_List').append(html);
+			updateOutput($('#nestable').data('output', $('#nestable-output')));
+			
+		}
+		
+    });
+
+
+    $('#nestable').nestable();
+
+
+
+});
+</script>
+
+</body>
+</html>

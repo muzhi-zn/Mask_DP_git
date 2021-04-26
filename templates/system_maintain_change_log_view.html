@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>数据详情</title>
+    {% include 'base.html' %}
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+    <meta name="decorator" content="ani"/>
+</head>
+<body class="bg-white">
+<form id="inputForm" class="form-horizontal">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <table class="table table-bordered">
+        <div><label>New Data</label></div>
+        {% for key,value in new_data.items() %}
+            <tr align="center">
+                {# 如果第三第四个td有数据，则正常显示，否则第二个trcolspan=3 #}
+                <td class="width-35 active"><label class="center">{{ key }}</label></td>
+                <td class="width-35 active"><label class="center">{{ value }}</label></td>
+
+            </tr>
+        {% endfor %}
+    </table>
+
+    <table class="table table-bordered">
+        <div><label>Old Data</label></div>
+        {% for key,value in old_data.items() %}
+            <tr align="center">
+                {# 如果第三第四个td有数据，则正常显示，否则第二个trcolspan=3 #}
+                <td class="width-35 active"><label class="center">{{ key }}</label></td>
+                <td class="width-35 active"><label class="center">{{ value }}</label></td>
+
+            </tr>
+        {% endfor %}
+    </table>
+</form>
+</body>
+</html>

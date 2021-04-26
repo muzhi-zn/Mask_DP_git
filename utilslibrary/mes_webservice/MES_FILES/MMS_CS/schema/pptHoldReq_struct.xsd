@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:17 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/objectIdentifier.xsd"/>
+  <xsd:complexType name="pptHoldReq_struct">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="holdType" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="holdReasonCodeID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="holdUserID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="responsibleOperationMark" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="routeID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="operationNumber" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="relatedLotID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="claimMemo" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="siInfo" type="corba:CORBA.Any"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>

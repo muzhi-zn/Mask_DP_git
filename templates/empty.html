@@ -1,0 +1,627 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+	<title>用户管理</title>
+	
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<script>var d = "";</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<!-- 设置浏览器图标 -->
+<link rel="shortcut icon" href= "{{ static ('/ani/static/favicon.ico') }}">
+<!-- 引入jeeplus ajax版本库文件，该文件压缩了jQuery，datatime等常用js文件以提高加载速度 -->
+<link rel="stylesheet" href= "{{ static ('/ani/static/common/css/vendor.css') }}" />
+<script src= "{{ static ('/ani/static/common/js/vendor.js') }}"></script>
+<!-- 引入依赖的第三方插件 -->
+<link href= "{{ static ('/ani/static/plugin/awesome/4.4/css/font-awesome.min.css') }}" rel="stylesheet" />
+<script src= "{{ static ('/ani/static/plugin/jquery-validation/1.14.0/jquery.validate.js') }}" type="text/javascript"></script>
+<script src= "{{ static ('/ani/static/plugin/jquery-validation/1.14.0/localization/messages_zh.min.js') }}" type="text/javascript"></script>
+<script src= "{{ static ('/ani/static/plugin/jquery-validation/1.14.0/validation-methods.js') }}" type="text/javascript"></script>
+<link href= "{{ static ('/ani/static/plugin/icheck-1.x/skins/square/_all.css') }}" rel="stylesheet" />
+<script src= "{{ static ('/ani/static/plugin/icheck-1.x/icheck.js') }}"></script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $('input.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-lynch',
+            radioClass: 'iradio_square-lynch',
+            increaseArea: '20%' // optional
+        });
+    });
+
+
+</script>
+<!--省市区三级联动插件-->
+<link href= "{{ static ('/ani/static/plugin/city-picker/css/city-picker.css') }}" rel="stylesheet" type="text/css"/>
+<script src= "{{ static ('/ani/static/plugin/city-picker/js/city-picker.data.js') }}" type="text/javascript"></script>
+<script src= "{{ static ('/ani/static/plugin/city-picker/js/city-picker.js') }}" type="text/javascript"></script>
+
+<!-- 引入layer插件,当做独立组件使用，不使用layui模块，该版本修复了chrome下花屏的bug -->
+<script src= "{{ static ('/ani/static/plugin/layui/layer/layer.js') }}"></script>
+<script src= "{{ static ('/ani/static/plugin/layui/laytpl/laytpl.js') }}"></script>
+
+
+<!--引入webuploader-->
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/webuploader-0.1.5/webuploader.css') }}">
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/webuploader-0.1.5/demo.css') }}">
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/webuploader-0.1.5/webuploader.js') }}"></script>
+
+<!-- 引入toastr -->
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/toastr/toastr.css') }}">
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/toastr/toastr.min.js') }}"></script>
+
+<!--引入select2-->
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/select2/css/select2.min.css') }}">
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/select2/css/select2-bootstrap.css') }}">
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/select2/js/select2.min.js') }}"></script>
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/select2/js/i18n/zh-CN.js') }}"></script>
+
+<!-- 引入自定义文件 -->
+<script type="text/javascript">var ctx = '/ani/a', ctxStatic='/ani/static';</script>
+<link rel="stylesheet" id="theme" href= "{{ static ('/ani/static/common/css/app-lynch.css') }}" />
+<script src= "{{ static ('/ani/static/common/js/jeeplus.js') }}"></script>
+
+	
+	
+	<meta name="decorator" content="ani"/>
+	
+<!--è¿éå¼å¥bootstrap-table ä¾èµçæä»¶ï¼bootstrap-table.jså·²ç»åå¹¶å¨vendor.jsä¸­-->
+<script src= "{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-zh-CN.js') }}"></script>
+<script src= "{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-contextmenu.js') }}"></script>
+<script src= "{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-export.js') }}"></script>
+<script src= "{{ static ('/ani/static/plugin/bootstrapTable/tableExport.js') }}"></script>
+
+	<link href= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.css') }}" rel="stylesheet" type="text/css"/>
+	<script src= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.js') }}" type="text/javascript"></script>
+	
+<script type="text/javascript">
+		$(document).ready(function() {
+		//zTree初始化
+			$.getJSON("/ani/a/sys/office/bootstrapTreeData",function(data){
+				$('#jstree').treeview({
+					data: data,
+					levels: 5,
+		            onNodeSelected: function(event, treeNode) {
+		            	var id = treeNode.id == '0' ? '' :treeNode.id;
+						if(treeNode.level == 1){//level=0 代表公司
+							$("#companyId").val(id);
+							$("#companyName").val(treeNode.text);
+							$("#officeId").val("");
+							$("#officeName").val("");
+						}else{
+							$("#companyId").val("");
+							$("#companyName").val("");
+							$("#officeId").val(id);
+							$("#officeName").val(treeNode.text);
+						}
+						
+						$('#table').bootstrapTable('refresh');
+		            },
+		         });
+			});
+			
+						
+			  //表格初始化
+			  $('#table').bootstrapTable({
+				  
+				  //请求方法
+                  method: 'post',
+                  //类型json
+                  dataType: "json",
+                  contentType: "application/x-www-form-urlencoded",
+	                 //是否显示行间隔色
+	                striped: true,
+	                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）     
+	                cache: false,
+                  //显示检索按钮
+                  showSearch: true,
+                  //显示刷新按钮
+                  showRefresh: true,
+                  //显示切换手机试图按钮
+                  showToggle: true,
+                  //显示 内容列下拉框
+                  showColumns: true,
+                  //显示切换分页按钮
+                  showPaginationSwitch: true,
+	                //是否显示分页（*）  
+	                pagination: true,   
+	                 //排序方式 
+	                sortOrder: "asc",    
+	                //初始化加载第一页，默认第一页
+	                pageNumber:1,   
+	                //每页的记录行数（*）   
+	                pageSize: 10,  
+	                //可供选择的每页的行数（*）    
+	                pageList: [10, 25, 50, 100],
+	                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据  
+	                url: "/ani/a/sys/user/list",
+	                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+	                //queryParamsType:'',   
+	                ////查询参数,每次调用是会带上这个参数，可自定义                         
+	                queryParams : function(params) {
+	                	var searchParam = $("#searchForm").serializeJSON();
+	                	searchParam.pageNo = params.limit === undefined? "1" :params.offset/params.limit+1;
+	                	searchParam.pageSize = params.limit === undefined? -1 : params.limit;
+	                	searchParam.orderBy = params.sort === undefined? "" : params.sort+ " "+  params.order;
+	                    return searchParam;
+	                },
+					  onShowSearch: function () {
+						  $("#search-collapse").slideToggle();
+					  },
+	                //分页方式：client客户端分页，server服务端分页（*）
+	                sidePagination: "server",
+	                contextMenuTrigger:"right",//pc端 按右键弹出菜单
+	                contextMenuTriggerMobile:"press",//手机端 弹出菜单，click：单击， press：长按。
+	                contextMenu: '#context-menu',
+	                onContextMenuItem: function(row, $el){
+	                    if($el.data("item") == "edit"){
+	                    	edit(row.id);
+	                    } else if($el.data("item") == "delete"){
+	                    	deleteAll(row.id);
+	                    } 
+	                },
+	               
+	                onClickRow: function(row, $el){
+	                },
+	                columns: [{
+				        checkbox: true
+				       
+				    }, {
+				        field: 'photo',
+				        title: '头像',
+				        formatter:function(value, row , index){
+				        	if(value ==''){
+				        		return '<img height="40px" src= "{{ static ('/ani/static/common/images/flat-avatar.png') }}">';
+				        	}else{
+				        		return '<img   onclick="jp.showPic(\''+value+'\')"'+' height="40px" src="'+value+'">';
+				        	}
+				        	
+				        }
+				       
+				    }, {
+				        field: 'loginName',
+				        title: '登录名',
+				        sortable: true
+				       
+				    }, {
+				        field: 'name',
+				        title: '姓名',
+				        sortable: true
+				    }, {
+				        field: 'phone',
+				        title: '电话',
+				        sortable: true
+				    }, {
+				        field: 'mobile',
+				        title: '手机',
+				        sortable: true
+				    }, {
+				        field: 'company.name',
+				        title: '归属公司',
+                        sortable: true,
+						sortName: 'c.name'
+				    }, {
+				        field: 'office.name',
+				        title: '归属部门',
+                        sortable: true,
+						sortName: 'o.name'
+				    }]
+				
+				});
+			
+			  
+			  if(navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)){//如果是移动端
+				  $('#table').bootstrapTable("toggleView");
+				}
+			  
+			  $('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+		                'check-all.bs.table uncheck-all.bs.table', function () {
+		            $('#remove').prop('disabled', ! $('#table').bootstrapTable('getSelections').length);
+		            $('#edit').prop('disabled', $('#table').bootstrapTable('getSelections').length!=1);
+		        });
+	
+			$("#btnImport").click(function(){
+					jp.open({
+					    type: 2,
+                        area: [500, 200],
+                        auto: true,
+                        title:"导入数据",
+                        content: "/ani/a/tag/importExcel" ,
+					    btn: ['下载模板','确定', '关闭'],
+
+                        btn1: function(index, layero){
+                            jp.downloadFile('/ani/a/sys/user/import/template');
+                        },
+                        btn2: function(index, layero){
+                            var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.contentWindow.importExcel('/ani/a/sys/user/import', function (data) {
+                                if(data.success){
+                                    jp.success(data.msg);
+                                    refresh();
+                                }else{
+                                    jp.error(data.msg);
+                                }
+                                jp.close(index);
+                            });//调用保存事件
+                            return false;
+                        },
+
+                        btn3: function(index){
+                            //  jp.close(index);
+                        }
+
+					});
+				});
+				    
+			  $("#search").click("click", function() {// 绑定查询按扭
+				  $('#table').bootstrapTable('refresh');
+				});
+			  $("#reset").click("click", function() {// 绑定查询按扭
+				  $("#searchForm  input").val("");
+				  $("#searchForm  select").val("");
+				  $('#table').bootstrapTable('refresh');
+				});
+			  
+			  $('#beginInDate').datetimepicker({
+					 format: "YYYY-MM-DD HH:mm:ss"
+			    });
+			  $('#endInDate').datetimepicker({
+				 	format: "YYYY-MM-DD HH:mm:ss"
+		      });
+			  
+		});
+		
+		  function getIdSelections() {
+		        return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+		            return row.id
+		        });
+		    }
+		  
+		  function deleteAll(ids){
+			    if(!ids){
+			    	ids =  getIdSelections();
+			    }
+				jp.confirm('确认要删除选中用户吗？',  function(){
+					    jp.loading();
+                 	  	$.get("/ani/a/sys/user/deleteAll?ids=" +ids, function(data){
+                 	  		if(data.success){
+                 	  			$('#table').bootstrapTable('refresh');
+                	  			jp.success(data.msg);
+                	  		}else{
+                	  			jp.error(data.msg);
+                	  		}
+                 	  	})
+				})
+		  }
+		  function edit(id){
+			  if(!id){
+				  id = getIdSelections();
+			  }
+			  jp.openSaveDialog('编辑用户', "/ani/a/sys/user/form?id=" + id,'800px', '680px');
+			  
+		  }
+		  function refresh() {
+              $('#table').bootstrapTable('refresh');
+          }
+	</script>
+
+</head>
+<body id="" class=""  style="">
+	
+	<div class="wrapper wrapper-content">
+	<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">用户列表</h3>
+	</div>
+	<div class="panel-body">
+	<div class="row">
+		<div class="col-sm-3 col-md-2" >
+			<div id="jstree"></div> 
+		</div>
+		<div  class="col-sm-9 col-md-10 animated fadeInRight">
+			<!-- 搜索框-->
+			<div id="search-collapse" class="collapse">
+				<div class="accordion-inner">
+					<form id="searchForm" class="form form-horizontal well clearfix" >
+						<div class="col-sm-4">
+							<label class="label-item single-overflow pull-left" title="登录名：">登录名：</label>
+							<input type="text" name="loginName" maxlength="100"  class=" form-control"/>
+						</div>
+						<div class="col-sm-4">
+							<label class="label-item single-overflow pull-left" title="姓名：">姓名：</label>
+							<input type="text" name="name" maxlength="100"  class=" form-control"/>
+						</div>
+						<div class="col-sm-4">
+					    	<label class="label-item single-overflow pull-left" title="公司：">归属公司：</label>
+					    	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<input id="companyId" name="company.id" class=" form-control form-control" type="hidden" value=""/>
+	<div class="input-group" style="width:100%">
+		<input id="companyName" name="" readonly="readonly"  type="text" value="" data-msg-required=""
+		class=" form-control" style=""/>
+       		 <span class="input-group-btn">
+	       		 <button type="button"  id="companyButton" class="btn   btn-primary  "><i class="fa fa-search"></i>
+	             </button> 
+	             
+	             	 <button type="button" id="companyDelButton" class="close" data-dismiss="alert" style="position: absolute; top: 5px; right: 53px; z-index: 999; display: block;">×</button>
+	             
+	             
+	             
+       		 </span>
+       		
+    </div>
+	<label id="companyName-error" class="error" for="companyName" style="display:none"></label>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#companyButton, #companyName").click(function(){
+		// 是否限制选择，如果限制，设置为disabled
+		if ($("#companyButton").hasClass("disabled")){
+			return true;
+		}
+		// 正常打开	
+		top.layer.open({
+		    type: 2, 
+		    area: ['300px', '420px'],
+		    title:"选择公司",
+		    ajaxData:{selectIds: $("#companyId").val()},
+		    content: "/ani/a/tag/treeselect?url="+encodeURIComponent("/sys/office/treeData?type=1")+"&module=&checked=&extId=&isAll=&allowSearch=" ,
+		    btn: ['确定', '关闭']
+    	       ,yes: function(index, layero){ //或者使用btn1
+						var tree = layero.find("iframe")[0].contentWindow.tree;//h.find("iframe").contents();
+						var ids = [], names = [], nodes = [];
+						if ("" == "true"){
+							nodes = tree.get_checked(true);
+						}else{
+							nodes = tree.get_selected(true);
+						}
+						for(var i=0; i<nodes.length; i++) {//
+							ids.push(nodes[i].id);
+							names.push(nodes[i].text);//
+							break; // 如果为非复选框选择，则返回第一个选择  
+						}
+						$("#companyId").val(ids.join(",").replace(/u_/ig,""));
+						$("#companyName").val(names.join(","));
+						$("#companyName").focus();
+						top.layer.close(index);
+				    	       },
+    	cancel: function(index){ //或者使用btn2
+    	           //按钮【按钮二】的回调
+    	       }
+		}); 
+	
+	});
+	
+	$("#companyDelButton").click(function(){
+		// 是否限制选择，如果限制，设置为disabled
+		if ($("#companyButton").hasClass("disabled")){
+			return true;
+		}
+		// 清除	
+		$("#companyId").val("");
+		$("#companyName").val("");
+		$("#companyName").focus();
+	
+	});
+})
+</script>
+					    </div>
+					    <div class="col-sm-4">
+					    	<label class="label-item single-overflow pull-left" title="员工：">归属部门：</label>
+					   		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<input id="officeId" name="office.id" class=" form-control form-control" type="hidden" value=""/>
+	<div class="input-group" style="width:100%">
+		<input id="officeName" name="" readonly="readonly"  type="text" value="" data-msg-required=""
+		class=" form-control" style=""/>
+       		 <span class="input-group-btn">
+	       		 <button type="button"  id="officeButton" class="btn   btn-primary  "><i class="fa fa-search"></i>
+	             </button> 
+	             
+	             	 <button type="button" id="officeDelButton" class="close" data-dismiss="alert" style="position: absolute; top: 5px; right: 53px; z-index: 999; display: block;">×</button>
+	             
+	             
+	             
+       		 </span>
+       		
+    </div>
+	<label id="officeName-error" class="error" for="officeName" style="display:none"></label>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#officeButton, #officeName").click(function(){
+		// 是否限制选择，如果限制，设置为disabled
+		if ($("#officeButton").hasClass("disabled")){
+			return true;
+		}
+		// 正常打开	
+		top.layer.open({
+		    type: 2, 
+		    area: ['300px', '420px'],
+		    title:"选择部门",
+		    ajaxData:{selectIds: $("#officeId").val()},
+		    content: "/ani/a/tag/treeselect?url="+encodeURIComponent("/sys/office/treeData?type=2")+"&module=&checked=&extId=&isAll=&allowSearch=" ,
+		    btn: ['确定', '关闭']
+    	       ,yes: function(index, layero){ //或者使用btn1
+						var tree = layero.find("iframe")[0].contentWindow.tree;//h.find("iframe").contents();
+						var ids = [], names = [], nodes = [];
+						if ("" == "true"){
+							nodes = tree.get_checked(true);
+						}else{
+							nodes = tree.get_selected(true);
+						}
+						for(var i=0; i<nodes.length; i++) {//
+                            if (nodes[i].children && nodes[i].children.length >0){
+								top.layer.msg("不能选择父节点（"+nodes[i].text+"）请重新选择。", {icon: 0});
+								return false;
+							}//
+							ids.push(nodes[i].id);
+							names.push(nodes[i].text);//
+							break; // 如果为非复选框选择，则返回第一个选择  
+						}
+						$("#officeId").val(ids.join(",").replace(/u_/ig,""));
+						$("#officeName").val(names.join(","));
+						$("#officeName").focus();
+						top.layer.close(index);
+				    	       },
+    	cancel: function(index){ //或者使用btn2
+    	           //按钮【按钮二】的回调
+    	       }
+		}); 
+	
+	});
+	
+	$("#officeDelButton").click(function(){
+		// 是否限制选择，如果限制，设置为disabled
+		if ($("#officeButton").hasClass("disabled")){
+			return true;
+		}
+		// 清除	
+		$("#officeId").val("");
+		$("#officeName").val("");
+		$("#officeName").focus();
+	
+	});
+})
+</script>
+					    </div>
+					    <div class="col-sm-4">
+							 <div style="margin-top:26px">
+							  <a  id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-search"></i> 查询</a>
+							  <a  id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm" ><i class="fa fa-refresh"></i> 重置</a>
+							</div>
+					    </div>
+					</form>
+				</div>
+			</div><!-- 搜索框结束 -->
+		
+		<!-- 工具栏 -->
+	    <div id="toolbar">
+	    
+	    	
+	    		<a id="add" class="btn btn-primary"  onclick="jp.openSaveDialog('新建用户', '/ani/a/sys/user/form','800px', '680px')"><i class="glyphicon glyphicon-plus"></i> 新建</a>
+			
+			
+				<button id="edit" class="btn btn-success" disabled onclick="edit()">
+		            <i class="glyphicon glyphicon-edit"></i> 修改
+		        </button>
+			
+			
+				<button id="remove" class="btn btn-danger" disabled onclick="deleteAll()">
+		            <i class="glyphicon glyphicon-remove"></i> 删除
+		        </button>
+			
+			
+				<button id="btnImport" class="btn btn-info"><i class="fa fa-folder-open-o"></i> 导入</button>
+				<div id="importBox" class="hide">
+					<form id="importForm" action="/ani/a/sys/user/import" method="post" enctype="multipart/form-data"
+						 style="padding-left:20px;text-align:center;" ><br/>
+						<input id="uploadFile" name="file" type="file" style="width:330px"/>导入文件不能超过5M，仅允许导入“xls”或“xlsx”格式文件！<br/>　　
+					</form>
+				</div>
+			
+			
+				<a id="export" class="btn btn-warning" href="/ani/a/sys/user/export"><i class="fa fa-file-excel-o"></i> 导出</a>
+	       
+	    </div><!-- 工具栏结束 -->
+	    
+	    
+	    <!-- 表格 -->
+	    <table id="table"
+	           data-toolbar="#toolbar">
+	    </table>
+	
+	    <!-- context menu -->
+	    <ul id="context-menu" class="dropdown-menu">
+	        <li data-item="edit"><a>编辑</a></li>
+	        <li data-item="delete"><a>删除</a></li>
+	        <li data-item="cancel"><a>取消</a></li>
+	    </ul> 
+	</div>
+	</div>
+	</div>
+	</div>
+	</div>
+
+</body>
+</html>

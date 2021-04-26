@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Released JDV Data List</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-lynch',
+                radioClass: 'iradio_square-lynch',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+    <meta name="decorator" content="ani"/>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+            //表格初始化
+            $('#table').bootstrapTable({
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                showSearch: true,
+                //显示刷新按钮
+                showRefresh: true,
+                //显示切换手机试图按钮
+                showToggle: true,
+                //显示 内容列下拉框
+                showColumns: true,
+                //显示切换分页按钮
+                showPaginationSwitch: true,
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/query_system/jdv_data/list/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#searchForm").serializeJSON();
+                    //alert(searchParam.pageNo)
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                    searchParam.csrfmiddlewaretoken = $("#token").val();
+                    searchParam.tip_no = $("#tip_no").val();
+                    searchParam.mask_name = $("#mask_name").val();
+                    return searchParam;
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right", //pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                columns: [
+                    {
+                        checkbox: true
+                    }, {
+                        align: 'center',
+                        field: 'product_name',
+                        title: 'Product Name'
+                    }, {
+                        align: 'center',
+                        field: 'tip_no',
+                        title: 'Tip No'
+                    }, {
+                        align: 'center',
+                        field: 'mask_name',
+                        title: 'Mask Name',
+                    }, {
+                        align: 'center',
+                        field: 'lot_id',
+                        title: 'Lot ID',
+                    }, {
+                        align: 'center',
+                        field: 'send_email_date',
+                        title: 'JDV Date'
+                    }, {
+                        align: 'center',
+                        field: 'customer_release_date',
+                        title: 'Customer Release Date'
+                    }, {
+                        align: 'center',
+                        field: 'dp_release_user',
+                        title: 'DP Release User'
+                    }, {
+                        align: 'center',
+                        field: 'dp_release_date',
+                        title: 'DP Release Date'
+                    }, {
+                        align: 'center',
+                        field: 'note',
+                        title: 'Note'
+                    }
+                ]
+
+            });
+
+            if (navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)) { //如果是移动端
+                $('#table').bootstrapTable("toggleView");
+            }
+
+            $('#table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table',
+                function () {
+                    $('#remove').prop('disabled', !$('#table').bootstrapTable('getSelections').length);
+                    $('#edit').prop('disabled', $('#table').bootstrapTable('getSelections').length != 1);
+                });
+            $("#search").click("click", function () { // 绑定查询按扭
+                $('#table').bootstrapTable('refresh');
+            });
+            $("#reset").click("click", function () { // 绑定查询按扭
+                //$("#searchForm  select").val("");
+                $('#table').bootstrapTable('refresh');
+            });
+        });
+
+        function getIdSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        function refresh() {
+            $('#table').bootstrapTable('refresh');
+        }
+
+        {# ------------------------------- 执行方法 ---------------------------------#}
+        // jdv data view方法
+        function jdv_data_view() {
+            alert("jdv_data_view")
+        }
+
+        //customer release
+        function release() {
+            alert("release")
+        }
+
+        // hold操作
+        function hold(id) {
+            jp.confirm("Are you sure to hold?", function () {
+                jp.post("/query_system/jdv_data/hold/", {"id": id}, function (data) {
+                    jp.success(data.msg)
+                    refresh()
+                });
+            })
+
+        }
+    </script>
+</head>
+<body>
+<input id="tip_no" type="hidden" name="tip_no" value="{{ tip_no }}"/>
+<input id="mask_name" type="hidden" name="mask_name" value="{{ mask_name }}"/>
+<form id="inputForm"><input id="token" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"></form>
+<div class="wrapper wrapper-content">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Released JDV Data List</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 animated fadeInRight">
+                    <!-- 工具栏 -->
+                    {#                    <div id="toolbar">#}
+                    {#                        <button class="btn btn-success" onclick="Apply()">Release</button>#}
+                    {#                        <button class="btn btn-primary" onclick="/jdv/sop_file/download/">download sop</button>#}
+                    {#                    </div>#}
+                    <table id="table" data-toolbar="#toolbar">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

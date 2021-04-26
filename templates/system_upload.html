@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload</title>
+    <link rel="stylesheet" type="text/css" href="{{ static ('/css/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ static ('/webuploader/webuploader.css') }}">
+    <script type="text/javascript" src="{{ static ('/js/jquery-3.4.1.js') }}"></script>
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+    <script type="text/javascript" src="{{ static ('/webuploader/webuploader.js') }}"></script>
+    <style>
+        .upload {
+            width: 100px;
+            height: 36px;
+            background-color: #00b7ee;
+            border: none;
+            border-radius: 3px;
+            font-size: 14px;
+            color: white;
+        }
+
+        .upload-hover {
+            background-color: #00a2d4;
+        }
+    </style>
+    <script>
+        function mouse_in() {
+            $('#upload').addClass('upload-hover')
+        }
+
+        function mouse_out() {
+            $('#upload').removeClass('upload-hover')
+        }
+    </script>
+</head>
+<body>
+<input type="hidden" id="data" value="{{ data or '' }}"/>
+<div style="padding: 10px">
+    <div id="uploader" class="wu-example">
+        <!--用来存放文件信息-->
+        {#        class="uploader-list"#}
+        <div id="the_list"></div>
+        <div class="btns">
+            <div id="select" style="width:100px; height:36px; float:left;">Select</div>
+            <div style="width:10px; height:36px; float:left;"></div>
+            <button id="upload" onclick="upload()" class="upload"
+                    onmouseover="mouse_in()" onmouseout="mouse_out()">
+                Upload
+            </button>
+            <br><br>
+            <table id="table_1" class="table table-bordered">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Size</th>
+                    <th>Status</th>
+                    <th>Remove</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <textarea id="log_textarea" class="form-control" rows="8" style="font-size: 12px"></textarea>
+</div>
+<script>
+    let uploader;
+    let log_text = $('#log_textarea');
+    $(document).ready(function () {
+        var fileMd5;
+        var u_file;
+        var id = '{{ id }}'
+        var sub_id = '{{ sub_id }}';
+        var swf = '{{ static ('/webuploader/Uploader.swf') }}';
+        var server_path = '{{ server_path }}';
+        var auto = JSON.parse('{{ auto or false }}'.toLowerCase());
+        var threads = '{{ threads or 1 }}';
+        var fileNumLimit = {{ fileNumLimit or 1 }};
+        var fileSizeLimit = {{ fileSizeLimit or 100 * 1024 * 1024 }};
+        var fileSingleSizeLimit = {{ fileSingleSizeLimit or 100 * 1024 * 1024 }};
+        var server_url = '{{ server_url }}';
+        var check_type = '{{ check_type }}';
+        var callback_api = '{{ callback_api or ''}}';
+        var file_type = '{{ file_type }}'.split(',');
+        <!-- -1:没传值,失败 0:直接过, 1:recipe -->
+        console.log('{{ type_no }}')
+        console.log('type_no = ' + '{{ type_no }}')
+        var type_no = '{{ type_no or -1 }}';
+        //监听分块上传过程中的三个时间点
+        console.log(JSON.stringify($('#data').val()));
+        console.log($('#data').val());
+        WebUploader.Uploader.register({
+            "before-send-file": "beforeSendFile",
+            "before-send": "beforeSend",
+            "after-send-file": "afterSendFile"
+        }, {
+            //时间点1：所有分块进行上传之前调用此函数
+            beforeSendFile: function (file) {
+                u_file = file
+                var deferred = WebUploader.Deferred();
+                //1、计算文件的唯一标记，用于断点续传
+                (new WebUploader.Uploader()).md5File(file, 0, 20 * 1024 * 1024)
+                    .then(function (val) {
+                        fileMd5 = val;
+                        //获取文件信息后进入下一步
+                        deferred.resolve();
+                    });
+                return deferred.promise();
+            },
+            //时间点2：如果有分块上传，则每个分块上传之前调用此函数
+            beforeSend: function (block) {
+                var deferred = WebUploader.Deferred();
+                $.ajax({
+                    type: "POST",
+                    url: "/system/upload/file_check/",
+                    data: {
+                        tip_no: $("#tipNo").val(),
+                        server_path: server_path,
+                        //文件唯一标记
+                        task_id: fileMd5,
+                        //当前分块下标
+                        chunk: block.chunk,
+                        //当前分块大小
+                        chunkSize: block.end - block.start,
+                        file_name: u_file.source['name']
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.isExist) {
+                            //分块存在，跳过
+                            deferred.reject();
+                        } else {
+                            //分块不存在或不完整，重新发送该分块内容
+                            deferred.resolve();
+                        }
+                    }
+                });
+                this.owner.options.formData.tip_no = $("#tipNo").val();
+                this.owner.options.formData.task_id = fileMd5;
+                return deferred.promise();
+            },
+            //时间点3：所有分块上传成功后调用此函数
+            afterSendFile: function (file) {
+                //如果分块上传成功，则通知后台合并分块
+                $.ajax({
+                    type: "POST",
+                    url: "/system/upload/file_merge/",
+                    data: {
+                        server_path: server_path,
+                        task_id: fileMd5,
+                        filename: file.source['name'],
+                        sub_id: sub_id,
+                        id: id,
+                        check_type: check_type,
+
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        console.log(fileMd5);
+                        if (callback_api !== '') {
+                            log_text.val(log_text.val() + '\nCallback start');
+                            $.ajax({
+                                type: "POST",
+                                url: callback_api,
+                                data: {
+                                    id: id,
+                                    sub_id: sub_id,
+                                    res_id: response['id'],
+                                    data: JSON.stringify($('#data').val()),
+                                    file_name: file.source['name'],
+                                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                                },
+                                success: function (response) {
+                                    if (response['success'] === true) {
+                                        log_text.val(log_text.val() + '\nCallback success');
+                                        log_text.val(log_text.val() + '\n' + '  ' + response['msg']);
+                                    } else {
+                                        log_text.val(log_text.val() + '\nCallback error');
+                                        log_text.val(log_text.val() + '\n' + '  ' + response['msg']);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+
+        uploader = WebUploader.create({ //创建上传控件
+            swf: swf, //swf位置，这个可能与flash有关
+            server: server_url, //接收每一个分片的服务器地址
+            pick: '#select', //填上传按钮的id选择器值
+            auto: auto, //选择文件后，是否自动上传
+            chunked: true, //是否分片
+            chunkSize: 20 * 1024 * 1024, //每个分片的大小，这里为20M
+            chunkRetry: 3, //某分片若上传失败，重试次数
+            threads: threads, //线程数量，考虑到服务器，这里就选了1
+            duplicate: true, //分片是否自动去重
+            formData: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                server_path: server_path,
+            },
+        });
+
+        // 当文件被加入队列之前触发
+        uploader.on('beforeFileQueued', function (file) {
+            console.log('1111111')
+            console.log('type_no = ' + '{{ type_no or -1 }}')
+            log_text.val('beforeFileQueued');
+            if (file.size > fileSingleSizeLimit) {
+                console.log(file.size)
+                console.log(fileSingleSizeLimit)
+                $('#log_text').val(log_text.val() + file.name + '\n  Single file size out of range. Size must be less ' + fileSingleSizeLimit / 1024 / 1024 + " MB.");
+                console.log('file size too big')
+                return false
+            }
+            console.log('22222')
+            var file_ext = file.name.split('.').pop();
+            if (($.inArray(file_ext, file_type)) == -1) {
+                log_text.val(log_text.val() + '\n  File type error. Must be [ ' + file_type + ' ]');
+                return false
+            }
+            console.log('33333')
+            var table_row = $("#table_1 tr").length;
+            if (table_row - 1 === fileNumLimit) {
+                log_text.val(log_text.val() + '\n  File count out of range.');
+                return false;
+            }
+            console.log('123')
+        });
+
+        // 当一批文件添加进队列以后触发
+        uploader.on('filesQueued', function (files) {
+            {#log_text.val(log_text.val() + '\nfilesQueued');#}
+            var file_size_sum = 0;
+
+            if (files.length > fileNumLimit) {
+                for (let i = 0; i < files.length; i++) {
+                    uploader.removeFile(files[i]);
+                }
+                log_text.val(log_text.val() + '\n  File count out of range.');
+                return false;
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                file_size_sum = file_size_sum + files[i].size;
+                console.log(file_size_sum);
+            }
+
+            if (file_size_sum > fileSizeLimit) {
+                for (let i = 0; i < files.length; i++) {
+                    uploader.removeFile(files[i]);
+                }
+                log_text.val(log_text.val() + '\n  File size out of range');
+                return false;
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                console.log(i);
+                var file = files[i];
+                {#$("#table_1").append("<tr id='" + file.id + "'>" +#}
+                {#    "<th id='" + file.id + "'>" + file.id + "</th>" +#}
+                {#    "<th id='name_" + file.id + "'>" + file.name + "</th>" +#}
+                {#    "<th id='size_" + file.id + "'>" + file.size + "</th>" +#}
+                {#    "<th id='status_" + file.id + "'>" + 'Waiting' + "</th>" +#}
+                {#    "<th><button onclick='remove_row(this)' id='btn_" + file.id + "'>remove</button></th></tr>"#}
+                {#);#}
+                console.log(type_no)
+                $.ajax({
+                    url: '/system/upload/file_upload_check/',
+                    data: {
+                        id: id,
+                        file_name: file.name,
+                        type: type_no,
+                    },
+                    method: 'post',
+                    dataType: 'json',
+                    async: false,
+                    success: function (data) {
+                        if (data.success) {
+                            {#for (let i = 0; i < files.length; i++) {#}
+                            {#    console.log(i);#}
+                            {#    var file = files[i];#}
+                            $("#table_1").append("<tr id='" + file.id + "'>" +
+                                "<th id='" + file.id + "'>" + file.id + "</th>" +
+                                "<th id='name_" + file.id + "'>" + file.name + "</th>" +
+                                "<th id='size_" + file.id + "'>" + file.size + "</th>" +
+                                "<th id='status_" + file.id + "'>" + 'Waiting' + "</th>" +
+                                "<th><button onclick='remove_row(this)' id='btn_" + file.id + "'>remove</button></th></tr>"
+                            );
+                            //}
+                            return true;
+                        } else {
+                            uploader.removeFile(files[i]);
+                            return false;
+                        }
+                    }
+                })
+            }
+        });
+
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on('uploadProgress', function (file, percentage) {
+            var $li = $('#status_' + file.id),
+                $percent = $li.find('.progress .progress-bar');
+
+            // 避免重复创建
+            if (!$percent.length) {
+                $li.text('Uploading');
+                $percent = $('<div class="progress progress-striped active">' +
+                    '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                    '</div>' +
+                    '</div>').appendTo($li).find('.progress-bar');
+            }
+            $percent.css('width', percentage * 100 + '%');
+        });
+
+        // 当开始上传流程时触发
+        uploader.on('startUpload', function (file) {
+            console.log(file);
+            log_text.val(log_text.val() + '\nStart upload');
+        });
+
+        // 当文件上传成功时触发
+        uploader.on('uploadSuccess', function (file) {
+            $('#status_' + file.id).text('Upload success');
+            log_text.val(log_text.val() + '\n' + file.id + '  upload success');
+        });
+
+        // 不管成功或者失败，文件上传完成时触发
+        uploader.on('uploadComplete', function (file) {
+            $('#status_' + file.id).find('.progress').fadeOut();
+            console.log(uploader.getStats());
+            uploader.removeFile(file);
+        });
+
+        // 当文件上传出错时触发
+        uploader.on('uploadError', function (file) {
+            $('#status_' + file.id).text('Upload error');
+            log_text.val(log_text.val() + '\n' + file.id + '  upload error');
+        });
+    });
+
+    // 移除檔案
+    function remove_row(obj) {
+        var id = obj.id.slice(4,);
+
+        uploader.removeFile(id, true);
+
+        $('#' + id).remove();
+        log_text.val(log_text.val() + '\nRemove ' + id);
+    }
+
+    //上傳
+    function upload() {
+        var table_row = $("#table_1 tr").length;
+        console.log(table_row);
+        uploader.upload();
+        if (table_row === 1) {
+            log_text.val(log_text.val() + '\nNo file');
+        }
+    }
+</script>
+</body>
+</html>

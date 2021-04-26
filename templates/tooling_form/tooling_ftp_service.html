@@ -1,0 +1,199 @@
+
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+	<title>FTP Service</title>
+	
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-store">
+<script>var d = "";</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<!-- 设置浏览器图标 -->
+<link rel="shortcut icon" href= "{{ static ('/ani/static/favicon.ico') }}">
+<!-- 引入jeeplus ajax版本库文件，该文件压缩了jQuery，datatime等常用js文件以提高加载速度 -->
+<link rel="stylesheet" href= "{{ static ('/ani/static/common/css/vendor.css') }}" />
+<script src= "{{ static ('/ani/static/common/js/vendor.js') }}"></script>
+<!-- 引入依赖的第三方插件 -->
+<link href= "{{ static ('/ani/static/plugin/awesome/4.4/css/font-awesome.min.css') }}" rel="stylesheet" />
+<script src= "{{ static ('/ani/static/plugin/jquery-validation/1.14.0/jquery.validate.js') }}" type="text/javascript"></script>
+<script src= "{{ static ('/ani/static/plugin/jquery-validation/1.14.0/localization/messages_zh.min.js') }}" type="text/javascript"></script>
+<script src= "{{ static ('/ani/static/plugin/jquery-validation/1.14.0/validation-methods.js') }}" type="text/javascript"></script>
+<link href= "{{ static ('/ani/static/plugin/icheck-1.x/skins/square/_all.css') }}" rel="stylesheet" />
+<script src= "{{ static ('/ani/static/plugin/icheck-1.x/icheck.js') }}"></script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $('input.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-lynch',
+            radioClass: 'iradio_square-lynch',
+            increaseArea: '20%' // optional
+        });
+    });
+
+
+</script>
+<!--省市区三级联动插件-->
+<link href= "{{ static ('/ani/static/plugin/city-picker/css/city-picker.css') }}" rel="stylesheet" type="text/css"/>
+<script src= "{{ static ('/ani/static/plugin/city-picker/js/city-picker.data.js') }}" type="text/javascript"></script>
+<script src= "{{ static ('/ani/static/plugin/city-picker/js/city-picker.js') }}" type="text/javascript"></script>
+
+<!-- 引入layer插件,当做独立组件使用，不使用layui模块，该版本修复了chrome下花屏的bug -->
+<script src= "{{ static ('/ani/static/plugin/layui/layer/layer.js') }}"></script>
+<script src= "{{ static ('/ani/static/plugin/layui/laytpl/laytpl.js') }}"></script>
+
+
+<!--引入webuploader-->
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/webuploader-0.1.5/webuploader.css') }}">
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/webuploader-0.1.5/demo.css') }}">
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/webuploader-0.1.5/webuploader.js') }}"></script>
+
+<!-- 引入toastr -->
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/toastr/toastr.css') }}">
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/toastr/toastr.min.js') }}"></script>
+
+<!--引入select2-->
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/select2/css/select2.min.css') }}">
+<link rel="stylesheet" type="text/css" href= "{{ static ('/ani/static/plugin/select2/css/select2-bootstrap.css') }}">
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/select2/js/select2.min.js') }}"></script>
+<script type="text/javascript" src= "{{ static ('/ani/static/plugin/select2/js/i18n/zh-CN.js') }}"></script>
+
+<!-- 引入自定义文件 -->
+<script type="text/javascript">var ctx = '/ani/a', ctxStatic='/ani/static';</script>
+<link rel="stylesheet" id="theme" href= "{{ static ('/ani/static/common/css/app-lynch.css') }}" />
+<script src= "{{ static ('/ani/static/common/js/jeeplus.js') }}"></script>
+
+	
+	
+	<meta name="decorator" content="ani"/>
+	
+
+<script src= "{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-zh-CN.js') }}"></script>
+<script src= "{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-contextmenu.js') }}"></script>
+<script src= "{{ static ('/ani/static/plugin/bootstrapTable/bootstrap-table-export.js') }}"></script>
+<script src= "{{ static ('/ani/static/plugin/bootstrapTable/tableExport.js') }}"></script>
+
+	<link href= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.css') }}" rel="stylesheet" type="text/css"/>
+	<script src= "{{ static ('/ani/static/plugin/bootstrapTree/bootstrap-treeview.js') }}" type="text/javascript"></script>
+	
+<script type="text/javascript">
+		$(document).ready(function() {
+		//zTree初始化
+			
+				$('#jstree').treeview({
+					data: '[{"level":1,"children":[{"name":"Device001","id":"4","text":"Device001","children":[{"name":"abc.oas","id":"4","text":"abc.oas"},{"name":"abc.oas","id":"4","text":"abc.oas"},{"name":"abc.oas","id":"4","text":"abc.oas"}]},{"name":"Device002","id":"6a642e140e40496a8d467c646b8e935e","text":"Device002","children":[{"name":"abc.oas","id":"4","text":"abc.oas"},{"name":"abc.oas","id":"4","text":"abc.oas"},{"name":"abc.oas","id":"4","text":"abc.oas"}]},{"name":"Device003","id":"e0ef8af9cae6416f8bb359714a1b4244","text":"Device003"},{"name":"Device004","id":"5","text":"Device004"}],"name":"TIP0190001","id":"1","text":"总公司"}]',
+					levels: 5,
+		            onNodeSelected: function(event, treeNode) {
+		            	var id = treeNode.id == '0' ? '' :treeNode.id;
+						if(treeNode.level == 1){//level=0 代表公司
+							$("#companyId").val(id);
+							$("#companyName").val(treeNode.text);
+							$("#officeId").val("");
+							$("#officeName").val("");
+						}else{
+							$("#companyId").val("");
+							$("#companyName").val("");
+							$("#officeId").val(id);
+							$("#officeName").val(treeNode.text);
+						}
+						
+						
+		            },
+					rules:
+					{
+					draggable : "all" //这个设置可以使得节点进行拖动操作
+					},
+		         });
+			
+			$('#jstree2').treeview({
+				data: '[{"level":1,"children":[{"name":"Device001","id":"4","text":"Device001","children":[{ "selectable": "true","icon": "glyphicon glyphicon-check","color": "#FF0000","name":"abc.oas  --File Size Wrong","id":"4","text":"abc.oas"},{"name":"abc.oas --MD5Num Wrong","icon": "glyphicon glyphicon-check","color": "#FF0000","id":"4","text":"abc.oas"},{"name":"abc.oas","id":"4","text":"abc.oas"}]},{"name":"Device002","id":"6a642e140e40496a8d467c646b8e935e","text":"Device002","children":[{"name":"abc.oas","id":"4","text":"abc.oas"},{"name":"abc.oas --File size wrong","color": "#FF0000","icon": "glyphicon glyphicon-check","id":"4","text":"abc.oas"},{"name":"abc.oas","id":"4","text":"abc.oas"}]},{"color": "#FF0000","name":"Device003 --NO GDS","icon": "glyphicon glyphicon-check","id":"e0ef8af9cae6416f8bb359714a1b4244","text":"Device003"},{"color": "#FF0000","name":"Device004 --NO GDS","icon": "glyphicon glyphicon-check","id":"5","text":"Device004"}],"name":"TIP0190001","id":"1","text":"总公司"}]',
+				levels: 5
+			 });
+			
+		 
+			  
+			  
+		});
+		
+		 
+		  
+		  
+		
+	</script>
+
+</head>
+<body id="" class=""  style="">
+	
+	<div class="wrapper wrapper-content">
+	<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">FTP Service</h3>
+	</div>
+	<div class="panel-body">
+	<div class="row">
+		<div class="col-sm-12 col-md-12" >
+		<span style="color: red;">TIPNO:</span>	<input type="text" id="tipno" name="tipno" />
+			Tooling Form Name:<input type="text" id="tipno" name="tipno" />
+			<p></p>
+		</div>
+		
+		<div class="col-sm-5 col-md-5" >
+			<div id="jstree"></div> 
+		</div>
+		<div class="col-sm-5 col-md-5" >
+			<div id="jstree2"></div> 
+		</div>
+		<div  class="col-sm-2 col-md-2 animated fadeInRight" style="align-content: center;">
+			 
+		
+		<!-- 工具栏 -->
+	    <div id="toolbar" >
+	    
+	    	
+	    		<a id="add" class="btn btn-primary"  onclick="jp.openSaveDialog('新建用户', '/ani/a/sys/user/form','800px', '680px')"><i class="glyphicon glyphicon-plus"></i>FTP</a>
+			<div>
+			
+				<button id="edit" class="btn btn-success" disabled onclick="edit()">
+		            <i class="glyphicon glyphicon-edit"></i> RE FTP
+		        </button>
+			</div>
+			<div>
+				<button id="remove" class="btn btn-danger" disabled onclick="deleteAll()">
+		            <i class="glyphicon glyphicon-remove"></i> CHECK
+		        </button>
+			</div>
+			<div>
+				<button id="btnImport" class="btn btn-info"><i class="fa fa-folder-open-o"></i> RE Tooling</button>
+			</div>
+			<div>
+			
+			
+				<a id="export" class="btn btn-warning" href="/ani/a/sys/user/export"><i class="fa fa-file-excel-o"></i> DONE</a>
+	       </div>	 
+	    </div><!-- 工具栏结束 -->
+	    
+	    
+	    <!-- 表格 -->
+	    <table id="table"
+	           data-toolbar="#toolbar">
+	    </table>
+	
+	    <!-- context menu -->
+	    <ul id="context-menu" class="dropdown-menu">
+	        <li data-item="edit"><a>编辑</a></li>
+	        <li data-item="delete"><a>删除</a></li>
+	        <li data-item="cancel"><a>取消</a></li>
+	    </ul> 
+	</div>
+	</div>
+	</div>
+	</div>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Tool Maintain</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" method="post" autocomplete="off">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input type="hidden" name="lot_info_id" value="{{ lot_info.id }}">
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Create File : </label>
+            </td>
+            <td class="width-35">
+                <textarea id="writer_create_file_error_message" name="writer_create_file_error_message"
+                          maxlength="100000"
+                          class="form-control" rows="3">{{ lot_info.writer_create_file_error_message or '' }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>FTP Upload : </label>
+            </td>
+            <td class="width-35">
+                <textarea id="ftp_upload_error_message" name="ftp_upload_error_message"
+                          maxlength="100000" class="form-control"
+                          rows="3">{{ lot_info.ftp_upload_error_message or '' }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Catalog : </label>
+            </td>
+            <td class="width-35">
+                <textarea id="catalog_error_message" name="catalog_error_message" maxlength="100000"
+                          class="form-control"
+                          rows="3">{{ lot_info.catalog_error_message or '' }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Regist : </label>
+            </td>
+            <td class="width-35">
+                <textarea id="register_error_message" name="register_error_message" maxlength="100000"
+                          class="form-control"
+                          rows="3">{{ lot_info.register_error_message or '' }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Reg Delete : </label>
+            </td>
+            <td class="width-35">
+                <textarea id="register_del_error_message" name="register_del_error_message" maxlength="100000"
+                          class="form-control"
+                          rows="3">{{ lot_info.register_del_error_message or '' }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Writer OP : </label>
+            </td>
+            <td class="width-35">
+                <textarea id="writer_op_error_message" name="writer_op_error_message" maxlength="100000"
+                          class="form-control"
+                          rows="3">{{ lot_info.writer_op_error_message or '' }}</textarea>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+</body>

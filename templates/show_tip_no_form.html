@@ -1,0 +1,128 @@
+
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+	<head>
+		<title>User Manage</title>
+
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=9,IE=10" />
+		<meta http-equiv="Expires" content="0">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Cache-Control" content="no-store">
+		<script>
+			var d = "";
+		</script>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		{% include 'base.html' %}
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('input.i-checks').iCheck({
+					checkboxClass: 'icheckbox_square-blue',
+					radioClass: 'iradio_square-blue',
+					increaseArea: '20%' // optional
+				});
+			});
+		</script>
+
+
+
+		<meta name="decorator" content="ani" />
+		<script type="text/javascript">
+			function save() {
+				var isValidate = jp.validateForm('#inputForm'); //校验表单
+				if (!isValidate) {
+					return false;
+				} else {
+					jp.loading();
+					jp.post("/wrong_form_type2/",$('#inputForm').serialize(), function(data) {
+						if (data.success) {
+							jp.getParent().refresh();
+							var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+							parent.layer.close(dialogIndex);
+							jp.success(data.msg)
+
+						} else {
+							jp.error(data.msg);
+						}
+					})
+				}
+
+			}
+/*			$(document).ready(function() {
+				$("#no").focus();
+				$("#inputForm").validate({
+					rules: {
+						loginName: {
+							remote: "/system/user_check_loginname/?oldLoginName=" + encodeURIComponent(
+								'{{user.loginname or ''}}')
+						}
+					},
+					messages: {
+						loginName: {
+							remote: "用户登录名已存在"
+						},
+						confirmNewPassword: {
+							equalTo: "输入与上面相同的密码"
+						}
+					}
+				});
+
+			}); */
+		</script>
+
+	</head>
+	<body id="" class="bg-white" style="">
+
+		<form id="inputForm" class="form-horizontal" action="/wrong_form_type2/" method="post">
+			<input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+
+			<input id="id" name="id" type="hidden" value="{{import_error_message_log.id or ''}}" />
+			<table class="table table-bordered">
+				<tbody>
+					<!-- id = request.POST.get('id')
+					 import_error_message_log  -->
+					<tr>
+						<td class="active"><label class="pull-right">
+								<font color="red"></font>import_data_id:
+							</label></td>
+						<td><input id="import_data_id" name="import_data_id" value="{{import_error_message_log.import_data_id or ''}}" /></td>
+					</tr>
+					<tr>
+						<td class="active"><label class="pull-right">
+								<font color="red"></font>tip_no:
+							</label></td>
+						<td><input id="tip_no" name="tip_no" value="{{import_error_message_log.tip_no or ''}}"/></td>
+					</tr>
+
+
+					<tr>
+						<td class="active"><label class="pull-right">
+								<font color="red"></font>import_data:
+							</label></td>
+						<td><input id="import_data" name="import_data" value="{{import_error_message_log.import_data or ''}}"/></td>
+					</tr>
+					<tr>
+						<td class="active"><label class="pull-right">
+								<font color="red"></font>error_code:
+							</label></td>
+						<td><input id="error_code" name="error_code" value="{{import_error_message_log.error_code or ''}}"/></td>
+					</tr>
+
+					<tr>
+						<td class="active"><label class="pull-right">error_description:</label></td>
+						<td><input id="error_description" name="error_description" value="{{import_error_message_log.error_description or ''}}"/></td>
+					</tr>
+					<tr>
+						<td class="active"><label class="pull-right">error_type:</label></td>
+						<td><input id="error_type" name="error_type" value="{{import_error_message_log.error_type or ''}}"/></td>
+					</tr>
+
+				</tbody>
+			</table>
+		</form>
+
+	</body>
+</html>

@@ -1,0 +1,269 @@
+#ifndef MMS_PPTServiceManager_idl
+#define MMS_PPTServiceManager_idl
+
+#include "MMS_pptstr.idl"
+// Bob Ke 2020/02/27 Add  #9, #10, #11
+// Bob Ke 2020/03/09 Add #12, #13, #14
+// Bob Ke 2020/04/21 Add #15, #16
+// Bob Ke 2020/05/22 Add #17, #18, #19
+// Bob Ke 2020/07/30 Add #20
+// Bob Ke 2020/09/07 Add #21
+// Bob Ke 2020/10/22 Add #22, #23
+// Bob Ke 2020/10/26 Add #24
+
+interface PPTServiceManager
+{
+};
+
+
+interface CS_PPTServiceManager : PPTServiceManager
+{
+
+  void CS_PPTServiceManager_init();
+  void CS_PPTServiceManager_uninit();
+// Excel # : 1
+pptOpeStartReqResult TxOpeStartReq
+(
+in pptUser requestUserID, 
+in objectIdentifier equipmentID, 
+in string portGroupID, 
+in objectIdentifier controlJobID, 
+in pptStartCassetteSequence strStartCassette, 
+in boolean processJobPauseFlag, 
+in string claimMemo
+);
+// Excel # : 2
+pptOpeStartCancelReqResult TxOpeStartCancelReq
+(
+in pptUser requestUserID, 
+in objectIdentifier equipmentID, 
+in objectIdentifier controlJobID, 
+in string claimMemo
+);
+// Excel # : 3
+pptOpeCompWithDataReqResult TxOpeCompWithDataReq
+(
+in pptUser requestUserID, 
+in objectIdentifier equipmentID, 
+in objectIdentifier controlJobID, 
+in boolean spcResultRequiredFlag, 
+in string claimMemo
+);
+// Excel # : 4
+pptHoldLotReleaseReqResult TxHoldLotReleaseReq
+(
+in pptUser requestUserID, 
+in objectIdentifier lotID, 
+in objectIdentifier releaseReasonCodeID, 
+in pptHoldListSequence strLotHoldReleaseReqList
+);
+// Excel # : 6
+pptRunningHoldReqResult TxRunningHoldReq
+( 
+in pptUser requestUserID, 
+in objectIdentifier equipmentID, 
+in objectIdentifier controlJobID, 
+in objectIdentifier holdReasonCodeID, 
+in string claimMemo
+);
+// Excel # : 7
+pptForceOpeCompReqResult TxForceOpeCompReq
+( 
+in pptUser requestUserID, 
+in objectIdentifier equipmentID, 
+in objectIdentifier controlJobID, 
+in boolean spcResultRequiredFlag, 
+in string claimMemo
+);
+// Excel # : 5
+csUniversalHoldLotReqResult CS_TxUniversalHoldLotReq
+(
+in pptUser                                  requestUserID,
+in csUniversalHoldLotReqInParm              strUniversalHoldLotReqInParm,
+in string                                   claimMemo
+);
+// Excel # : 8
+pptLotsInfoForOpeStartInqResult TxLotsInfoForOpeStartInq
+(
+in pptUser requestUserID, 
+in objectIdentifier equipmentID, 
+in objectIdentifierSequence cassetteID
+);
+
+// Excel # : 9 CS_TxExTIPLayerDataParmSetReq
+csExTIPLayerDataParmSetReqResult CS_TxExTIPLayerDataParmSetReq
+(
+    in pptUser                           requestUserID,
+    in csExTIPLayerDataParmSetReqInParm  strExTIPLayerDataParmSetReqInParm
+);
+
+// Excel # : 10 CS_TxExTIPLayerDataParmInq
+csExTIPLayerDataParmInqResult CS_TxExTIPLayerDataParmInq
+(
+    in pptUser                        requestUserID,
+    in csExTIPLayerDataParmInqInParm  strExTIPLayerDataParmInqInParm
+);
+
+// Excel # : 11 TxLotListInq__180
+pptLotListInqResult__180 TxLotListInq__180 (
+    in pptUser          requestUserID,
+    in objectIdentifier bankID,
+    in string           lotStatus,
+    in string           lotType,
+    in objectIdentifier productID,
+    in string           orderNumber,
+    in string           customerCode,
+    in objectIdentifier manufacturingLayerID,
+    in objectIdentifier routeID,
+    in string           operationNumber,
+    in boolean          bankInRequiredFlag,
+    in objectIdentifier lotID,
+    in string           requiredCassetteCategory,
+    in boolean          backupProcessingFlag,
+    in string           subLotType,
+    in boolean          deleteLotFlag,
+    in objectIdentifier holdReasonCodeID,
+    in boolean          sorterJobCreationCheckFlag,
+    in string           interFabXferState,
+    in boolean          autoDispatchControlLotFlag,
+    in boolean          virtualOperationFlag,
+    in objectIdentifier operationID );
+
+// Excel # : 12 TxVirtualOperationLotListInq
+pptVirtualOperationLotListInqResult TxVirtualOperationLotListInq(
+    in pptUser                              requestUserID,
+    in pptVirtualOperationLotListInqInParam strVirtualOperationLotListInqInParam );
+
+// Excel # : 13 TxLoadingLotRpt
+pptLoadingLotRptResult TxLoadingLotRpt(in pptUser requestUserID, in objectIdentifier equipmentID, in objectIdentifier cassetteID, in objectIdentifier portID, in string loadPurposeType, in string claimMemo);
+
+// Excel # : 14 TxUnLoadingLotRpt
+pptUnloadingLotRptResult TxUnloadingLotRpt(in pptUser           requestUserID,
+                                         in objectIdentifier  equipmentID,
+                                         in objectIdentifier  cassetteID,
+                                         in objectIdentifier  portID,
+                                         in string            claimMemo);
+                                         
+// Excel # : 15 TxLotOperationListInq__160
+//## Operation: TxLotOperationListInq__160
+//## Documentation:
+//      Transaction Id : TXTRQ008
+pptLotOperationListInqResult__160 TxLotOperationListInq__160(
+    in pptUser          requestUserID,
+    in boolean          searchDirection,
+    in boolean          posSearchFlag,
+    in long             searchCount,
+    in boolean          currentFlag,
+    in objectIdentifier lotID );
+    
+// Excel # : 16 TxRouteOperationListInq__160
+//## Operation: TxRouteOperationListInq__160
+//## Documentation:
+//      Transaction Id : TXPLQ011
+pptRouteOperationListInqResult__160 TxRouteOperationListInq__160(
+    in pptUser          requestUserID,
+    in objectIdentifier routeID,
+    in objectIdentifier operationID,
+    in string           operationNumber,
+    in string           pdType,
+    in long             searchCount );    
+    
+// Excel # : 17 TxLotInfoInq__160
+//## Operation: TxLotInfoInq__160
+//## Documentation:
+//## Transaction ID: TXTRQ003
+pptLotInfoInqResult__160 TxLotInfoInq__160 (
+    in pptUser                  requestUserID,
+    in objectIdentifierSequence lotID,
+    in boolean                  lotBasicInfoFlag,
+    in boolean                  lotControlUseInfoFlag,
+    in boolean                  lotFlowBatchInfoFlag,
+    in boolean                  lotNoteFlagInfoFlag,
+    in boolean                  lotOperationInfoFlag,
+    in boolean                  lotOrderInfoFlag,
+    in boolean                  lotControlJobInfoFlag,
+    in boolean                  lotProductInfoFlag,
+    in boolean                  lotRecipeInfoFlag,
+    in boolean                  lotLocationInfoFlag,
+    in boolean                  lotWipOperationInfoFlag,
+    in boolean                  lotWaferAttributesFlag,
+    in boolean                  lotListInCassetteInfoFlag,
+    in boolean                  waferMapInCassetteInfoFlag,
+    in boolean                  lotBackupInfoFlag );
+
+// Excel # : 18 TxUserParameterValueInq
+// Transaction ID : TXPCQ018
+pptUserParameterValueInqResult TxUserParameterValueInq(in pptUser requestUserID, in string parameterClass, in string identifier) ;    
+
+// Excel # : 19 TxUserDataInq__101
+//## Operation: TxUserDataInq__101
+//## Documentation:
+//## Transaction Id : TXOTQ002
+pptUserDataInqResult TxUserDataInq__101 (
+    in pptUser                     requestUserID,
+    in pptUserDataInqInParm__101   strUserDataInqInParm,
+    in string                      claimMemo
+);
+
+// Excel # : 20 TxLogOnCheckReq
+//## Operation: TxSCHLogOnCheckReq
+//## Documentation:
+//## Transaction Id : TXOMC006
+pptLogOnCheckReqResult TxLogOnCheckReq(in pptUser requestUserID, in string subSystemID, in string categoryID, in boolean  bProductRequestFlag, in boolean  bRecipeRequestFlag) ;  //D4000013
+
+// Excel # : 21 TxEqpInfoInq__160
+//## Operation: TxEqpInfoInq__160
+//## Documentation:
+//## Transaction ID: TXEQQ004
+pptEqpInfoInqResult__160 TxEqpInfoInq__160 (
+    in  pptUser                             requestUserID,
+    in  objectIdentifier                    equipmentID,
+    in  boolean                             requestFlagForBRInfo,
+    in  boolean                             requestFlagForStatusInfo,
+    in  boolean                             requestFlagForPMInfo,
+    in  boolean                             requestFlagForPortInfo,
+    in  boolean                             requestFlagForChamberInfo,
+    in  boolean                             requestFlagForStockerInfo,
+    in  boolean                             requestFlagForInprocessingLotInfo,
+    in  boolean                             requestFlagForReservedControlJobInfo,
+    in  boolean                             requestFlagForRSPPortInfo,
+    in  boolean                             requestFlagForEqpContainerInfo );
+
+// Excel # : 22 CS_TxCollectedDataInfoForAfterOpeCompInq
+//## Operation: CS_TxCollectedDataInfoForAfterOpeCompInq
+//## Documentation:
+//## Transaction Id : 
+csCollectedDataInfoForAfterOpeCompInqResult CS_TxCollectedDataInfoForAfterOpeCompInq
+(
+    in pptUser requestUserID,
+    in csCollectedDataInfoForAfterOpeCompInqInParm strCollectedDataInfoForAfterOpeCompInqInParm
+);
+
+// Excel # : 23 CS_TxCollectedDataAfterOpeCompRpt
+//## Operation: CS_TxCollectedDataAfterOpeCompRpt
+//## Documentation:
+//## Transaction Id : 
+csCollectedDataAfterOpeCompRptResult CS_TxCollectedDataAfterOpeCompRpt
+(
+     in pptUser requestUserID,
+     in csCollectedDataAfterOpeCompRptInParm strCollectedDataAfterOpeCompRptInParm
+);
+
+// Excel # : 24 TxOpeLocateReq
+//## Operation: TxOpeLocateReq
+//## Documentation:
+//      Transaction Id : TXTRC015
+pptOpeLocateReqResult TxOpeLocateReq(in pptUser requestUserID,
+                                   in boolean locateDirection,
+                                   in objectIdentifier lotID,
+                                   in objectIdentifier currentRouteID,
+                                   in string currentOperationNumber,
+                                   in objectIdentifier routeID,
+                                   in objectIdentifier operationID,
+                                   in string operationNumber,
+                                   in pptProcessRef processRef,
+                                   in long seqno,
+                                   in string claimMemo);
+
+};
+#endif

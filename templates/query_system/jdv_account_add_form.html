@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JDV Account List</title>
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src="{{ static ('/js/jquery-3.4.1.js') }}"></script>
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+    {% include 'base.html' %}
+    <script>
+        var tree, form, util;
+        $(function () {
+            layui.use(['form', 'tree', 'util', 'laydate'], function () {
+                form = layui.form;
+                tree = layui.tree;
+                util = layui.util;
+                var laydate = layui.laydate;
+
+                laydate.render({
+                    elem: '#start_date'
+                });
+
+                laydate.render({
+                    elem: '#end_date'
+                });
+
+                let chips_data = $("#chips_data").val();
+                let layers_data = $("#layers_data").val();
+                //渲染
+                tree.render({
+                    elem: '#chips'  //绑定元素
+                    , showCheckbox: true
+                    , id: 'chips_tree'
+                    , data: [{
+                        id: 1,
+                        title: 'All Chips',
+                        spread: true,
+                        children: JSON.parse(chips_data)
+                    }]
+                });
+
+
+                tree.render({
+                    elem: '#layers'  //绑定元素
+                    , showCheckbox: true
+                    , id: 'layers_tree'
+                    , data: [{
+                        id: 1,
+                        title: 'All Layers',
+                        spread: true,
+                        children: JSON.parse(layers_data)
+                    }]
+                });
+            });
+            show_jdv_account_list();
+            get_jdv_account_options();
+            get_job_deck_options()
+        });
+
+        // 显示jdv_account列表
+        function show_jdv_account_list() {
+            $("#jdv_data_tbody").empty();
+            jp.post("/query_system/jdv/account_list/", {
+                tip_no: $("#tip_no").val(),
+                csrfmiddlewaretoken: $("#token").val()
+            }, function (data) {
+                let jdv_data_list = data.data;
+                for (let i = 0; i < jdv_data_list.length; i++) {
+                    let jdv_data = jdv_data_list[i];
+                    $("#jdv_data_tbody").append("<tr><td>" + jdv_data.sgd_user_name + "</td>" +
+                        "<td>" + jdv_data.job_deck_name + "</td>" +
+                        "<td style='word-wrap:break-word;word-break:break-all;'>" + jdv_data.layers + "</td>" +
+                        "<td style='word-wrap:break-word;word-break:break-all;'>" + jdv_data.chips + "</td>" +
+                        "<td>" + jdv_data.start_date + "~" + jdv_data.end_date + "</td>" +
+                        "<td><button class='layui-btn layui-btn-sm layui-btn-danger' onclick='jdv_data_del(" + jdv_data.id + ")'>" +
+                        {#"<i class='layui-icon layui-icon-up'></i>" +#}
+                        "delete" +
+                        "</button></td></tr>");
+                }
+            })
+        }
+
+        function save() {
+            let chips = null;
+            let layers = null;
+            let chipsData = tree.getChecked("chips_tree")
+            let layersData = tree.getChecked("layers_tree")
+            if (chipsData.length > 0) {
+                chips = chipsData[0].children
+            }
+            if (layersData.length > 0) {
+                layers = layersData[0].children
+            }
+            console.log(chips)
+            console.log(layers)
+        }
+
+        function add_jdv_data() {
+            let chips = [];
+            let layers = [];
+            let chipsData = tree.getChecked("chips_tree")
+            let layersData = tree.getChecked("layers_tree")
+            if (chipsData.length > 0) {
+                let chips_children = chipsData[0].children;
+                for (let i = 0; i < chips_children.length; i++) {
+                    chips.push(chips_children[i].title)
+                }
+            }
+            if (layersData.length > 0) {
+                let layers_children = layersData[0].children
+                for (let i = 0; i < layers_children.length; i++) {
+                    layers.push(layers_children[i].title)
+                }
+            }
+            $.ajax({
+                url: '/query_system/jdv/account_add/',
+                data: {
+                    tip_no: $("#tip_no").val(),
+                    jdv_account: $("#jdv_account").val(),
+                    start_date: $("#start_date").val(),
+                    end_date: $("#end_date").val(),
+                    job_deck_name: $("#job_deck_name").val(),
+                    chips: chips,
+                    layers: layers,
+                    csrfmiddlewaretoken: $("#token").val()
+                },
+                method: 'post',
+                traditional: true,
+                success: function (data) {
+                    alert(data.msg)
+                    show_jdv_account_list();
+                }
+            });
+        }
+
+        //删除
+        function jdv_data_del(jdv_data_id){
+            $.ajax({
+                url: '/query_system/jdv_data/del/',
+                method: 'post',
+                data: {
+                    jdv_data_id: jdv_data_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    alert(data.msg)
+                    show_jdv_account_list();
+                }
+            });
+        }
+
+        // 获取sgd account选项
+        function get_jdv_account_options(){
+            var tip_no = $("#tip_no").val();
+            $.ajax({
+                url: "/query_system/jdv/account_options/",
+                method: 'post',
+                data: {
+                    tip_no: tip_no
+                },
+                dataType: 'json',
+                success: function (data) {
+                    var options = data.data;
+                    for(let i = 0 ; i < options.length; i++){
+                        $("#jdv_account").append("<option value='" + options[i].id + "'>" + options[i].user_name + "</option>");
+                    }
+                    form.render("select");
+                }
+            });
+        }
+
+        // 获取job_deck的选项
+        function get_job_deck_options() {
+            let tip_no = $("#tip_no").val();
+            console.log(tip_no)
+            $.ajax({
+                url: "/query_system/jdv/job_deck_options/",
+                method: "post",
+                data: {
+                    tip_no: tip_no
+                },
+                dataType: "json",
+                success: function (data) {
+                    let options = data.data
+                    for(let i = 0 ; i < options.length; i++) {
+                        $("#job_deck_name").append("<option value='" + options[i] + "'>" + options[i] + "</option>");
+                    }
+                    form.render("select");
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<input id="token" type="hidden" value="{{ csrf_token }}"/>
+<input id="tip_no" type="hidden" value="{{ tip_no }}">
+<input id="chips_data" type="hidden" value="{{ chips }}">
+<input id="layers_data" type="hidden" value="{{ layers }}">
+<table class="layui-table layui-form">
+    <tbody class="layui-form-item">
+{#    <tr>#}
+{#        <td>EJDV Account Name:</td>#}
+{#        <td><input id="jdv_account" type="text" class="layui-input"/></td>#}
+{#    </tr>#}
+    <tr>
+        <td>EJDV Account Name:</td>
+        <td>
+            <select id="jdv_account" class="form-control">
+                <option value="">Please Chose A SGD Account</option>
+            </select>
+        </td>
+    </tr>
+{#    <tr>#}
+{#        <td>Start Date:</td>#}
+{#        <td><input id="start_date" type="text" class="layui-input"/></td>#}
+{#    </tr>#}
+{#    <tr>#}
+{#        <td>End Date:</td>#}
+{#        <td><input id="end_date" type="text" class="layui-input"/></td>#}
+{#    </tr>#}
+    <tr>
+        <td>EJDV JDV Job Deck:</td>
+        <td>
+            {#            <input id="job_deck_name" type="text" class="layui-input"/>#}
+            <select id="job_deck_name" class="form-control" multiple="multiple">
+                <option value="">Please Chose A Job Deck</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {#            <div style="width: 100%; height: 200px">#}
+            {#                <label>Chips</label>#}
+            {#                <div id="chips"></div>#}
+            {#            </div>#}
+            <div class="layui-card" style="width: 95%; height: 200px">
+                <div class="layui-card-header">Chips</div>
+                <div class="layui-card-body" id="chips">
+
+                </div>
+            </div>
+        </td>
+        <td>
+            {#            <div style="width: 100%; height: 200px">#}
+            {#                <label>Layers</label>#}
+            {#                <div id="layers"></div>#}
+            {#            </div>#}
+            <div class="layui-card" style="width: 95%; height: 200px">
+                <div class="layui-card-header">Layers</div>
+                <div class="layui-card-body" id="layers">
+
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td align="right" colspan="2">
+            <button onclick="add_jdv_data()" class="layui-btn layui-btn-normal">
+{#                <i class="layui-icon layui-icon-down"></i>#}
+                Create Jdv Data
+            </button>
+
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>JDV Account</th>
+                    <th>Job Name</th>
+                    <th>Layer Name</th>
+                    <th>Chip Name</th>
+                    <th>Duration</th>
+                    <th>Operation</th>
+                </tr>
+                </thead>
+                <tbody id="jdv_data_tbody"></tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detailed View</title>
+    {% include 'base.html' %}
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" autocomplete="off">
+    <input id="token" type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Convert Status ID: </label>
+            </td>
+            <td class="width-35">
+                <label class="pull-left">{{ log.convert_status_id }}</label>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Operation : </label>
+            </td>
+            <td class="width-35">
+                <label class="pull-left">{{ log.operation }}</label>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active" class="active">
+                <label class="pull-right">Operation Time : </label>
+            </td>
+            <td class="width-35">
+                <label class="pull-left">{{ log.operation_time }}</label>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Operation User Name: </label>
+            </td>
+            <td class="width-35">
+                <label class="pull-left">{{ log.operation_user_name }}</label>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Status: </label>
+            </td>
+            <td class="width-35">
+                {% if log.status == 0 %}
+                <label class="pull-left">提交成功</label>
+                {% else %}
+                <label class="pull-left">提交失败</label>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Message : </label>
+            </td>
+            <td class="width-35">
+                <label class="pull-left">{{ log.message }}</label>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">URL : </label>
+            </td>
+            <td class="width-35" colspan="3">
+                <label class="pull-left">{{ log.url }}</label>
+            </td>
+        </tr>
+        <tr>
+            <td class="width-15 active">
+                <label class="pull-right">Params : </label>
+            </td>
+            <td class="width-35" colspan="3">
+{#                <input id="mask_type" name="mask_type" maxlength="200" class="form-control"#}
+{#                          value="{{ w_m.mask_type or ''}}"/>#}
+                <label class="pull-left">{{ log.params }}</label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </tr>
+</form>
+</body>

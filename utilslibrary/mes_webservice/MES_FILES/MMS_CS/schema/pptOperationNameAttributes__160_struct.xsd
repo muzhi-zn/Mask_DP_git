@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:17 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/objectIdentifier.xsd"/>
+  <xsd:include schemaLocation="../schema/pptProcessRef.xsd"/>
+  <xsd:include schemaLocation="../schema/objectIdentifierSequence.xsd"/>
+  <xsd:include schemaLocation="../schema/pptProcessBackupDataSequence.xsd"/>
+  <xsd:complexType name="pptOperationNameAttributes__160_struct">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="seqno" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="routeID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="operationID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="operationNumber" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="operationName" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="operationPass" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="objrefPO" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="processRef" type="tns:pptProcessRef"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="testType" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="inspectionType" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="stageID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="stageGroupID" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="maskLevel" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="departmentNumber" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="mandatoryOperationFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="standardCycleTime" type="xsd:double"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="plannedStartTime" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="plannedEndTime" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="plannedMachine" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="actualStartTime" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="actualCompTime" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="assignedMachine" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="qtimeFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="machines" type="tns:objectIdentifierSequence"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="strProcessBackupDataSeq" type="tns:pptProcessBackupDataSequence"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="pdType" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="siInfo" type="corba:CORBA.Any"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>

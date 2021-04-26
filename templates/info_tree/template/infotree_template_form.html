@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>Machine Manage</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="author" content="http://www.jeeplus.org/"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <script>var d = "";</script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+
+    <meta name="decorator" content="ani"/>
+    <link href="{{ static ('/ani/static/plugin/jstree/style.css') }}" rel="stylesheet" type="text/css"/>
+    <script src="{{ static ('/ani/static/plugin/jstree/jstree.min.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function save() {
+            var isValidate = jp.validateForm('#inputForm');//校验表单
+            if (!isValidate) {
+                return false;
+            } else {
+                jp.loading();
+                jp.post("/infotree/template/{{method}}/", $('#inputForm').serialize(), function (data) {
+                    if (data.success) {
+                        jp.getParent().refresh();
+                        var dialogIndex = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                        parent.layer.close(dialogIndex);
+                        jp.success(data.msg)
+                    } else {
+                        jp.error(data.msg);
+                    }
+                })
+            }
+        }
+    </script>
+    <script>
+        $(function () {
+            gen_options();
+            get_machine_type_sel();
+            level_sel()
+        });
+
+        function gen_options() {
+            $.ajax({
+                url: '/infotree/template/dict/',
+                method: "post",
+                async: false,
+                datatype: 'json',
+                success: function (arr) {
+                    var machine_type_val = '{{ temp.machine_type or ''}}'.split(',');
+                    for (var i = 0; i < arr.Tool.length; i++) {
+                        if (machine_type_val.indexOf(arr.Tool[i]) !== -1) {
+                            $("#machine_type_sel").append("<option value='" + arr.Tool[i] + "'selected>" + arr.Tool[i] + "</option>");
+                        } else {
+                            $("#machine_type_sel").append("<option value='" + arr.Tool[i] + "'>" + arr.Tool[i] + "</option>");
+                        }
+                    }
+                }
+            })
+        }
+
+        function level_sel() {
+            const level_val = '{{ temp.level or ''}}';
+            if (level_val === '1') {
+                $("#level").get(0).selectedIndex = 1;
+            } else if (level_val === '2') {
+                $("#level").get(0).selectedIndex = 2;
+            }
+
+
+        }
+
+        function get_machine_type_sel() {
+            const data = $('#machine_type_sel').val();
+            {#console.log(data.length);#}
+            {#console.log($('#machine_type_sel option').length);#}
+            {#console.log($('#machine_type_se option[value="1"]').val());#}
+            {#$("#machine_type_sel").get(0).selectedIndex = 3;#}
+            console.log(data);
+            if (data !== null) {
+                if ((data.indexOf('MS03') !== -1) && (data.length > 1)) {
+                    jp.warning('MS03 只能單獨選擇');
+                    $("#machine_type_sel").val('default');
+                    $("#machine_type_sel").selectpicker("refresh");
+                }
+            }
+
+            console.log(data);
+            $('#machine_type').val(data);
+
+            if (data.indexOf('MS03') === -1) {
+                {#$('#level').attr("disabled", true);#}
+                $("#level_option_1").css("display", "block");
+                $("#level_option_2").css("display", "none");
+                $("#level_option_3").css("display", "none");
+                $("#level").get(0).selectedIndex = 0;
+            } else {
+                {#$('#level').attr("disabled", false);#}
+                $("#level_option_1").css("display", "none");
+                $("#level_option_2").css("display", "block");
+                $("#level_option_3").css("display", "block");
+                $("#level").get(0).selectedIndex = 1;
+            }
+        }
+    </script>
+</head>
+<body id="" class="bg-white" style="">
+<form id="inputForm" class="form-horizontal" autocomplete="off">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    {#    <input id="id" name="id" type="hidden" value="{{ temp.id or '' }}"/>#}
+    <input id="menuIds" name="menuIds" type="hidden" value=""/>
+    <table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
+        <tbody>
+        <tr>
+            {# id #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>ID : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_id" name="old_id" type="hidden" value="{{ temp.id or ''}}">
+                <input id="id" name="id" class="form-control" type="text"
+                       value="{{ temp.id or '' }}" maxlength="50" readonly/>
+            </td>
+        </tr>
+        <tr>
+            {# machine_type #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Machine Type :</label>
+            </td>
+            <td class="width-35">
+                {#                <input id="old_machine_type" name="old_machine_type" type="hidden" value="{{ temp.machine_type or ''}}">#}
+                {#                <input id="machine_type" name="machine_type" class="form-control required" type="text"#}
+                {#                       value="{{ temp.machine_type or '' }}" maxlength="50"/>#}
+                <input id="machine_type" name="machine_type" type="hidden" value="{{ temp.machine_type or ''}}">
+                <select id="machine_type_sel" name="machine_type_sel" class="form-control selectpicker required"
+                        onchange="get_machine_type_sel()" multiple>
+                </select>
+            </td>
+        </tr>
+        <tr id="level_tr">
+            {# level #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Level :</label>
+            </td>
+            <td class="width-35">
+                <select id="level" name="level" class="form-control required">
+                    <option id="level_option_1" val="0">0</option>
+                    <option id="level_option_2" val="1">1</option>
+                    <option id="level_option_3" val="2">2</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            {# type #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Type : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_type" name="old_type" type="hidden" value="{{ temp.type or ''}}">
+                <input id="type" name="type" class="form-control required" type="text"
+                       value="{{ temp.type or '' }}" maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            {# cs_command #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>CS Command : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_cs_command" name="old_cs_command" type="hidden" value="{{ temp.cs_command or ''}}">
+                <input id="cs_command" name="cs_command" class="form-control required" type="text"
+                       value="{{ temp.cs_command or '' }}" maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            {# data_type #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Data Type : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_data_type" name="old_data_type" type="hidden" value="{{ temp.data_type or ''}}">
+                <input id="data_type" name="data_type" class="form-control required" type="text"
+                       value="{{ temp.data_type or '' }}" maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            {# limit_type #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Limit Type : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_limit_type" name="old_limit_type" type="hidden" value="{{ temp.limit_type or ''}}">
+                <input id="limit_type" name="limit_type" class="form-control required" type="text"
+                       value="{{ temp.limit_type or '0' }}" maxlength="50"/>
+            </td>
+        </tr>
+        <tr>
+            {# limit #}
+            <td class="width-15 active">
+                <label class="pull-right"><font color="red">*</font>Limit : </label>
+            </td>
+            <td class="width-35">
+                <input id="old_limit" name="old_limit" type="hidden" value="{{ temp.limit or ''}}">
+                <input id="limit" name="limit" class="form-control required" type="text"
+                       value="{{ temp.limit or '' }}" maxlength="50"/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+</body>

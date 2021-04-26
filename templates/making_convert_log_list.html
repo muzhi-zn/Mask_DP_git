@@ -1,0 +1,185 @@
+
+
+
+<!DOCTYPE html>
+<html style="overflow-x:auto;overflow-y:auto;">
+<head>
+    <title>JDV Service</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=9,IE=10"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <link rel="stylesheet" type="text/css" href= "{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src= "{{ static ('/layui/layui.js') }}"></script>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    {% include 'base.html' %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-lynch',
+                radioClass: 'iradio_square-lynch',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+    <meta name="decorator" content="ani"/>
+    <script type="text/javascript">
+        var form;
+        layui.use('form', function () {
+            form = layui.form;
+        });
+
+        $(document).ready(function () {
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+
+            //表格初始化
+            $('#table').bootstrapTable({
+                //请求方法
+                method: 'post',
+                //类型json
+                dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                //是否显示行间隔色
+                striped: true,
+                //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                cache: false,
+                //显示检索按钮
+                showSearch: false,
+                //显示刷新按钮
+                showRefresh: false,
+                //显示切换手机试图按钮
+                showToggle: false,
+                //显示 内容列下拉框
+                showColumns: false,
+                //显示切换分页按钮
+                showPaginationSwitch: false,
+                //是否显示分页（*）
+                pagination: true,
+                //排序方式
+                sortOrder: "asc",
+                //初始化加载第一页，默认第一页
+                pageNumber: 1,
+                //每页的记录行数（*）
+                pageSize: 10,
+                //可供选择的每页的行数（*）
+                pageList: [10, 25, 50, 100],
+                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+                url: "/making/convert/status/log/list/",
+                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+                //queryParamsType:'',
+                ////查询参数,每次调用是会带上这个参数，可自定义
+                queryParams: function (params) {
+                    var searchParam = $("#inputForm").serializeJSON();
+                    //alert(searchParam.pageNo)
+                    searchParam.pageNo = params.limit === undefined ? "1" : params.offset / params.limit + 1;
+                    searchParam.pageSize = params.limit === undefined ? -1 : params.limit;
+                    searchParam.orderBy = params.sort === undefined ? "" : params.sort + " " + params.order;
+                    return searchParam;
+                },
+                onShowSearch: function () {
+                    $("#search-collapse").slideToggle();
+                },
+                //分页方式：client客户端分页，server服务端分页（*）
+                sidePagination: "server",
+                contextMenuTrigger: "right", //pc端 按右键弹出菜单
+                contextMenuTriggerMobile: "press", //手机端 弹出菜单，click：单击， press：长按。
+                contextMenu: '#context-menu',
+                onClickRow: function (row, $el) {
+                },
+                columns: [
+                    {
+                        checkbox: true
+                    },
+                    {
+                        align: 'center',
+                        field: 'operation',
+                        title: 'Operation'
+                    },
+                    {
+                        align: 'center',
+                        field: 'operation_user_name',
+                        title: 'User'
+                    },
+                    {
+                        align: 'center',
+                        field: 'operation_time',
+                        title: 'Operation Time'
+                    },
+                    {
+                        align: 'center',
+                        field: 'message',
+                        title: 'Message'
+                    },
+                    {
+                        align: 'center',
+                        field: 'result',
+                        title: 'Result'
+                    },
+                    {
+                        field: 'operate',
+                        title: 'Operate',
+                        align: 'center',
+                        events: {
+                            'click .view': function (e, value, row, index) {
+                                jp.openViewDialog('View Detailed', '/making/convert/status/log/view/?id=' + row.id, '800px', '500px');
+                            },
+
+                        },
+                        formatter: function operateFormatter(value, row, index) {
+                            return [
+                                {% if '/making/convert/status/log/view/' in request.session.MASK_DP_SESSION_CURRENT_USER_PERMISSION_LIST %}
+                                    '<a href="#" class="view" title="View" ><i class="fa fa-eye"></i> </a>',
+                                {% endif %}
+
+                            ].join('');
+                        }
+                    }
+                ]
+
+            });
+
+        });
+
+        function getIdSelections() {
+            return $.map($("#table").bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        function refresh() {
+            $('#table').bootstrapTable('refresh');
+        }
+
+    </script>
+
+</head>
+<body id="" class="" style="">
+<form id="inputForm">
+    <input type ="hidden" name ="csrfmiddlewaretoken" value ="{{csrf_token}}">
+    <input type ="hidden" name ="convert_status_id" value ="{{ convert_status_id }}">
+</form>
+<div class="wrapper wrapper-content">
+    <div class="panel panel-primary">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 animated fadeInRight">
+                    <table id="table">
+                    </table>
+                    <!-- context menu -->
+                    <!-- <ul id="context-menu" class="dropdown-menu">
+                        <li data-item="edit"><a>编辑</a></li>
+                        <li data-item="delete"><a>删除</a></li>
+                        <li data-item="cancel"><a>取消</a></li>
+                    </ul> -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

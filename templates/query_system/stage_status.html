@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stage Status</title>
+    <link rel="stylesheet" type="text/css" href="{{ static ('/layui/css/layui.css') }}">
+    <script type="text/javascript" src="{{ static ('/js/jquery-3.4.1.js') }}"></script>
+    <script type="text/javascript" src="{{ static ('/layui/layui.js') }}"></script>
+    <style>
+        .PD_col {
+            background: yellow;
+        }
+
+        .QA_col {
+            background: #00FF00;
+        }
+
+        .MM_col {
+            background: #00b8d4;
+        }
+        .wait{
+            background: white;
+        }
+
+        .done{
+            background: #0d8ddb;
+        }
+
+        .o_g{
+            background: #398439;
+        }
+
+        .non_clean{
+            background: #b71c1c;
+        }
+
+        .job_fail{
+            background: #9973C2;
+        }
+
+        .non_clean_skip{
+            background: #0d8ddb;
+        }
+    </style>
+    <script>
+        $(function(){
+            show_table();
+        });
+        function show_table() {
+            $.ajax({
+                url: '/query_system/production/get_stage_status/',
+                method: 'post',
+                data: {
+                    tip_no: $("#tip_no").val(),
+                    mask_name: $("#mask_name").val(),
+                },
+                dataType: 'json',
+                success: function (data) {
+                    let list = data.data;
+                    for(let i = 0 ; i < list.length; i++){
+                        let device_name = list[i].device_name
+                        let col_list = list[i].col_list
+                        let status_list = list[i].status_list
+                        var cols = "<thead>";
+                        var body = "<tbody><tr>"
+                        console.log(status_list)
+                        for(let i = 0; i < col_list.length; i++){
+                            cols += "<th class='"+col_list[i].flow+"_col'>"+col_list[i].stage_name+"</th>";
+                            body += "<td class='"+get_status_class(status_list[i].status)+"'>"+get_status_title(status_list[i].status)+"</td>"
+                        }
+                        var html_str = "<tr><td>"+device_name+"</td><td><table border='2px' class='layui-table' lay-size='sm'>" + cols + "</thead>"+body+"</tr></tbody></table></td></tr>"
+                        {#$("#stage_status_table").append(cols + "</thead>");#}
+                        {#$("#stage_status_table").append(body + "</tr></tbody>");#}
+                        $("#stage_status_table").append(html_str);
+                    }
+
+                }
+            });
+        }
+
+        function get_status_class(status){
+            switch (status) {
+                case 0:
+                    return "wait";
+                case 1:
+                    return "o_g";
+                case 3:
+                    return "job_fail";
+                case 2:
+                    return "done";
+                case 4:
+                    return "non_clean";
+                case 5:
+                    return "non_clean_skip";
+                default:
+                    return "wait";
+            }
+        }
+
+        function get_status_title(status){
+            switch (status) {
+                case 0:
+                    return "Wait";
+                case 1:
+                    return "<label style='color: white'>O/G</label>";
+                case 3:
+                    return "<label style='color: white'>Job Fail</label>";
+                case 2:
+                    return "<label style='color: white'>Done</label>";
+                case 4:
+                    return "<label style='color: white'>Non Clean</label>";
+                case 5:
+                    return "<label style='color: white'>Non Clean But Skip</label>";
+                default:
+                    return "Wait";
+            }
+        }
+    </script>
+</head>
+<body>
+<input id="tip_no" type="hidden" value="{{ tip_no }}"/>
+<input id="mask_name" type="hidden" value="{{ mask_name }}"/>
+<table id="stage_status_table" border="2px" class="layui-table" lay-size="lg"></table>
+</body>
+</html>

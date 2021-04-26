@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptsm.idl
+    On Monday, October 26, 2020 2:10:28 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-WSDL/1.0/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:include schemaLocation="../../corba/corba.xsd"/>
+  <xsd:import namespace="http://www.omg.org/IDL-Mapped/" schemaLocation="../validation/CS_PPTServiceManager.TxVirtualOperationLotListInqRequest.xsd"/>
+  <xsd:element name="TxVirtualOperationLotListInq">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="requestUserID" type="tns:pptUser"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="strVirtualOperationLotListInqInParam" type="tns:pptVirtualOperationLotListInqInParam"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

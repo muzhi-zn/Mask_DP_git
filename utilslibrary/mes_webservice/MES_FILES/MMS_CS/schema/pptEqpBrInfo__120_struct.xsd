@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+    Generated from MMS_pptstr.idl
+    On Monday, October 26, 2020 2:10:18 PM CST
+    by IBM CORBA 2.3 XML Schema emitter 2.30
+--><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.omg.org/IDL-Mapped/" xmlns:corba="http://www.omg.org/IDL-WSDL/1.0/" xmlns:tns="http://www.omg.org/IDL-Mapped/">
+  <xsd:import namespace="http://www.omg.org/IDL-WSDL/1.0/" schemaLocation="../../corba/corba.xsd"/>
+  <xsd:include schemaLocation="../schema/objectIdentifier.xsd"/>
+  <xsd:include schemaLocation="../schema/stringSequence.xsd"/>
+  <xsd:complexType name="pptEqpBrInfo__120_struct">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="equipmentName" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="workArea" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="equipmentOwner" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="TCSResourceName" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="equipmentCategory" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="reticleUseFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="fixtureUseFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="cassetteChangeFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="startLotsNotifyRequiredFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="monitorCreationFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="eqpToEqpTransferFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="takeInOutTransferFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="emptyCassetteRequireFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="SLMCapabilityFlag" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="SLMSwitch" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="monitorBank" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="dummyBank" type="tns:objectIdentifier"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="specialControl" type="tns:stringSequence"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="multiRecipeCapability" nillable="true" type="xsd:string"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="maxBatchSize" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="minBatchSize" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="minWaferCount" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="processJobLevelCtrl" type="xsd:boolean"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="siInfo" type="corba:CORBA.Any"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>
